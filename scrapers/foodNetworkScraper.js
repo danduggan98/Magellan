@@ -1,25 +1,33 @@
 const puppeteer = require('puppeteer');
 
-async function getChefs(){
+//Gather all recipes from the site and store them in a list
+async function getRecipes(){
+
+    //Get a list of links to every chef
     const chefIndex = 'https://www.foodnetwork.com/profiles/talent';
 
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
     await page.goto(chefIndex);
 
-    let data = await page.evaluate(() => {
-        const itemName = '.m-PromoList__a-ListItem';
-        const items = document.querySelectorAll(itemName);
-        return Array.from(items).map((item) => {return item.href});
+    let chefList = await page.evaluate(() => {
+        const listItem = '.m-PromoList__a-ListItem > a';
+        const links = document.querySelectorAll(listItem);
+        return Array.from(links).map((link) => {return link.href});
     });
 
-    var chefList = data;
-    //chefList.push(url);
+    //Store the urls of every recipe from every chef
+    for (chef of chefList){
+        getRecipes(chef);
+    }
+    
+    async function getRecipes(chefURL){
+        chefURL += '/recipes';
+        console.log(chefURL);
+    }
 
-    console.log(chefList);
+    //Shut down the browser on completion
     await browser.close();
 }
 
-async function getRecipes(chefURL){}
-
-getChefs();
+getRecipes();
