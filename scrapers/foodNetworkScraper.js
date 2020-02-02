@@ -7,11 +7,11 @@ const puppeteer = require('puppeteer');
         const page = await browser.newPage();
         const chefList = await getChefs(page); //Store links to all chef pages
 
+        /*
         //Store links to every recipe from every chef
         for (let i = 0; i < chefList.length; i++){ //Explicit for loop to ensure items are handled in the proper order
-            //getRecipes(chefList[i]);
             await getRecipes(chefList[i], page);
-        }
+        }*/ await getRecipes(chefList[2], page); //Test with my boy Aaron
 
         //Shut down the browser when finished
         await browser.close();
@@ -21,16 +21,16 @@ const puppeteer = require('puppeteer');
     }
 })();
 
-//Gather all recipes from the site and store them in a list
+//Get a list of links to every chef
 const getChefs = async(page) => {
     try {
-        //Get a list of links to every chef
+        //Navigate to the page where all chefs are listed
         await page.goto('https://www.foodnetwork.com/profiles/talent');
 
         //Store the link from each list item in an array
         const chefList = await page.evaluate(() => {
             const links = document.querySelectorAll('.m-PromoList__a-ListItem > a');
-            return Array.from(links).map((link) => {return link.href});
+            return Array.from(links).map(link => link.href);
         });
         return chefList;
 
@@ -41,25 +41,23 @@ const getChefs = async(page) => {
 
 //Find all recipes from a given chef
 const getRecipes = async(chefURL, page) => {
-    //const profileBrowser = await puppeteer.launch();
-    //const profilePage = await profileBrowser.newPage();
-    //await profilePage.goto(chefURL + '/recipes'); //Can't reach this?
     try {
-        console.log(chefURL + '/recipes');
+        //Navigate to the page with all the chef's recipes
+        await page.goto(chefURL + '/recipes');
+
+        //Store the link to each recipe in an array
+        const recipeList = await page.evaluate(() => {
+            const links = document.querySelectorAll('.m-MediaBlock__a-HeadlineText > a');
+            return Array.from(links).map(link => link.href);
+        });
+        
+        console.log(recipeList); //TESTING
+        return recipeList;
 
     } catch(err) {
         console.log("Error in 'getRecipes': ", err);
     }
+};
 
-
-    /*let recipeLinks = await page.evaluate(() => {
-        const element = '.m-MediaBlock__a-HeadlineText > a';
-        const elementLinks = document.querySelectorAll(element);Is
-        return Array.from(elementLinks).map((elementLink) => {return elementLink.href});
-    });
-
-    console.log(recipeLinks);*/
-
-    //https://www.foodnetwork.com/recipes/aaron-sanchez/aaron-sanchezs-mexican-brownies-recipe-1972919
-    //await profileBrowser.close();
-}
+//Gather+store all relevant information from a recipe
+const getData = async(recipeURL, page) => {};
