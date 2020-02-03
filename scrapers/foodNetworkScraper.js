@@ -18,7 +18,7 @@ const puppeteer = require('puppeteer');
         const subList = await getRecipes(chefList[2], page)
         masterRecipeList.concat(subList); //Test with my boy Aaron
 
-        //Save the data from every recipe in a json file
+        //Save the data from every recipe in a json/text file
         /* const curRecipe
         for (let j = 0; j < masterRecipeList.length; j++){
             curRecipe  = await getData(masterRecipeList[j]);
@@ -55,15 +55,14 @@ const getChefs = async(page) => {
 const getRecipes = async(chefURL, page) => {
     try {
         await page.goto(chefURL + '/recipes'); //Page with all the chef's recipes
-        const recipeList = [];
+        let recipeList = [];
 
         //GET THE NUMBER OF PAGES OF RECIPES
         const pageCount = 1;
-        console.log(pageCount);
 
         //Go through each page in the results
-        //for (let i = 1; i <= pageCount; i++){
-            //page.goto(chefURL + 'recipes/trending-/p/' + i); //TEST THIS
+        for (let i = 1; i <= pageCount; i++){
+            await page.goto(chefURL + '/recipes/trending-/p/' + i); //Move to the next page
 
             //Store the link to each recipe in an array
             const recipes = await page.evaluate(() => {
@@ -71,11 +70,10 @@ const getRecipes = async(chefURL, page) => {
                 const links = document.querySelectorAll(path);
                 return Array.from(links).map(link => link.href);
             });
-            console.log(recipes);
-            recipeList.concat(recipes); //Add the list for this page to our master list
-        //}
-
+            recipeList = recipeList.concat(recipes); //Add the list for this page to our master list
+        }
         console.log(recipeList); //TESTING
+
         return recipeList;
 
     } catch(err) {
