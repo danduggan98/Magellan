@@ -6,8 +6,8 @@ const puppeteer = require('puppeteer');
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
 
-        const chefList = await getChefs(page); //All chef pages
-        const masterRecipeList = []; //All recipes from the site
+        const chefs = await getChefs(page); //List of all chef pages
+        const masterRecipeList = []; //List of all recipes from the site
 
         /*
         //Store links to every recipe from every chef
@@ -15,14 +15,14 @@ const puppeteer = require('puppeteer');
             await getRecipes(chefList[i], page);
             
         }*/
-        const subList = await getRecipes(chefList[2], page)
-        masterRecipeList.concat(subList); //Test with my boy Aaron
+        const subList = await getRecipes(chefs[2], page); //Test with my boy Aaron
+        masterRecipeList.concat(subList); //Add the recipes for this chef to a master list
 
         //Save the data from every recipe in a json/text file
         /* const curRecipe
         for (let j = 0; j < masterRecipeList.length; j++){
             curRecipe  = await getData(masterRecipeList[j]);
-            //Add all data in list to mongo database
+            //Add all data in list to json file
         }
         */
 
@@ -51,20 +51,20 @@ const getChefs = async(page) => {
     }
 };
 
-//Find all recipes from a given chef (HAVE IT GO THROUGH ALL PAGES)
+//Find all recipes from a given chef
 const getRecipes = async(chefURL, page) => {
     try {
         await page.goto(chefURL + '/recipes'); //Page with all the chef's recipes
+
+        //Get the number of pages to evaluate
+        const pageCount = parseInt(await page.$eval('li.o-Pagination__a-ListItem:nth-child(6) > a:nth-child(1)', e => e.innerText)); //Get text from button to last page
+
+        //Go through each page
         let recipeList = [];
-
-        //GET THE NUMBER OF PAGES OF RECIPES
-        const pageCount = 1;
-
-        //Go through each page in the results
         for (let i = 1; i <= pageCount; i++){
             await page.goto(chefURL + '/recipes/trending-/p/' + i); //Move to the next page
 
-            //Store the link to each recipe in an array
+            //Store the link to each page's recipes in an array
             const recipes = await page.evaluate(() => {
                 const path = '.o-ListRecipe > .l-List > .m-MediaBlock.o-Capsule__m-MediaBlock > .m-MediaBlock__m-TextWrap > .m-MediaBlock__a-Headline > a';
                 const links = document.querySelectorAll(path);
@@ -72,8 +72,6 @@ const getRecipes = async(chefURL, page) => {
             });
             recipeList = recipeList.concat(recipes); //Add the list for this page to our master list
         }
-        console.log(recipeList); //TESTING
-
         return recipeList;
 
     } catch(err) {
