@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer');
 const fs = require('fs');
 
-//CHANGE IT SO EACH SUBLIST IS APPENDED TO THE FILE, RATHER THAN DOING EVERYTHING AT ONCE UPON COMPLETION
+//Implent getData and have main add its contents to a json
 
 //Main function - calls itself automatically and handles entire process
 (async function scrapeSite() {
@@ -9,22 +9,18 @@ const fs = require('fs');
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
         await page.setDefaultNavigationTimeout(0); //Let navigation take as long as it needs
+        const recipeFile = fs.createWriteStream('recipes.txt'); //Write stream for recipe.txt
 
         const chefs = await getChefs(page); //List of all chef pages
-        let masterRecipeList = []; //List of all recipes from the site
 
         //Store links to every recipe from every chef
         for (let i = 0; i < chefs.length; i++){ //Explicit for loop to ensure items are handled in the proper order
-            console.log('Starting chef', i);
-            const subList = await getRecipes(chefs[i], page); //Grab all the chef's recipes
-            console.log("Finished chef", i);
-            masterRecipeList = masterRecipeList.concat(subList); //Add the recipes for this chef to a master list
-            //Call getData here on the sublist
+            console.log('Starting chef', i+1);
+            await getRecipes(chefs[i], page, recipeFile); //Grab all the chef's recipes
+            console.log("Finished chef", i+1);
         }
-        console.log("There are ", masterRecipeList, " recipes");
-        writeArrayToFile(masterRecipeList, 'recipes.txt'); //Store all recipes in a file called 'recipes.txt'
 
-        //Save the data from every recipe in a json file
+        //Save the data from every recipe in a json file (call getData on each item in recipes.txt)
         /*const curRecipe = "";
         for (let j = 0; j < masterRecipeList.length; j++){
             fs.writeFile('recipesData.json', masterRecipeList[j], (err) => { if (err) throw err; });
@@ -33,9 +29,10 @@ const fs = require('fs');
         }*/
         
         //Shut down the browser when finished
+        recipeFile.end();
         await browser.close();
 
-    } catch(err) {
+    } catch (err) {
         console.log("Error in 'scrapeSite()':", err);
     }
 })();
@@ -54,14 +51,13 @@ const getChefs = async(page) => {
         console.log("Finished chef list");
         return chefList;
 
-    } catch(err) {
+    } catch (err) {
         console.log("Error in 'getChefs':", err);
     }
 };
 
-//HANDLE PEOPLE WITH ONLY A SINGLE PAGE
-//Find all recipes from a given chef
-const getRecipes = async(chefURL, page) => {
+//Find all recipes from a given chef and add them to a text file
+const getRecipes = async(chefURL, page, filestream) => {
     try {
         await page.goto(chefURL + '/recipes'); //Page with all the chef's recipes
 
@@ -76,7 +72,6 @@ const getRecipes = async(chefURL, page) => {
         }
 
         //Go through each page
-        let recipeList = [];
         for (let i = 1; i <= pageCount; i++){
             await page.goto(chefURL + '/recipes/trending-/p/' + i); //Move to the next page
             console.log('Navigated to:', chefURL + '/recipes/trending-/p/' + i);
@@ -87,11 +82,11 @@ const getRecipes = async(chefURL, page) => {
                 const links = document.querySelectorAll(path);
                 return Array.from(links).map(link => link.href);
             });
-            recipeList = recipeList.concat(recipes); //Add the list for this page to our master list
+            writeArrayToFile(recipes, filestream); //Add this chef's recipes to a file called 'recipes.txt'
         }
-        return recipeList;
+        return Promise.resolve();
 
-    } catch(err) {
+    } catch (err) {
         console.log("Error in 'getRecipes':", err);
     }
 };
@@ -99,13 +94,12 @@ const getRecipes = async(chefURL, page) => {
 //Gather and store all relevant information from a recipe
 const getData = async(recipeURL, page) => {};
 
-function writeArrayToFile(array, fileName) {
+//Append the contents of an array to a file with a given name
+function writeArrayToFile(array, filestream) {
     try {
-        const file = fs.createWriteStream(fileName);
         array.forEach((item) => { 
-            file.write(item + '\n'); 
+            filestream.write(item + '\n');
         });
-        file.end();
     } catch (err) {
         console.log("Error in 'writeArrayToFile':", err);
     }
