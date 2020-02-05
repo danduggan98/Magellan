@@ -21,9 +21,9 @@ const rl = require('readline');
 
         //Convert the recipes file to a JSON
         await writeRecipesToJSON(page, recipeFileName, JSONFileName);
-        await browser.close();
-
+        
         console.log("Scraping completed successfully");
+        await browser.close();
 
     } catch (err) {
         console.log("Error in 'scrapeSite':", err);
@@ -122,15 +122,24 @@ async function writeRecipesToJSON(page, inFile, outFile) {
         const readStream = fs.createReadStream(inFile);
         const writeStream = fs.createWriteStream(outFile);
         
-        const lineReader = rl.createInterface({ //Allows us to scan through the file stream line by line
+        const lineReader = rl.createInterface({ //Allows us to scan through the file line by line
             input: readStream
         });
 
+        //Get the length of the recipe file (I am deeply ashamed of this)
+        let len = 0;
+        fs.readFileSync(inFile).toString().split("\n").forEach((line, i, arr) => { len = arr.length; return; });
+
         //Get the data from each url and convert it to JSON
+        let i = 0;
+        writeStream.write('{\n\t"data" : [\n');
         for await (const line of lineReader) {
             const data = await getData(line, page);
-            writeStream.write(data + ',' + '\n'); //Write JSON'd data to the file
+            const comma = (i < len-1) ? ',' : ''; //Add a comma if we are not at the end yet
+            writeStream.write('\t' + data + comma + '\n'); //Write JSON'd data to the file
+            i++;
         }
+        writeStream.write('\t]\n}');
         console.log("JSON file completed");
 
     } catch (err) {
