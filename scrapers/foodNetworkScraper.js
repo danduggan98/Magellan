@@ -3,7 +3,6 @@ const fs = require('fs');
 const rl = require('readline');
 
 //Export scrapeSite as a module (but keep as self-calling)
-//change recipes.txt to 'FoodNetworkRecipes.txt', repopulate it
 
 //Main function - calls itself automatically and handles entire process
 (async function scrapeSite() {
@@ -13,11 +12,11 @@ const rl = require('readline');
         page.setDefaultNavigationTimeout(0); //Let navigation take as long as it needs
         console.log('Initialized browser and page');
 
-        const recipeFileName = 'recipes.txt'; //Name of file which stores our recipe ULRs
+        const recipeFileName = 'FoodNetworkRecipes.txt'; //Name of file which stores our recipe ULRs
         const JSONFileName = 'FoodNetworkRecipeData.json'; //Name of file which stores our JSON data
         
         //Gather all recipes from all chefs
-        //await findAllRecipes(page, recipefileName)
+        //await findAllRecipes(page, recipeFileName);
 
         //Convert the recipes file to a JSON
         await writeRecipesToJSON(page, recipeFileName, JSONFileName);
@@ -71,7 +70,7 @@ const getChefs = async(page) => {
 //Find all recipes from a given chef
 const getRecipes = async(chefURL, page, filestream) => {
     try {
-        console.log("Collecting all recipes for chef", chefURL.slice(35));
+        console.log("Collecting all recipes for chef", chefURL.slice(44));
         await page.goto(chefURL + '/recipes'); //Page with all the chef's recipes
 
         //Get the number of pages to evaluate
@@ -136,7 +135,7 @@ async function writeRecipesToJSON(page, inFile, outFile) {
         for await (const line of lineReader) {
             const data = await getData(line, page);
             const comma = (i < len-1) ? ',' : ''; //Add a comma if we are not at the end yet
-            writeStream.write('\t' + data + comma + '\n'); //Write JSON'd data to the file
+            writeStream.write('\t\t' + data + comma + '\n'); //Write JSON'd data to the file
             i++;
         }
         writeStream.write('\t]\n}');
