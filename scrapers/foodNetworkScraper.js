@@ -3,6 +3,8 @@ const fs = require('fs');
 const rl = require('readline');
 
 //Export scrapeSite as a module (but keep as self-calling)
+//FINISH DATA GRABBING
+//GRAB DATA BY CLASS RATHER THAN SELECTOR for things which can be in different places
 
 //Main function - calls itself automatically and handles entire process
 (async function scrapeSite() {
@@ -127,7 +129,10 @@ async function writeRecipesToJSON(page, inFile, outFile) {
 
         //Get the length of the recipe file (I am deeply ashamed of this)
         let len = 0;
-        fs.readFileSync(inFile).toString().split("\n").forEach((line, i, arr) => { len = arr.length; return; });
+        fs.readFileSync(inFile).toString().split("\n").forEach((line, i, arr) => { 
+            len = arr.length;
+            return; 
+        });
 
         //Get the data from each url and convert it to JSON
         let i = 0;
@@ -152,18 +157,24 @@ const getData = async(recipeURL, page) => {
         console.log("Gathering data from url ...", recipeURL.slice(35));
         await page.goto(recipeURL);
 
-        //Get all relevant data
-        const recipeName = await page.$eval('.o-AssetTitle__a-Headline > span:nth-child(1)', btn => btn.innerText);
-        const totalTime = await page.$eval('div.o-RecipeInfo:nth-child(2) > ul:nth-child(1) > li:nth-child(2) > span:nth-child(2)', btn => btn.innerText);
-
-        //JSON object to store everything
-        const data = {
-            url : recipeURL,
-            recipeName: recipeName,
-            totalTime: totalTime
-            //author: ''
-            //, etc...
+        //Selectors for each piece of data
+        const selectors = {
+            url: recipeURL,
+            recipeNameSelector: '.o-AssetTitle__a-Headline > span:nth-child(1)', 
+            totalTimeSelector: '.o-RecipeInfo span > o-RecipeInfo__a-Description m-RecipeInfo__a-Description--Total', //INCORRECT
+            //totalTimeSelector: 'div.o-RecipeInfo:nth-child(2) > ul:nth-child(1) > li:nth-child(2) > span:nth-child(2)'
         };
+
+        //Get all relevant data
+        const data = await page.evaluate((selectors) => {
+            return {
+                url : selectors.url,
+                recipeName: document.querySelector(selectors.recipeNameSelector).innerText,
+                totalTime: document.querySelector(selectors.totalTimeSelector).innerText
+                //author: ''
+                //, etc...
+            };
+        }, selectors);
         return JSON.stringify(data); //Return data in a JSON format
 
     } catch (err) {
