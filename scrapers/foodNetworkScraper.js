@@ -161,8 +161,7 @@ const getData = async(recipeURL, page) => {
         const selectors = {
             url: recipeURL,
             recipeNameSelector: '.o-AssetTitle__a-Headline > span:nth-child(1)', 
-            totalTimeSelector: '.o-RecipeInfo span > o-RecipeInfo__a-Description m-RecipeInfo__a-Description--Total', //INCORRECT
-            //totalTimeSelector: 'div.o-RecipeInfo:nth-child(2) > ul:nth-child(1) > li:nth-child(2) > span:nth-child(2)'
+            totalTimeSelector: 'li span.o-RecipeInfo__a-Description.m-RecipeInfo__a-Description--Total'
         };
 
         //Get all relevant data
