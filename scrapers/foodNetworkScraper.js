@@ -191,6 +191,7 @@ const getData = async(recipeURL, page) => {
                 totalTime: getInnerText(selectors.totalTimeSelector),
                 prepTime: getTimeText('Prep'),
                 inactiveTime: getTimeText('Inactive'),
+                activeTime: getTimeText('Active'),
                 cookTime: getTimeText('Cook'),
                 yield: getInnerText(selectors.yieldSelector)
             };
