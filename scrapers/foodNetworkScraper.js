@@ -4,7 +4,6 @@ const rl = require('readline');
 
 //Export scrapeSite as a module (but keep as self-calling)
 //FINISH DATA GRABBING
-//GRAB DATA BY CLASS RATHER THAN SELECTOR for things which can be in different places
 
 //Main function - calls itself automatically and handles entire process
 (async function scrapeSite() {
@@ -160,18 +159,31 @@ const getData = async(recipeURL, page) => {
         //Selectors for each piece of data
         const selectors = {
             url: recipeURL,
-            recipeNameSelector: '.o-AssetTitle__a-Headline > span:nth-child(1)', 
-            totalTimeSelector: 'li span.o-RecipeInfo__a-Description.m-RecipeInfo__a-Description--Total'
+            authorSelector: 'div.o-Attribution__m-Author span.o-Attribution__a-Author--Prefix span.o-Attribution__a-Name a',
+            recipeNameSelector: '.o-AssetTitle__a-Headline > span:nth-child(1)',
+            difficultySelector: 'ul.o-RecipeInfo__m-Level li span.o-RecipeInfo__a-Description',
+            totalTimeSelector: 'li span.o-RecipeInfo__a-Description.m-RecipeInfo__a-Description--Total',
+            yieldSelector: 'ul.o-RecipeInfo__m-Yield li span.o-RecipeInfo__a-Description'
         };
 
         //Get all relevant data
         const data = await page.evaluate((selectors) => {
+            
+            //Function which grabs the inner text of an element if it exists - return an empty string if it does not
+            function getInnerText(selector){
+                return (document.querySelector(selector) || {innerText:''}).innerText;
+            }
+
             return {
                 url : selectors.url,
-                recipeName: document.querySelector(selectors.recipeNameSelector).innerText,
-                totalTime: document.querySelector(selectors.totalTimeSelector).innerText
-                //author: ''
-                //, etc...
+                author: getInnerText(selectors.authorSelector).slice(19),
+                recipeName: getInnerText(selectors.recipeNameSelector),
+                difficulty: getInnerText(selectors.difficultySelector),
+                totalTime: getInnerText(selectors.totalTimeSelector),
+                prepTime: (((document.evaluate("//span[@class='o-RecipeInfo__a-Headline' and contains(., 'Prep:')]", document, null, XPathResult.ANY_TYPE, null).iterateNext()) || {innerText:''}).nextElementSibling || {innerText:''}).innerText,
+                inactiveTime: (((document.evaluate("//span[@class='o-RecipeInfo__a-Headline' and contains(., 'Inactive:')]", document, null, XPathResult.ANY_TYPE, null).iterateNext()) || {innerText:''}).nextElementSibling || {innerText:''}).innerText,
+                cookTime: (((document.evaluate("//span[@class='o-RecipeInfo__a-Headline' and contains(., 'Cook:')]", document, null, XPathResult.ANY_TYPE, null).iterateNext()) || {innerText:''}).nextElementSibling || {innerText:''}).innerText,
+                yield: getInnerText(selectors.yieldSelector)
             };
         }, selectors);
         return JSON.stringify(data); //Return data in a JSON format
