@@ -136,6 +136,7 @@ async function writeRecipesToJSON(page, inFile, outFile) {
         //Get the data from each url and convert it to JSON
         let i = 0;
         writeStream.write('{\n\t"data" : [\n');
+        console.time('Data gathering took'); //Track how long it takes to gather data from all recipes
         for await (const line of lineReader) {
             const data = await getData(line, page);
             const comma = (i < len-1) ? ',' : ''; //Add a comma if we are not at the end yet
@@ -144,6 +145,7 @@ async function writeRecipesToJSON(page, inFile, outFile) {
         }
         writeStream.write('\t]\n}');
         console.log("JSON file completed");
+        console.timeEnd('Data gathering took');
 
     } catch (err) {
         console.log("Error in 'readRecipesToJSON':", err);
@@ -192,7 +194,7 @@ const getData = async(recipeURL, page) => {
                 cookTime: getTimeText('Cook'),
                 yield: getInnerText(selectors.yieldSelector)
             };
-        }, selectors);
+        }, selectors); 
         return JSON.stringify(data); //Return data in a JSON format
 
     } catch (err) {
