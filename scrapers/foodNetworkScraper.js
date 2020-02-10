@@ -168,10 +168,17 @@ const getData = async(recipeURL, page) => {
 
         //Get all relevant data
         const data = await page.evaluate((selectors) => {
-            
-            //Function which grabs the inner text of an element if it exists - return an empty string if it does not
+
+            //Function which returns the inner text of an element if it exists, and an empty string if it does not
             function getInnerText(selector){
                 return (document.querySelector(selector) || {innerText:''}).innerText;
+            }
+
+            //Function for prep/cook/inactive time - based on the description since they all use the same class, have no ids, and can be in any order :/
+            //Returns an empty string if the element is not found
+            function getTimeText(descriptor) {
+                const path = "//span[@class='o-RecipeInfo__a-Headline' and contains(., '" + descriptor + ":')]"; //Xpath based on the description of that time
+                return (((document.evaluate(path, document, null, XPathResult.ANY_TYPE, null).iterateNext()) || {innerText:''}).nextElementSibling || {innerText:''}).innerText;
             }
 
             return {
@@ -180,9 +187,9 @@ const getData = async(recipeURL, page) => {
                 recipeName: getInnerText(selectors.recipeNameSelector),
                 difficulty: getInnerText(selectors.difficultySelector),
                 totalTime: getInnerText(selectors.totalTimeSelector),
-                prepTime: (((document.evaluate("//span[@class='o-RecipeInfo__a-Headline' and contains(., 'Prep:')]", document, null, XPathResult.ANY_TYPE, null).iterateNext()) || {innerText:''}).nextElementSibling || {innerText:''}).innerText,
-                inactiveTime: (((document.evaluate("//span[@class='o-RecipeInfo__a-Headline' and contains(., 'Inactive:')]", document, null, XPathResult.ANY_TYPE, null).iterateNext()) || {innerText:''}).nextElementSibling || {innerText:''}).innerText,
-                cookTime: (((document.evaluate("//span[@class='o-RecipeInfo__a-Headline' and contains(., 'Cook:')]", document, null, XPathResult.ANY_TYPE, null).iterateNext()) || {innerText:''}).nextElementSibling || {innerText:''}).innerText,
+                prepTime: getTimeText('Prep'),
+                inactiveTime: getTimeText('Inactive'),
+                cookTime: getTimeText('Cook'),
                 yield: getInnerText(selectors.yieldSelector)
             };
         }, selectors);
