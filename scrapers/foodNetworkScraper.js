@@ -5,6 +5,7 @@ const rl = require('readline');
 //Export scrapeSite as a module (but keep as self-calling)
 //oragnize all scrapers into single, callable api
 //FINISH DATA GRABBING
+//HANDLE SUBRECIPES (like mccargo's horseradish sauce in recipe #3)
 //change author of recipes from food network star to the actual people
 
 //Main function - calls itself automatically and handles entire process
@@ -168,15 +169,23 @@ const getData = async(recipeURL, page) => {
             recipeNameSelector: '.o-AssetTitle__a-Headline > span:nth-child(1)',
             difficultySelector: 'ul.o-RecipeInfo__m-Level li span.o-RecipeInfo__a-Description',
             totalTimeSelector: 'li span.o-RecipeInfo__a-Description.m-RecipeInfo__a-Description--Total',
-            yieldSelector: 'ul.o-RecipeInfo__m-Yield li span.o-RecipeInfo__a-Description'
+            yieldSelector: 'ul.o-RecipeInfo__m-Yield li span.o-RecipeInfo__a-Description',
+            ingredientSelector: 'div.o-Ingredients__m-Body p.o-Ingredients__a-Ingredient',
+            stepSelector: 'div.o-Method__m-Body ol li.o-Method__m-Step'
         };
 
         //Get all relevant data
         const data = await page.evaluate((selectors) => {
 
-            //Function which returns the inner text of an element if it exists, and an empty string if it does not
+            //Function which returns the inner text of an element if it exists and an empty string if it doesn't
             function getInnerText(selector){
                 return (document.querySelector(selector) || {innerText:''}).innerText;
+            }
+
+            //Return an array with the content from all instances of a class
+            function getAllBySelector(selector){
+                const items = document.querySelectorAll(selector);
+                return Array.from(items).map(item => item.innerText);
             }
 
             //Function for prep/cook/active/inactive time - based on the description since they all use the same class, have no ids, and can be in any order :/
@@ -186,6 +195,7 @@ const getData = async(recipeURL, page) => {
                 return (((document.evaluate(path, document, null, XPathResult.ANY_TYPE, null).iterateNext()) || {innerText:''}).nextElementSibling || {innerText:''}).innerText;
             }
 
+            //Organize data into an object
             return {
                 URL : selectors.url,
                 imageURL: (document.querySelector(selectors.imageSelector) || {src:''}).src,
@@ -197,7 +207,9 @@ const getData = async(recipeURL, page) => {
                 inactiveTime: getTimeText('Inactive'),
                 activeTime: getTimeText('Active'),
                 cookTime: getTimeText('Cook'),
-                yield: getInnerText(selectors.yieldSelector)
+                yield: getInnerText(selectors.yieldSelector),
+                ingredientList: getAllBySelector(selectors.ingredientSelector),
+                directions: getAllBySelector(selectors.stepSelector)
             };
         }, selectors); 
         return JSON.stringify(data); //Return data in a JSON format
