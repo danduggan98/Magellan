@@ -3,7 +3,9 @@ const fs = require('fs');
 const rl = require('readline');
 
 //Export scrapeSite as a module (but keep as self-calling)
+//oragnize all scrapers into single, callable api
 //FINISH DATA GRABBING
+//change author of recipes from food network star to the actual people
 
 //Main function - calls itself automatically and handles entire process
 (async function scrapeSite() {
@@ -176,7 +178,7 @@ const getData = async(recipeURL, page) => {
                 return (document.querySelector(selector) || {innerText:''}).innerText;
             }
 
-            //Function for prep/cook/inactive time - based on the description since they all use the same class, have no ids, and can be in any order :/
+            //Function for prep/cook/active/inactive time - based on the description since they all use the same class, have no ids, and can be in any order :/
             //Returns an empty string if the element is not found
             function getTimeText(descriptor) {
                 const path = "//span[@class='o-RecipeInfo__a-Headline' and contains(., '" + descriptor + ":')]"; //Xpath based on the description of that time
