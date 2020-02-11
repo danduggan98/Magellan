@@ -163,6 +163,7 @@ const getData = async(recipeURL, page) => {
         //Selectors for each piece of data
         const selectors = {
             url: recipeURL,
+            imageSelector: '.m-MediaBlock__a-Image.a-Image',
             authorSelector: 'div.o-Attribution__m-Author span.o-Attribution__a-Author--Prefix span.o-Attribution__a-Name a',
             recipeNameSelector: '.o-AssetTitle__a-Headline > span:nth-child(1)',
             difficultySelector: 'ul.o-RecipeInfo__m-Level li span.o-RecipeInfo__a-Description',
@@ -186,7 +187,8 @@ const getData = async(recipeURL, page) => {
             }
 
             return {
-                url : selectors.url,
+                URL : selectors.url,
+                imageURL: (document.querySelector(selectors.imageSelector) || {src:''}).src,
                 author: getInnerText(selectors.authorSelector).slice(19),
                 recipeName: getInnerText(selectors.recipeNameSelector),
                 difficulty: getInnerText(selectors.difficultySelector),
