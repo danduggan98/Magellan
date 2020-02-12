@@ -5,7 +5,6 @@ const rl = require('readline');
 //Export scrapeSite as a module (but keep as self-calling)
 //oragnize all scrapers into single, callable api
 //FINISH DATA GRABBING
-//HANDLE SUBRECIPES (like mccargo's horseradish sauce in recipe #3)
 //change author of recipes from food network star to the actual people
 
 //Main function - calls itself automatically and handles entire process
@@ -172,8 +171,8 @@ const getData = async(recipeURL, page) => {
             yieldSelector: 'ul.o-RecipeInfo__m-Yield li span.o-RecipeInfo__a-Description',
             ingredientListSelector: 'div.o-Ingredients__m-Body',
             ingredientClass: 'o-Ingredients__a-Ingredient',
-            stepListSelector: 'o-Method__m-Body',
-            stepClass: 'o-Method__m-Step'
+            stepListSelector: 'div.o-Method__m-Body',
+            stepClass: 'li.o-Method__m-Step'
         };
 
         //Get all relevant data
@@ -193,7 +192,7 @@ const getData = async(recipeURL, page) => {
 
             //Get an array of ingredients organized based on the part of the recipe they are included in
             function getIngredients() {
-                const nodes = document.querySelector(selectors.ingredientListSelector).children; //Get everything in the ingredient list box
+                const nodes = document.querySelector(selectors.ingredientListSelector).children; //Get everything in the ingredient section
 
                 const ingredients = {};
                 const main = [];
@@ -207,8 +206,8 @@ const getData = async(recipeURL, page) => {
 
                 //Ingredients within subsections (sauces, spice mixes, etc.) - named based on the subsection title
                 while (i < nodes.length) {
-                    const sectionName = nodes[i++].innerText;
-                    const sectionData = [];
+                    let sectionName = nodes[i++].innerText;
+                    let sectionData = [];
 
                     while (i < nodes.length && nodes[i].className === selectors.ingredientClass) {
                         sectionData.push(nodes[i++].innerText);
@@ -216,6 +215,35 @@ const getData = async(recipeURL, page) => {
                     ingredients[sectionName] = sectionData;
                 }
                 return ingredients;
+            }
+
+            //Get an array of directions organized by subrecipe title
+            function getDirections() {
+                const nodes = document.querySelector(selectors.stepListSelector).children; //Get everything in the ingredient section
+
+                const directions = {};
+                let sectionName = "main";
+                let i = 0;
+                
+                //Go through all sections
+                while (i < nodes.length) {
+                    let sectionData = [];
+
+                    //If the section contains a list, grab the data from its members
+                    if (nodes[i].tagName === 'OL') {
+                        innerNodes = nodes[i++].children;
+
+                        for (let j = 0; j < innerNodes.length; j++) {
+                            sectionData.push(innerNodes[j].innerText);
+                        }
+                        directions[sectionName] = sectionData;
+                    }
+                    //If the section is a header, use that as the title of the next sublist
+                    else {
+                        sectionName = nodes[i++].innerText;
+                    }
+                }
+                return directions;
             }
 
             //Organize data into an object
@@ -232,7 +260,7 @@ const getData = async(recipeURL, page) => {
                 cookTime: getTimeText('Cook'),
                 yield: getInnerText(selectors.yieldSelector),
                 ingredients: getIngredients(),
-                directions: 'Yuh'
+                directions: getDirections()
             };
         }, selectors); 
         return JSON.stringify(data); //Return data in a JSON format
