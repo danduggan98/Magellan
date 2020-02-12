@@ -41,7 +41,7 @@ async function findAllRecipes(page, fileName){
         const chefs = await getChefs(page); //List of all chef pages
 
         //Store links to every recipe from every chef
-        for (let i = 0; i < chefs.length; i++){
+        for (let i = 0; i < chefs.length; i++) {
             await getRecipes(chefs[i], page, stream); //Grab all the chef's recipes
         }
         console.log("Successfully gathered all recipes");
@@ -81,12 +81,12 @@ const getRecipes = async(chefURL, page, filestream) => {
         let pageCount = 1;
         const pgNumSelector = 'li.o-Pagination__a-ListItem:nth-child(6) > a:nth-child(1)';
 
-        if (await page.$(pgNumSelector) != null){ //If a button to the last page exists, get the number inside it
+        if (await page.$(pgNumSelector) != null) { //If a button to the last page exists, get the number inside it
             pageCount = parseInt(await page.$eval(pgNumSelector, btn => btn.innerText));
         }
 
         //Go through each page
-        for (let i = 1; i <= pageCount; i++){
+        for (let i = 1; i <= pageCount; i++) {
             await page.goto(chefURL + '/recipes/trending-/p/' + i); //Move to the next page
 
             //Store the link to each page's recipes in an array
@@ -170,22 +170,18 @@ const getData = async(recipeURL, page) => {
             difficultySelector: 'ul.o-RecipeInfo__m-Level li span.o-RecipeInfo__a-Description',
             totalTimeSelector: 'li span.o-RecipeInfo__a-Description.m-RecipeInfo__a-Description--Total',
             yieldSelector: 'ul.o-RecipeInfo__m-Yield li span.o-RecipeInfo__a-Description',
-            ingredientSelector: 'div.o-Ingredients__m-Body p.o-Ingredients__a-Ingredient',
-            stepSelector: 'div.o-Method__m-Body ol li.o-Method__m-Step'
+            ingredientListSelector: 'div.o-Ingredients__m-Body',
+            ingredientClass: 'o-Ingredients__a-Ingredient',
+            stepListSelector: 'o-Method__m-Body',
+            stepClass: 'o-Method__m-Step'
         };
 
         //Get all relevant data
         const data = await page.evaluate((selectors) => {
 
             //Function which returns the inner text of an element if it exists and an empty string if it doesn't
-            function getInnerText(selector){
+            function getInnerText(selector) {
                 return (document.querySelector(selector) || {innerText:''}).innerText;
-            }
-
-            //Return an array with the content from all instances of a class
-            function getAllBySelector(selector){
-                const items = document.querySelectorAll(selector);
-                return Array.from(items).map(item => item.innerText);
             }
 
             //Function for prep/cook/active/inactive time - based on the description since they all use the same class, have no ids, and can be in any order :/
@@ -193,6 +189,33 @@ const getData = async(recipeURL, page) => {
             function getTimeText(descriptor) {
                 const path = "//span[@class='o-RecipeInfo__a-Headline' and contains(., '" + descriptor + ":')]"; //Xpath based on the description of that time
                 return (((document.evaluate(path, document, null, XPathResult.ANY_TYPE, null).iterateNext()) || {innerText:''}).nextElementSibling || {innerText:''}).innerText;
+            }
+
+            //Get an array of ingredients organized based on the part of the recipe they are included in
+            function getIngredients() {
+                const nodes = document.querySelector(selectors.ingredientListSelector).children; //Get everything in the ingredient list box
+
+                const ingredients = {};
+                const main = [];
+                let i = 0;
+
+                //Main ingredients before any subsections - given the name "main"
+                while(i < nodes.length && nodes[i].className === selectors.ingredientClass) {
+                       main.push(nodes[i++].innerText); 
+                }
+                ingredients['main'] = main;
+
+                //Ingredients within subsections (sauces, spice mixes, etc.) - named based on the subsection title
+                while (i < nodes.length) {
+                    const sectionName = nodes[i++].innerText;
+                    const sectionData = [];
+
+                    while (i < nodes.length && nodes[i].className === selectors.ingredientClass) {
+                        sectionData.push(nodes[i++].innerText);
+                    }
+                    ingredients[sectionName] = sectionData;
+                }
+                return ingredients;
             }
 
             //Organize data into an object
@@ -208,8 +231,8 @@ const getData = async(recipeURL, page) => {
                 activeTime: getTimeText('Active'),
                 cookTime: getTimeText('Cook'),
                 yield: getInnerText(selectors.yieldSelector),
-                ingredientList: getAllBySelector(selectors.ingredientSelector),
-                directions: getAllBySelector(selectors.stepSelector)
+                ingredients: getIngredients(),
+                directions: 'Yuh'
             };
         }, selectors); 
         return JSON.stringify(data); //Return data in a JSON format
