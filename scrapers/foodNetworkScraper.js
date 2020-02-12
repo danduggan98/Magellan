@@ -192,58 +192,68 @@ const getData = async(recipeURL, page) => {
 
             //Get an array of ingredients organized based on the part of the recipe they are included in
             function getIngredients() {
-                const nodes = document.querySelector(selectors.ingredientListSelector).children; //Get everything in the ingredient section
+                try {
+                    const nodes = document.querySelector(selectors.ingredientListSelector).children; //Get everything in the ingredient section
 
-                const ingredients = {};
-                const main = [];
-                let i = 0;
+                    const ingredients = {};
+                    const main = [];
+                    let i = 0;
 
-                //Main ingredients before any subsections - given the name "main"
-                while(i < nodes.length && nodes[i].className === selectors.ingredientClass) {
-                       main.push(nodes[i++].innerText); 
-                }
-                ingredients['main'] = main;
-
-                //Ingredients within subsections (sauces, spice mixes, etc.) - named based on the subsection title
-                while (i < nodes.length) {
-                    let sectionName = nodes[i++].innerText;
-                    let sectionData = [];
-
-                    while (i < nodes.length && nodes[i].className === selectors.ingredientClass) {
-                        sectionData.push(nodes[i++].innerText);
+                    //Main ingredients before any subsections - given the name "main"
+                    while(i < nodes.length && nodes[i].className === selectors.ingredientClass) {
+                        main.push(nodes[i++].innerText); 
                     }
-                    ingredients[sectionName] = sectionData;
+                    ingredients['main'] = main;
+
+                    //Ingredients within subsections (sauces, spice mixes, etc.) - named based on the subsection title
+                    while (i < nodes.length) {
+                        let sectionName = nodes[i++].innerText;
+                        let sectionData = [];
+
+                        while (i < nodes.length && nodes[i].className === selectors.ingredientClass) {
+                            sectionData.push(nodes[i++].innerText);
+                        }
+                        ingredients[sectionName] = sectionData;
+                    }
+                    return ingredients;
+
+                } catch (err) {
+                    console.log("Error in getData > getIngredients: ", err)
                 }
-                return ingredients;
             }
 
             //Get an array of directions organized by subrecipe title
             function getDirections() {
-                const nodes = document.querySelector(selectors.stepListSelector).children; //Get everything in the ingredient section
+                try {
+                    const nodes = document.querySelector(selectors.stepListSelector).children; //Get everything in the ingredient section
 
-                const directions = {};
-                let sectionName = "main";
-                let i = 0;
-                
-                //Go through all sections
-                while (i < nodes.length) {
-                    let sectionData = [];
+                    const directions = {};
+                    let sectionName = "main";
+                    let i = 0;
+                    
+                    //Go through all sections
+                    while (i < nodes.length) {
+                        let sectionData = [];
 
-                    //If the section contains a list, grab the data from its members
-                    if (nodes[i].tagName === 'OL') {
-                        innerNodes = nodes[i++].children;
+                        //If the section contains a list, grab the data from its members
+                        if (nodes[i].tagName === 'OL') {
+                            innerNodes = nodes[i++].children;
 
-                        for (let j = 0; j < innerNodes.length; j++) {
-                            sectionData.push(innerNodes[j].innerText);
+                            for (let j = 0; j < innerNodes.length; j++) {
+                                sectionData.push(innerNodes[j].innerText);
+                            }
+                            directions[sectionName] = sectionData;
                         }
-                        directions[sectionName] = sectionData;
+                        //If the section is a header, use that as the title of the next sublist
+                        else {
+                            sectionName = nodes[i++].innerText;
+                        }
                     }
-                    //If the section is a header, use that as the title of the next sublist
-                    else {
-                        sectionName = nodes[i++].innerText;
-                    }
+                    return directions;
+                    
+                } catch (err) {
+                    console.log("Error in getData > getDirections: ", err)
                 }
-                return directions;
             }
 
             //Organize data into an object
