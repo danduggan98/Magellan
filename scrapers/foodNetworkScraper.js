@@ -218,7 +218,7 @@ const getData = async(recipeURL, page) => {
                     return ingredients;
 
                 } catch (err) {
-                    console.log("Error in getData > getIngredients: ", err)
+                    console.log("Error in getData > getIngredients: ", err);
                 }
             }
 
@@ -250,9 +250,9 @@ const getData = async(recipeURL, page) => {
                         }
                     }
                     return directions;
-                    
+
                 } catch (err) {
-                    console.log("Error in getData > getDirections: ", err)
+                    console.log("Error in getData > getDirections: ", err);
                 }
             }
 
