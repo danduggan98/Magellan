@@ -1,3 +1,9 @@
-//Populates the database with our JSON recipe database
+//
+// Populates the database with our JSON recipe data
+//
 
-//Grab the database connection from another file (SET UP THIS FILE WITH OUR CONNECT - IT CAN BE USED IN THE SERVER TOO)
+//Connect to Mongo
+const db = require('./dbConnect.js');
+const connection = db.connectToMongo();
+
+//Add FoodNetwork recipes
