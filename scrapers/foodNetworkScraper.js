@@ -4,8 +4,11 @@ const rl = require('readline');
 
 //Export scrapeSite as a module (but keep as self-calling)
 //oragnize all scrapers into single, callable api
-//FINISH DATA GRABBING
-//change author of recipes from food network star to the actual people
+//change author of recipes from food network star to Aarti
+
+// 
+//REWRITE GETDIRECTIONS TO HANDLE YIELD SUBTITLES, THEN RERUN FROM START
+//
 
 //Main function - calls itself automatically and handles entire process
 (async function scrapeSite() {

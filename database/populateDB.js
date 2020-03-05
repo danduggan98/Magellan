@@ -30,7 +30,6 @@ connection.connect((err, db) => {
 
     for (let i = 0; i < recipes.length; i++) {
         const recipe = recipes[i];
-        const insertString = "";
 
         //Construct an SQL insert string
         /*const URL = recipe.URL;
@@ -48,6 +47,8 @@ connection.connect((err, db) => {
             if (err) throw err;
             console.log("Inserted recipe with name: " + recipe.recipeName);
         });
+
+        //REGEX TO FIND BAD JSON LABELS: ,"Yield:.*\.":
 
         //CAN PROBABLY JUST ADD WHOLE OBJECT SINCE IT'S JSON ALREADY ^^
 
