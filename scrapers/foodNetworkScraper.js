@@ -4,6 +4,7 @@ const rl = require('readline');
 
 //Export scrapeSite as a module (but keep as self-calling)
 //oragnize all scrapers into single, callable api
+//FINISH CLEANING DATA (null recipe authors, etc.)
 
 // 
 //REWRITE GETDIRECTIONS TO HANDLE YIELD SUBTITLES, THEN RERUN FROM START

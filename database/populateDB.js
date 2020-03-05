@@ -2,42 +2,50 @@
 // Populates the database with our JSON recipe data
 //
 
-//Connect to Mongo
-const connection = require('./dbConnect.js').client;
+//Main function - calls itself automatically and adds our JSON data to the database
+(async function populateDB() {
+    try {
+        //Connect to Mongo
+        const connection = require('./dbConnect.js').client;
 
-connection.connect((err, db) => {
-    if (err) throw err;
-    console.log("Connected to Mongo cluster");
-
-    const recipeDB = db.db("recipeData"); //Connect to our main database
-
-    //Create a 'recipes' collection if it does not currently exist
-    if (!(recipeDB.listCollections({name: 'recipes'})).hasNext()) {
-        recipeDB.createCollection("recipes", (err, res) => {
+        await connection.connect((err, db) => {
             if (err) throw err;
-            console.log("Collection 'recipes' not found. Creating from scratch");
+            console.log("Connected to Mongo cluster");
+
+            const recipeDB = db.db("recipeData"); //Connect to our main database
+
+            //Create a 'recipes' collection if it does not currently exist
+            if (!(recipeDB.listCollections({name: 'recipes'})).hasNext()) {
+                recipeDB.createCollection("recipes", (err, res) => {
+                    if (err) throw err;
+                    console.log("Collection 'recipes' not found. Creating from scratch");
+                });
+            }
+
+            //Add FoodNetwork recipes to our collection
+            const coll = recipeDB.collection('recipes'); //Jump to our collection
+
+            const jsonData = JSON.parse(require('fs').readFileSync('../scrapers/FoodNetworkRecipeData.json')); //Read through the JSON file
+            const recipes = jsonData.data;
+
+            for (let i = 0; i < recipes.length; i++) {
+                const recipe = recipes[i];
+                recipe.author = fixAuthorName(recipe.author); //Fix the author name
+                recipe.source = "Food Network"; //Add a 'source' column to note which site this recipe is from
+
+                //Add the recipe to our collection
+                coll.insertOne(recipe, (err) => {
+                    if (err) throw err;
+                    console.log("Inserted recipe by " + recipe.author + " with name '" + recipe.recipeName + "'");
+                });
+            }
+            db.close();      
         });
+
+    } catch (err) {
+        console.log("Error in 'populateDB':", err);
     }
-
-    //Add FoodNetwork recipes to our collection
-    const coll = recipeDB.collection('recipes'); //Jump to our collection
-
-    const jsonData = JSON.parse(require('fs').readFileSync('../scrapers/FoodNetworkRecipeData.json')); //Read through the JSON file
-    const recipes = jsonData.data;
-
-    for (let i = 0; i < recipes.length; i++) {
-        const recipe = recipes[i];
-        recipe.author = fixAuthorName(recipe.author); //Fix the author name
-        recipe.source = "Food Network"; //Add a 'source' column to note which site this recipe is from
-
-        //Add the recipe to our collection
-        coll.insertOne(recipe, (err) => {
-            if (err) throw err;
-            console.log("Inserted recipe with name '" + recipe.recipeName + "'");
-        });
-    }
-    db.close();      
-});
+})();
 
 //Convert an author name from all caps to normal
 function fixAuthorName(name) {
