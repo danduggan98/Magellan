@@ -3,12 +3,12 @@
 //
 
 //Main function - calls itself automatically and adds our JSON data to the database
-(async function populateDB() {
+(function populateDB() {
     try {
         //Connect to Mongo
         const connection = require('./dbConnect.js').client;
 
-        await connection.connect((err, db) => {
+        connection.connect((err, db) => {
             if (err) throw err;
             console.log("Connected to Mongo cluster");
 
@@ -39,7 +39,6 @@
                     console.log("Inserted recipe by " + recipe.author + " with name '" + recipe.recipeName + "'");
                 });
             }
-            db.close();      
         });
 
     } catch (err) {
