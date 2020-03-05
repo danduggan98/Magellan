@@ -225,7 +225,7 @@ const getData = async(recipeURL, page) => {
             //Get an array of directions organized by subrecipe title
             function getDirections() {
                 try {
-                    const nodes = document.querySelector(selectors.stepListSelector).children; //Get everything in the ingredient section
+                    const nodes = document.querySelector(selectors.stepListSelector).children; //Get everything in the ingredient section (DOESNT FACTOR YIELD LABELS)
 
                     const directions = {};
                     let sectionName = "main";
