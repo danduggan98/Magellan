@@ -40,6 +40,10 @@ app.get('/home', (req, res) => {
     res.send("WHADUUUUPPPP");
 });
 
+app.get('/testreact', (req, res) => {
+    res.send("YO");
+});
+
 //Load a recipe
 //HANDLE RECIPE NOT FOUND (avoid error 500, instead return not found page)
 app.get('/recipe/:recipeid', (req, res) => {
