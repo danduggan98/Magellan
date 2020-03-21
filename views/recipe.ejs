@@ -21,6 +21,15 @@
         <% if (cookTime) {%>
             <h4> <%=cookTime%> cook time <h4>
         <% } %>
+
+        <!-- List all ingredients and directions (NOT CORRECTLY ITERATING THROUGH INGREDIENTS OBJECT-->
+        <ul>
+        <% for(let i = 0; i < ingredients.length; i++) { %>
+            <% for(let j = 0; j < ingredients[i].length; j++) { %>
+                <li> <%=ingredients[i][j]%> </li>
+            <% } %>
+        <% } %>
+        </ul>
         <br>
     </body>
 </html>
