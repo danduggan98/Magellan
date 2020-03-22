@@ -2,18 +2,17 @@ import React, {Component} from 'react';
 //import ReactDom from 'react-dom';
 
 class TestReact extends Component {
-    constructor(){
+    constructor() {
         super();
         this.state = {
-            msg: "nah...."
+            msg: 'nah....'
         }
     }
     
     componentDidMount() {
         fetch('/testreact')
             .then(res => res.json())
-            .then(msg => this.setState({msg},
-                () => console.log('Message:', msg)));
+            .then(msg => this.setState({msg}));
     }
 
     render() {

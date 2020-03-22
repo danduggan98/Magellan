@@ -23,7 +23,7 @@ const ObjectId = require('mongodb').ObjectID;
     const dbClient = require('./database/dbConnect.js').client;
     dbClient.connect((err, db) => {
         if (err) throw err;
-        console.log("Connected to Mongo cluster");
+        console.log('Connected to Mongo cluster');
         database = db; //Save the connection
     });
 })();
@@ -37,17 +37,20 @@ app.get('/', (req, res) => {
 
 // Home Page
 app.get('/home', (req, res) => {
-    res.send("WHADUUUUPPPP");
-});
+    res.send('WHADUUUUPPPP');
+}); 
 
+//TESTING
 app.get('/testreact', (req, res) => {
-    res.json( {msg: "IT WORKED!!!"} );
+    res.json (
+        {msg: 'IT WORKED!!!'}
+    );
 });
 
 //Load a recipe
 //HANDLE RECIPE NOT FOUND (avoid error 500, instead return not found page)
 app.get('/recipe/:recipeid', (req, res) => {
-    const recipes = database.db('recipeData').collection("recipes"); //Access the recipe list
+    const recipes = database.db('recipeData').collection('recipes'); //Access the recipe list
 
     //Grab recipe info from database
     recipes.find(ObjectId(req.params.recipeid)).toArray((err, result) => {
