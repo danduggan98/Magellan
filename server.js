@@ -41,7 +41,7 @@ app.get('/home', (req, res) => {
 });
 
 app.get('/testreact', (req, res) => {
-    res.send("YO");
+    res.json( {msg: "IT WORKED!!!"} );
 });
 
 //Load a recipe
