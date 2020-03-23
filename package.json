@@ -4,10 +4,17 @@
     "authors": "",
     "version": "1.0.0",
     "private": true,
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js",
+        "magellan": "npm start --prefix magellan",
+        "dev": "concurrently \"npm run start\" \"npm run magellan\""
+    },
     "dependencies": {
+        "concurrently": "^5.1.0",
+        "express": "4.17.1",
         "react": "^16.13.1",
         "react-dom": "16.13.1",
         "react-scripts": "3.4.1"
-    },
-    "proxy": "http://localhost:3000/"
+    }
 }
