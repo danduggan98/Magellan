@@ -40,11 +40,6 @@ app.get('/home', (req, res) => {
     res.send('WHADUUUUPPPP');
 });
 
-//TESTING
-app.get('/testreact', (req, res) => {
-    res.json({ test: 'IT WORKED!!!' });
-});
-
 //Load a recipe
 //HANDLE RECIPE NOT FOUND (avoid error 500, instead return not found page)
 app.get('/recipe/:recipeid', (req, res) => {
@@ -56,7 +51,7 @@ app.get('/recipe/:recipeid', (req, res) => {
         let recipeData = result[0];
 
         //Pass each data point to the ejs file
-        res.render('recipe', {
+        res.json({
             URL: recipeData.URL,
             imageURL: recipeData.imageURL,
             author: recipeData.author,
