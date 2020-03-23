@@ -38,13 +38,11 @@ app.get('/', (req, res) => {
 // Home Page
 app.get('/home', (req, res) => {
     res.send('WHADUUUUPPPP');
-}); 
+});
 
 //TESTING
 app.get('/testreact', (req, res) => {
-    res.json (
-        {msg: 'IT WORKED!!!'}
-    );
+    res.json({ test: 'IT WORKED!!!' });
 });
 
 //Load a recipe
@@ -89,7 +87,7 @@ app.use((err, req, res, next) => {
 });
 
 //Server listens on native port, or on 3000 if in a local environment
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 const server = app.listen(port, () => {
     console.log('Magellan server listening on port', port);
 });
