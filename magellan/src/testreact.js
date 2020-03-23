@@ -5,21 +5,22 @@ class TestReact extends Component {
     constructor() {
         super();
         this.state = {
-            msg: 'nah....'
-        }
+            msg: 'nah'
+        };
     }
-    
+
     componentDidMount() {
+        this.setState({msg: 'NO'});
         fetch('/testreact')
             .then(res => res.json())
-            .then(msg => this.setState({msg}));
+            .then(data => this.setState({ msg: data.test }));
     }
 
     render() {
         return (
             <div>
-                <h2>DID IT WORK?</h2>
-                <h1> {this.state.msg} </h1>
+                <h2> DID IT WORK? </h2>
+                <h1> { this.state.msg } </h1>
             </div>
         );
     }
