@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 import './App.css';
-import TestReact from './testreact.js';
+import Recipe from './recipe.js';
 
 class App extends Component {
   render() {
     return (
-      <TestReact/>
+      <Recipe/>
     );
   }
 }
