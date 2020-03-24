@@ -40,7 +40,7 @@ class Recipe extends Component {
                 <h2> by {this.state.author} </h2>
                 <h3> courtesy of {this.state.source} </h3>
                 <img src={this.state.imageURL} alt="" width="600"></img>
-                
+
                 <br></br>
                 <a target="_blank" rel="noopener noreferrer" href={this.state.URL}>Original Recipe</a>
                 
@@ -56,17 +56,17 @@ class Recipe extends Component {
                 }
                     
                 { this.state.cookTime ?
-                    <h4> {this.state.cookTime} cook time </h4>:
+                    <h4> {this.state.cookTime} cook time </h4> :
                     <p></p>
                 }
 
                 { this.state.activeTime ?
-                    <h4> {this.state.activeTime} active time </h4>:
+                    <h4> {this.state.activeTime} active time </h4> :
                     <p></p>
                 }
 
                 { this.state.inactiveTime ?
-                    <h4> {this.state.inactiveTime} inactive time </h4>:
+                    <h4> {this.state.inactiveTime} inactive time </h4> :
                     <p></p>
                 }
             </div>
