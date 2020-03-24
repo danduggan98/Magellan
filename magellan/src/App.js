@@ -5,7 +5,7 @@ import Recipe from './recipe.js';
 class App extends Component {
   render() {
     return (
-      <Recipe/>
+      <Recipe id='5e61c282be6ab70df4adad79'/>
     );
   }
 }
