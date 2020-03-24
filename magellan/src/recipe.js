@@ -1,21 +1,32 @@
 import React, {Component} from 'react';
 
-//Parse ingredients
-function IngredientList(props) {
-    return (
-        <ul>
-            <li>{props.list}</li>
-        </ul>
-    );
+//Parse an object into a JSX list
+function ObjectToList(props) {
+    let data = props.list;
+    let items = [];
+
+    Object.keys(data).forEach((header, list) => {
+        let section = [];
+        let itemList = data[header];
+        for (let i = 0; i < itemList.length; i++) {
+            section.push(<li key={itemList[i].toString()}>{itemList[i]}</li>);
+        }
+        items.push(<h4 key={header.toString()}><u>{header}</u></h4>)
+        items.push(<ul key={section.toString()}>{section}</ul>);
+    });
+
+    return (<div> {items} </div>);
 }
 
-//Parse directions
+//Parse directions into a list
 
 class Recipe extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
-            recipeID: '5e61c282be6ab70df4adad7a' //MAKE THIS DYNAMIC
+            recipeID: props.id,
+            ingredients: '',
+            directions: ''
         };
     }
 
@@ -81,10 +92,13 @@ class Recipe extends Component {
                     <p></p>
                 }
 
-                {
-                //<IngredientList list={this.state.IngredientList}/>}
-                }
-                <IngredientList list={"BRUH"}/>
+                <br></br>
+                <h2>Ingredients: </h2>
+                <ObjectToList list={this.state.ingredients} />
+                <br></br>
+
+                <h2>Directions: </h2>
+                <ObjectToList list={this.state.directions} />
             </div>
         );
     }
