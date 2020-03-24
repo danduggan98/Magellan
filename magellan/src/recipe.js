@@ -1,6 +1,13 @@
 import React, {Component} from 'react';
 
 //Parse ingredients
+function IngredientList(props) {
+    return (
+        <ul>
+            <li>{props.list}</li>
+        </ul>
+    );
+}
 
 //Parse directions
 
@@ -8,7 +15,7 @@ class Recipe extends Component {
     constructor() {
         super();
         this.state = {
-            recipeID: '5e61c282be6ab70df4adad79'
+            recipeID: '5e61c282be6ab70df4adad7a' //MAKE THIS DYNAMIC
         };
     }
 
@@ -38,8 +45,12 @@ class Recipe extends Component {
             <div>
                 <h1> {this.state.recipeName} </h1>
                 <h2> by {this.state.author} </h2>
-                <h3> courtesy of {this.state.source} </h3>
-                <img src={this.state.imageURL} alt="" width="600"></img>
+                <h3> Courtesy of {this.state.source} </h3>
+
+                { this.state.imageURL ?
+                    <img src={this.state.imageURL} alt="" width="600"></img> :
+                    <p></p>
+                }
 
                 <br></br>
                 <a target="_blank" rel="noopener noreferrer" href={this.state.URL}>Original Recipe</a>
@@ -51,7 +62,7 @@ class Recipe extends Component {
                 <h2> Total Time: {this.state.totalTime} </h2>
 
                 { this.state.prepTime ?
-                    <h4> {this.state.prepTime} prep time </h4>:
+                    <h4> {this.state.prepTime} prep time </h4> :
                     <p></p>
                 }
                     
@@ -69,6 +80,11 @@ class Recipe extends Component {
                     <h4> {this.state.inactiveTime} inactive time </h4> :
                     <p></p>
                 }
+
+                {
+                //<IngredientList list={this.state.IngredientList}/>}
+                }
+                <IngredientList list={"BRUH"}/>
             </div>
         );
     }
