@@ -19,7 +19,7 @@ function ObjectToList(props) {
         }
 
         //Print the header for each section0
-        if (ings > 0) {
+        if (header !== 'main') {
             items.push (
                 <h4 key={header.toString()}>
                     <u>{header}</u>
@@ -45,7 +45,7 @@ class Recipe extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            recipeID: props.id,
+            recipeID: props.match.params.recipeid, //URL parameter
             ingredients: '',
             directions: ''
         };

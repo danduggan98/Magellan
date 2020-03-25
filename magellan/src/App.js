@@ -11,9 +11,7 @@ export default function App() {
   return (
     <Router>
       <Switch>
-        <Route path="/recipe">
-          <Recipe id='5e61c282be6ab70df4adad81'/>
-        </Route>
+        <Route path='/recipe/:recipeid' component={Recipe} />
       </Switch>
     </Router>
   );
