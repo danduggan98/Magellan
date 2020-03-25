@@ -94,25 +94,35 @@ class Recipe extends Component {
                 <br></br>
                 <h2>Total Time: {this.state.totalTime}</h2>
 
+                <ul>
                 { this.state.prepTime ?
-                    <h4>{this.state.prepTime} prep time</h4> :
-                    <p></p>
+                    <li>
+                        <h4>{this.state.prepTime} prep time</h4>
+                    </li>
+                    : <p></p>
                 }
                     
                 { this.state.cookTime ?
-                    <h4>{this.state.cookTime} cook time</h4> :
-                    <p></p>
+                    <li>
+                        <h4>{this.state.cookTime} cook time</h4>
+                    </li>
+                    : <p></p>
                 }
 
                 { this.state.activeTime ?
-                    <h4>{this.state.activeTime} active time</h4> :
-                    <p></p>
+                    <li>
+                        <h4>{this.state.activeTime} active time</h4>
+                    </li>
+                    : <p></p>
                 }
 
                 { this.state.inactiveTime ?
-                    <h4>{this.state.inactiveTime} inactive time</h4> :
-                    <p></p>
+                    <li>
+                        <h4>{this.state.inactiveTime} inactive time</h4>
+                    </li>
+                    : <p></p>
                 }
+                </ul>
 
                 <br></br>
                 <h2>Ingredients:</h2>
