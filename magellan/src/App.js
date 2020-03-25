@@ -1,13 +1,20 @@
-import React, {Component} from 'react';
-import './App.css';
+import React from 'react';
 import Recipe from './recipe.js';
+import './App.css';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route
+} from 'react-router-dom';
 
-class App extends Component {
-  render() {
-    return (
-      <Recipe id='5e61c282be6ab70df4adad81'/>
-    );
-  }
+export default function App() {
+  return (
+    <Router>
+      <Switch>
+        <Route path="/recipe">
+          <Recipe id='5e61c282be6ab70df4adad81'/>
+        </Route>
+      </Switch>
+    </Router>
+  );
 }
-
-export default App;

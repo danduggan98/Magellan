@@ -51,6 +51,7 @@ class Recipe extends Component {
         };
     }
 
+    //Gather data from server JSON response
     componentDidMount() {
         fetch('/recipe/' + this.state.recipeID)
         .then(res => res.json())

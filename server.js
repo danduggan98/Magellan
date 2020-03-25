@@ -3,11 +3,11 @@
 //
 
 //TO-DO
+// REACT ROUTER!!!!!!!!!!!
 // Host on Amazon
 // Add search bar functionality
 // Clean + finalize data in Mongo
 // Use Passport for authentication
-// Recipe page
 
 //Set up Express app
 const express = require('express');
