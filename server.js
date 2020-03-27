@@ -3,7 +3,6 @@
 //
 
 //TO-DO
-// REACT ROUTER!!!!!!!!!!!
 // Host on Amazon
 // Add search bar functionality
 // Clean + finalize data in Mongo
