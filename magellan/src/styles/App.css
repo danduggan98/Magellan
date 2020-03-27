@@ -1,3 +1,15 @@
 .App {
   text-align: center;
 }
+
+#logoBanner {
+  font-size: xx-large;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-weight: 1000;
+  border-bottom: 1px solid black;
+  border-width: 3px;
+  padding-top: 10px;
+  margin-bottom: 50px;
+  text-decoration: none;
+  color: black;
+}

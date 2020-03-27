@@ -13,13 +13,3 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
-
-#logoBanner {
-  font-size: xx-large;
-  font-family: Georgia, 'Times New Roman', Times, serif;
-  font-weight: 1000;
-  border-bottom: 1px solid black;
-  border-width: 3px;
-  padding-top: 10px;
-  margin-bottom: 50px;
-}
