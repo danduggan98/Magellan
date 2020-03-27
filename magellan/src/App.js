@@ -1,7 +1,6 @@
 import React from 'react';
 import Recipe from './components/recipe.js';
 import Home from './components/home.js';
-import './styles/App.css';
 import {
   BrowserRouter as Router,
   Switch,
@@ -10,16 +9,19 @@ import {
   Redirect
 } from 'react-router-dom';
 
+import './styles/App.css';
+
 export default function App() {
   return (
     <div>
       <Router>
+        
         <div id="logoBanner">
-          <Link to='/home'
-            style={{textDecoration: 'none'}}>
+          <Link to='/home' className="logo">
             MAGELLAN
           </Link>
         </div>
+
         <Switch>
           <Route path={'/recipe/:recipeid'} component={Recipe} />
           <Route path={'/home'} component={Home} />
@@ -27,6 +29,7 @@ export default function App() {
             <Redirect to={'/home'} />
           </Route>
         </Switch>
+
       </Router>
     </div>
   );
