@@ -7,12 +7,17 @@ class SearchBar extends Component {
             input: '',
             results: ''
         };
-        this.getResults = this.getResults.bind(this);
+        //this.getResults = this.getResults.bind(this);
     }
 
-    async getResults(params) {
-        await this.setState({input: 'Success!'});
-        alert(this.state.input)
+    async getResults() {
+        const res = await fetch('/search/' + this.state.input);
+        const data = await res.json();
+        this.setState({ results: data.msg });
+    }
+
+    updateInput = (vals) => {
+        this.setState({ input: vals.target.value })
     }
 
     //Search bar - form takes an input and redirects to an invisible
@@ -31,8 +36,11 @@ class SearchBar extends Component {
                         type='text'
                         autoComplete='off'
                         placeholder="Search for recipes"
-                        name='search'>
+                        name='search'
+                        onChange={this.updateInput}>
                     </input>
+
+                    <h1>{this.state.input}</h1>
                     <iframe name="hiddenFrame" title='hidden' width="0" height="0" border="0" style={{display: 'none'}}></iframe>
                 </form>
             </div>
