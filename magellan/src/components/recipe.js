@@ -59,7 +59,7 @@ class Recipe extends Component {
 
         //Recipe not found
         if (data.error) {
-            this.setState({status: 0});
+            this.setState({ status: 0 });
         }
         //Recipe found
         else {
