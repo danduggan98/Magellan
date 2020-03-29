@@ -20,6 +20,8 @@ const app = express();
 app.use(express.static(__dirname + '/'));
 
 let database; //Maintains a persistent connection to the Mongo cluster
+let recipes; //Persistent connection to our recipe collection
+
 const ObjectId = require('mongodb').ObjectID;
 const validMongoID = /^[0-9a-fA-F]{24}$/;
 
@@ -30,6 +32,7 @@ const validMongoID = /^[0-9a-fA-F]{24}$/;
         if (err) throw err;
         console.log('Connected to Mongo cluster');
         database = db; //Save the connection
+        recipes = database.db('recipeData').collection('recipes'); //Save the recipe collection
     });
 })();
 
@@ -45,8 +48,6 @@ app.get('/recipe/:recipeid', (req, res) => {
     }
     //Potentially valid recipe id
     else {
-        const recipes = database.db('recipeData').collection('recipes'); //Access the recipe list
-
         //Grab recipe info from database
         recipes.find(ObjectId(id)).toArray((err, result) => {
             if (err) throw err;
@@ -84,8 +85,19 @@ app.get('/recipe/:recipeid', (req, res) => {
 
 //Search for recipes
 app.get('/search/:terms', (req, res) => {
+    const terms = req.params.terms;
+
     //Query the database
-    res.json({ msg: 'GREAT SUCCESS!', data: req.params.terms });
+    recipes.find({ prepTime: '5 min' }).toArray((err, result) => {
+        if (err) throw err;
+
+        if (!result.length) {
+            res.json({ msg: 'BIG FAIL!', data: result });
+        }
+        else {
+            res.json({ msg: 'GREAT SUCCESS! Found ' + result.length + ' items!', data: result });
+        }
+    });
 });
 
 //Handle 404 errors
