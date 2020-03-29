@@ -4,7 +4,8 @@
 
 //TO-DO
 // Host on Amazon
-// Add search bar functionality
+// Add search bar to front page
+// Mini search bar above recipe pagee
 // Clean + finalize data in Mongo
 // Use Passport for authentication
 // use nodemon
@@ -30,8 +31,6 @@ const ObjectId = require('mongodb').ObjectID;
 ////////// PAGES \\\\\\\\\\
 
 //Load a recipe
-//HANDLE RECIPE NOT FOUND (avoid error 500, instead return not found page)
-//SEEMS LIKE FINDONE THINKS THE RECIPEID IS UNDEFINED?
 app.get('/recipe/:recipeid', (req, res) => {
     const recipes = database.db('recipeData').collection('recipes'); //Access the recipe list
 
@@ -39,9 +38,11 @@ app.get('/recipe/:recipeid', (req, res) => {
     recipes.find(ObjectId(req.params.recipeid)).toArray((err, result) => {
         if (err) throw err;
 
+        //Recipe not found
         if (!result.length) {
             res.json({ error: 'Recipe not found' });
         }
+        //Recipe found
         else {
             let data = result[0];
 
@@ -64,6 +65,12 @@ app.get('/recipe/:recipeid', (req, res) => {
             });
         }
     });
+});
+
+//Search for recipes
+app.post('/search/:searchparams', (req, res) => {
+    //Query the database
+    res.json('GREAT SUCCESS!');
 });
 
 //Handle 404 errors
