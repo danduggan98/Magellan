@@ -7,12 +7,12 @@
 // Add search bar functionality
 // Clean + finalize data in Mongo
 // Use Passport for authentication
+// use nodemon
 
 //Set up Express app
 const express = require('express');
 const app = express();
 app.use(express.static(__dirname + '/'));
-app.set('view engine', 'ejs'); //Use EJS for dynamic HTML
 
 let database; //Maintains a persistent connection to the Mongo cluster
 const ObjectId = require('mongodb').ObjectID;
@@ -29,43 +29,40 @@ const ObjectId = require('mongodb').ObjectID;
 
 ////////// PAGES \\\\\\\\\\
 
-//Default page - redirects to home
-app.get('/', (req, res) => {
-    res.redirect('/home');
-});
-
-// Home Page
-app.get('/home', (req, res) => {
-    res.send('WHADUUUUPPPP');
-});
-
 //Load a recipe
 //HANDLE RECIPE NOT FOUND (avoid error 500, instead return not found page)
+//SEEMS LIKE FINDONE THINKS THE RECIPEID IS UNDEFINED?
 app.get('/recipe/:recipeid', (req, res) => {
     const recipes = database.db('recipeData').collection('recipes'); //Access the recipe list
 
     //Grab recipe info from database
     recipes.find(ObjectId(req.params.recipeid)).toArray((err, result) => {
         if (err) throw err;
-        let recipeData = result[0];
 
-        //Pass each data point to the ejs file
-        res.json({
-            URL: recipeData.URL,
-            imageURL: recipeData.imageURL,
-            author: recipeData.author,
-            recipeName: recipeData.recipeName,
-            difficulty: recipeData.difficulty,
-            totalTime: recipeData.totalTime,
-            prepTime: recipeData.prepTime,
-            inactiveTime: recipeData.inactiveTime,
-            activeTime: recipeData.activeTime,
-            cookTime: recipeData.cookTime,
-            yield: recipeData.yield,
-            ingredients: recipeData.ingredients,
-            directions: recipeData.directions,
-            source: recipeData.source
-        });
+        if (!result.length) {
+            res.json({ error: 'Recipe not found' });
+        }
+        else {
+            let data = result[0];
+
+            //Pass each data point
+            res.json({
+                URL:          data.URL,
+                imageURL:     data.imageURL,
+                author:       data.author,
+                recipeName:   data.recipeName,
+                difficulty:   data.difficulty,
+                totalTime:    data.totalTime,
+                prepTime:     data.prepTime,
+                inactiveTime: data.inactiveTime,
+                activeTime:   data.activeTime,
+                cookTime:     data.cookTime,
+                yield:        data.yield,
+                ingredients:  data.ingredients,
+                directions:   data.directions,
+                source:       data.source
+            });
+        }
     });
 });
 
