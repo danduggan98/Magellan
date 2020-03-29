@@ -5,7 +5,7 @@
 //TO-DO
 // Host on Amazon
 // Add search bar to front page
-// Mini search bar above recipe pagee
+// Mini search bar above recipe page
 // Clean + finalize data in Mongo
 // Use Passport for authentication
 // use nodemon
@@ -32,39 +32,47 @@ const ObjectId = require('mongodb').ObjectID;
 
 //Load a recipe
 app.get('/recipe/:recipeid', (req, res) => {
-    const recipes = database.db('recipeData').collection('recipes'); //Access the recipe list
 
-    //Grab recipe info from database
-    recipes.find(ObjectId(req.params.recipeid)).toArray((err, result) => {
-        if (err) throw err;
+    //Check for invalid recipe id string
+    if (req.params.recipeid.length !== 12 && req.params.recipeid.length !== 24) {
+        res.json({ error: 'Recipe not found' });
+    }
+    //Potentially valid recipe id
+    else {
+        const recipes = database.db('recipeData').collection('recipes'); //Access the recipe list
 
-        //Recipe not found
-        if (!result.length) {
-            res.json({ error: 'Recipe not found' });
-        }
-        //Recipe found
-        else {
-            let data = result[0];
+        //Grab recipe info from database
+        recipes.find(ObjectId(req.params.recipeid)).toArray((err, result) => {
+            if (err) throw err;
 
-            //Pass each data point
-            res.json({
-                URL:          data.URL,
-                imageURL:     data.imageURL,
-                author:       data.author,
-                recipeName:   data.recipeName,
-                difficulty:   data.difficulty,
-                totalTime:    data.totalTime,
-                prepTime:     data.prepTime,
-                inactiveTime: data.inactiveTime,
-                activeTime:   data.activeTime,
-                cookTime:     data.cookTime,
-                yield:        data.yield,
-                ingredients:  data.ingredients,
-                directions:   data.directions,
-                source:       data.source
-            });
-        }
-    });
+            //Recipe not found
+            if (!result.length) {
+                res.json({ error: 'Recipe not found' });
+            }
+            //Recipe found
+            else {
+                let data = result[0];
+
+                //Pass each data point
+                res.json({
+                    URL:          data.URL,
+                    imageURL:     data.imageURL,
+                    author:       data.author,
+                    recipeName:   data.recipeName,
+                    difficulty:   data.difficulty,
+                    totalTime:    data.totalTime,
+                    prepTime:     data.prepTime,
+                    inactiveTime: data.inactiveTime,
+                    activeTime:   data.activeTime,
+                    cookTime:     data.cookTime,
+                    yield:        data.yield,
+                    ingredients:  data.ingredients,
+                    directions:   data.directions,
+                    source:       data.source
+                });
+            }
+        });
+    }
 });
 
 //Search for recipes
