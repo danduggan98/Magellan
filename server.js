@@ -5,7 +5,6 @@
 //TO-DO
 // Host on Amazon
 // Add search bar to front page
-// RECIPE SEARCH STILL FAILS OCCASIONALLY
 // Loading circle when search is submitted
 // Mini search bar above recipe page
 // Clean + finalize data in Mongo
@@ -38,10 +37,10 @@ const validMongoID = /^[0-9a-fA-F]{24}$/;
 
 //Load a recipe
 app.get('/recipe/:recipeid', (req, res) => {
-    const urlParam = req.params.recipeid;
+    const id = req.params.recipeid;
 
     //Check for invalid recipe id string
-    if (urlParam.length !== 12 || !(validMongoID.match(urlParam))) {
+    if (!(validMongoID.test(id))) {
         res.json({ error: 'Recipe not found' });
     }
     //Potentially valid recipe id
@@ -49,7 +48,7 @@ app.get('/recipe/:recipeid', (req, res) => {
         const recipes = database.db('recipeData').collection('recipes'); //Access the recipe list
 
         //Grab recipe info from database
-        recipes.find(ObjectId(req.params.recipeid)).toArray((err, result) => {
+        recipes.find(ObjectId(id)).toArray((err, result) => {
             if (err) throw err;
 
             //Recipe not found
