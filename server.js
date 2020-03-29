@@ -5,6 +5,7 @@
 //TO-DO
 // Host on Amazon
 // Add search bar to front page
+// RECIPE SEARCH STILL FAILS OCCASIONALLY
 // Loading circle when search is submitted
 // Mini search bar above recipe page
 // Clean + finalize data in Mongo
@@ -21,6 +22,7 @@ app.use(express.static(__dirname + '/'));
 
 let database; //Maintains a persistent connection to the Mongo cluster
 const ObjectId = require('mongodb').ObjectID;
+const validMongoID = /^[0-9a-fA-F]{24}$/;
 
 //Automatically connect to database, store the connection for reuse
 (function connectToMongo() {
@@ -36,9 +38,10 @@ const ObjectId = require('mongodb').ObjectID;
 
 //Load a recipe
 app.get('/recipe/:recipeid', (req, res) => {
+    const urlParam = req.params.recipeid;
 
     //Check for invalid recipe id string
-    if (req.params.recipeid.length !== 12 && req.params.recipeid.length !== 24) {
+    if (urlParam.length !== 12 || !(validMongoID.match(urlParam))) {
         res.json({ error: 'Recipe not found' });
     }
     //Potentially valid recipe id
@@ -56,7 +59,7 @@ app.get('/recipe/:recipeid', (req, res) => {
 
             //Recipe found
             else {
-                let data = result[0];
+                const data = result[0];
 
                 //Pass each data point
                 res.json({
