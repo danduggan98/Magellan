@@ -85,7 +85,7 @@ app.get('/recipe/:recipeid', (req, res) => {
 //Search for recipes
 app.post('/search/:terms', (req, res) => {
     //Query the database
-    res.json({msg: 'GREAT SUCCESS!', data: req.params.terms});
+    res.json({ msg: 'GREAT SUCCESS!', data: req.params.terms });
 });
 
 //Handle 404 errors
