@@ -4,8 +4,7 @@
 
 //TO-DO
 // Host on Amazon
-// Add search bar to front page (USE FETCH)
-// Loading circle when search is submitted
+// Make db connection code a github secret
 // Mini search bar above recipe page
 // Clean + finalize data in Mongo
 // Use Passport for authentication
@@ -88,14 +87,15 @@ app.get('/search/:terms', (req, res) => {
     const terms = req.params.terms;
 
     //Query the database
-    recipes.find({ prepTime: '5 min' }).toArray((err, result) => {
+    recipes.find({ prepTime: '10 min' }).toArray((err, result) => {
         if (err) throw err;
+        const numFound = result.length;
 
-        if (!result.length) {
+        if (!numFound) {
             res.json({ msg: 'BIG FAIL!', data: result });
         }
         else {
-            res.json({ msg: 'GREAT SUCCESS! Found ' + result.length + ' items!', data: result });
+            res.json({ msg: 'GREAT SUCCESS! Found ' + numFound + ' items!', data: result });
         }
     });
 });
