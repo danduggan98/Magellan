@@ -4,7 +4,7 @@
 
 //TO-DO
 // Host on Amazon
-// Add search bar to front page
+// Add search bar to front page (USE FETCH)
 // Loading circle when search is submitted
 // Mini search bar above recipe page
 // Clean + finalize data in Mongo
