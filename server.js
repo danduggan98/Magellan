@@ -5,10 +5,14 @@
 //TO-DO
 // Host on Amazon
 // Add search bar to front page
+// Loading circle when search is submitted
 // Mini search bar above recipe page
 // Clean + finalize data in Mongo
 // Use Passport for authentication
 // use nodemon
+// Recipe submission page
+// Sidebar with links
+// Logins + saved recipes
 
 //Set up Express app
 const express = require('express');
@@ -49,6 +53,7 @@ app.get('/recipe/:recipeid', (req, res) => {
             if (!result.length) {
                 res.json({ error: 'Recipe not found' });
             }
+
             //Recipe found
             else {
                 let data = result[0];
@@ -76,9 +81,9 @@ app.get('/recipe/:recipeid', (req, res) => {
 });
 
 //Search for recipes
-app.post('/search/:searchparams', (req, res) => {
+app.post('/search/:terms', (req, res) => {
     //Query the database
-    res.json('GREAT SUCCESS!');
+    res.json({msg: 'GREAT SUCCESS!', data: req.params.terms});
 });
 
 //Handle 404 errors

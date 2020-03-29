@@ -3,13 +3,17 @@ import React, {Component} from 'react';
 class SearchBar extends Component {
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {
+            input: 'SEARCH TERMS'
+        };
     }
 
     render() {
+        const route = '/search/' + this.state.input;
+
         return (
             <div>
-                <form action='/search/' method='POST'>
+                <form action={route} method='POST'>
                     <input
                         type='text'
                         placeholder="Search for recipes"
