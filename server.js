@@ -83,7 +83,7 @@ app.get('/recipe/:recipeid', (req, res) => {
 });
 
 //Search for recipes
-app.post('/search/:terms', (req, res) => {
+app.get('/search/:terms', (req, res) => {
     //Query the database
     res.json({ msg: 'GREAT SUCCESS!', data: req.params.terms });
 });
