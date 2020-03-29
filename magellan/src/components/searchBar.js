@@ -7,15 +7,16 @@ class SearchBar extends Component {
             input: '',
             results: ''
         };
-        //this.getResults = this.getResults.bind(this);
     }
 
-    async getResults() {
+    //Launch a search in the server and store the results
+    getResults = async () => {
         const res = await fetch('/search/' + this.state.input);
         const data = await res.json();
         this.setState({ results: data.msg });
     }
 
+    //Save the user's current input in state
     updateInput = (vals) => {
         this.setState({ input: vals.target.value })
     }
@@ -29,8 +30,7 @@ class SearchBar extends Component {
                 <form
                     name='searchbar'
                     target='hiddenFrame'
-                    onSubmit={this.getResults}
-                    method='post'>
+                    onSubmit={this.getResults}>
 
                     <input
                         type='text'
@@ -40,7 +40,7 @@ class SearchBar extends Component {
                         onChange={this.updateInput}>
                     </input>
 
-                    <h1>{this.state.input}</h1>
+                    <h2>{this.state.results}</h2>
                     <iframe name="hiddenFrame" title='hidden' width="0" height="0" border="0" style={{display: 'none'}}></iframe>
                 </form>
             </div>
