@@ -57,9 +57,11 @@ class Recipe extends Component {
         const res = await fetch('/recipe/' + this.state.recipeID);
         const data = await res.json();
 
+        //Recipe not found
         if (data.error) {
             this.setState({status: 0});
         }
+        //Recipe found
         else {
             this.setState({
                 URL:          data.URL,
@@ -81,6 +83,7 @@ class Recipe extends Component {
     }
 
     render() {
+        //Recipe not found
         if (!this.state.status) {
             return (
                 <div>
@@ -89,6 +92,7 @@ class Recipe extends Component {
                 </div>
             );
         }
+        //Recipe found
         else {
             return (
                 <div>
