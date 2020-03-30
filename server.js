@@ -87,18 +87,19 @@ app.get('/recipe/:recipeid', (req, res) => {
 //Search for recipes
 app.get('/search/:terms', (req, res) => {
     const terms = req.params.terms;
-    const query = {recipeName: {$regex:`.*${terms}.*`}}
-    
+
+    const query = //Search algorithm
+        {recipeName: {$regex:`.*${terms}.*`}} //Does the recipe name contain the term?
+
     //Query the database
     recipes.find(query).toArray((err, result) => {
         if (err) throw err;
-        const numFound = result.length;
 
-        if (!numFound) {
-            res.json({ msg: 'BIG FAIL! Nothing found', data: result });
+        if (!result.length) {
+            res.json({ error: 'No search results' });
         }
         else {
-            res.json({ msg: 'GREAT SUCCESS! Found ' + numFound + ' items!', data: result });
+            res.json({ searchResults: result });
         }
     });
 });

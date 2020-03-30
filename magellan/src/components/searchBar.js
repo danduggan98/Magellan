@@ -5,6 +5,7 @@ class SearchBar extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            status: 1,
             input: '',
             results: [],
             loading: false
@@ -16,7 +17,13 @@ class SearchBar extends Component {
         this.setState({ results: '', loading: true })
         const res = await fetch('/search/' + this.state.input);
         const data = await res.json();
-        this.setState({ results: data.msg, loading: false });
+
+        if (data.error) {
+            this.setState({ status: 0, loading: false });
+        }
+        else {
+            this.setState({ results: data.searchResults, loading: false });
+        }
     }
 
     //Save the user's current input in state
@@ -51,7 +58,6 @@ class SearchBar extends Component {
                         }
                     </div>
 
-                    <h2>{this.state.results}</h2>
                     <iframe name="hiddenFrame" title='hidden' width="0" height="0" border="0" style={{display: 'none'}}></iframe>
                 </form>
             </div>
