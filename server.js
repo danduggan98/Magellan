@@ -3,10 +3,12 @@
 //
 
 //TO-DO
-// Host on Amazon
-// Make db connection code a github secret
+// Finish search bar + search algorithm
 // Mini search bar above recipe page
 // Clean + finalize data in Mongo
+
+// Host on Amazon
+// Make db connection code a github secret
 // Use Passport for authentication
 // use nodemon
 // Recipe submission page
@@ -85,14 +87,15 @@ app.get('/recipe/:recipeid', (req, res) => {
 //Search for recipes
 app.get('/search/:terms', (req, res) => {
     const terms = req.params.terms;
-
+    const query = {recipeName: {$regex:`.*${terms}.*`}}
+    
     //Query the database
-    recipes.find({ prepTime: '10 min' }).toArray((err, result) => {
+    recipes.find(query).toArray((err, result) => {
         if (err) throw err;
         const numFound = result.length;
 
         if (!numFound) {
-            res.json({ msg: 'BIG FAIL!', data: result });
+            res.json({ msg: 'BIG FAIL! Nothing found', data: result });
         }
         else {
             res.json({ msg: 'GREAT SUCCESS! Found ' + numFound + ' items!', data: result });
