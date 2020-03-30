@@ -14,27 +14,42 @@ class SearchBar extends Component {
 
     //Launch a search in the server and store the results
     getResults = async () => {
-        this.setState({ results: '', loading: true })
+        this.setState({ results: '', loading: true });
         const res = await fetch('/search/' + this.state.input);
         const data = await res.json();
 
+        //No search results
         if (data.error) {
             this.setState({ status: 0, loading: false });
         }
+
+        //Create a list of items
         else {
-            this.setState({ results: data.searchResults, loading: false });
+            let itemNames = [];
+            const vals = data.searchResults;
+            for (let i = 0; i < vals.length; i++) {
+                itemNames.push(vals[i].recipeName);
+                //Change later to a list of cards with links!!
+                // (CREATE CARD COMPONENT, POPULATE WITH DATA)
+            }
+            this.setState({ status: 1, loading: false, results: itemNames });
         }
     }
 
     //Save the user's current input in state
     updateInput = (vals) => {
-        this.setState({ input: vals.target.value })
+        this.setState({ input: vals.target.value });
     }
 
     //Search bar - form takes an input and redirects to an invisible
     // iframe on the same page after querying the db and displaying 
     // the results below
     render() {
+        const res = Array.from(this.state.results);
+        const list = res.map(result => (
+            <p>{result}</p>
+        ));
+
         return (
             <div>
                 <form
@@ -57,6 +72,11 @@ class SearchBar extends Component {
                             : <p></p>
                         }
                     </div>
+
+                    { this.state.status ? 
+                        <h2>{list}</h2>
+                        : <h3>No results found. Try again</h3>
+                    }
 
                     <iframe name="hiddenFrame" title='hidden' width="0" height="0" border="0" style={{display: 'none'}}></iframe>
                 </form>
