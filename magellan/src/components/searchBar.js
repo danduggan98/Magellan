@@ -49,11 +49,7 @@ class SearchBar extends Component {
         const res = Array.from(this.state.results);
         const list = res.map(result => (
             <div>
-                <h4>
-                    {result.recipeName}
-                </h4>
-                <h5>by {result.author}</h5>
-                {/*<SearchCard />  */}
+                <SearchCard info={result} />
             </div>
         ));
 

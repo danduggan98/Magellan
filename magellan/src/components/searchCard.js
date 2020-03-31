@@ -3,13 +3,17 @@ import React, {Component} from 'react';
 class SearchCard extends Component {
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {
+            recipe: props.info
+        };
     }
 
     render() {
+        const data = this.state.recipe;
+        
         return (
-            <div>
-                <h4>(Search Result)</h4>
+            <div id='card'>
+                <h5>{data.recipeName}</h5>
             </div>
         );
     }
