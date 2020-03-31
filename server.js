@@ -88,8 +88,11 @@ app.get('/recipe/:recipeid', (req, res) => {
 app.get('/search/:terms', (req, res) => {
     const terms = req.params.terms;
 
-    const query = //Search algorithm
-        {recipeName: {$regex:`.*${terms}.*`}} //Does the recipe name contain the term?
+    //Search algorithm
+    const pattern = new RegExp(`.*${terms}.*`, 'i');
+
+    //DOES NOT WORK IF IT MATCHES THE FIRST WORD?????????
+    const query = {recipeName: {$regex: pattern}};
 
     //Query the database
     recipes.find(query).toArray((err, result) => {
