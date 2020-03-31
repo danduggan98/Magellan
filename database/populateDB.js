@@ -34,7 +34,8 @@
                 recipe.source = "Food Network"; //Add a 'source' column to note which site this recipe is from
 
                 //Add the recipe to our collection
-                coll.insertOne(recipe, (err) => {
+                //If the recipe already exists, sets the recipe name to itself (no change), and inserts it otherwise
+                coll.updateOne(recipe, {$set: {recipeName: recipe.recipeName} }, {upsert: true}, (err) => {
                     if (err) throw err;
                     console.log("Inserted recipe by " + recipe.author + " with name '" + recipe.recipeName + "'");
                 });
