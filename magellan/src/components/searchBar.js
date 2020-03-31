@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import BarLoader from 'react-spinners/BarLoader';
+import SearchCard from './searchCard.js';
 
 class SearchBar extends Component {
     constructor(props) {
@@ -28,7 +29,7 @@ class SearchBar extends Component {
             let itemNames = [];
             const vals = data.searchResults;
             for (let i = 0; i < vals.length; i++) {
-                itemNames.push(vals[i].recipeName);
+                itemNames.push(vals[i]);
                 //Change later to a list of cards with links!!
                 // (CREATE CARD COMPONENT, POPULATE WITH DATA)
             }
@@ -47,7 +48,13 @@ class SearchBar extends Component {
     render() {
         const res = Array.from(this.state.results);
         const list = res.map(result => (
-            <p>{result}</p>
+            <div>
+                <h4>
+                    {result.recipeName}
+                </h4>
+                <h5>by {result.author}</h5>
+                {/*<SearchCard />  */}
+            </div>
         ));
 
         return (
