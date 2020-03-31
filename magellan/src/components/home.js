@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import SearchBar from './searchBar.js';
-import SearchResults from './searchResults.js';
 
 class Home extends Component {
     constructor(props) {
@@ -13,7 +12,6 @@ class Home extends Component {
             <div>
                 <h1>WELCOME!</h1>
                 <SearchBar />
-                <SearchResults />
             </div>
         );
     }
