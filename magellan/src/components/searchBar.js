@@ -32,8 +32,6 @@ class SearchBar extends Component {
             const vals = data.searchResults;
             for (let i = 0; i < vals.length; i++) {
                 itemNames.push(vals[i]);
-                //Change later to a list of cards with links!!
-                // (CREATE CARD COMPONENT, POPULATE WITH DATA)
             }
             this.setState({ status: 1, loading: false, results: itemNames });
         }
@@ -68,6 +66,8 @@ class SearchBar extends Component {
                         onChange={this.updateInput}>
                     </input>
 
+                    <button type='submit'>Submit</button>
+                    
                     <div name='loadingBar'>
                         <br></br>
                         { this.state.loading ? 
@@ -78,14 +78,14 @@ class SearchBar extends Component {
                             : <p></p>
                         }
                     </div>
-
-                    { this.state.status ? 
-                        <h2>{list}</h2>
-                        : <h3>No results found. Try again</h3>
-                    }
-
-                    <iframe name="hiddenFrame" title='hidden' width="0" height="0" border="0" style={{display: 'none'}}></iframe>
                 </form>
+
+                { this.state.status ? 
+                    <h2>{list}</h2>
+                    : <h3>No results found. Try again</h3>
+                }
+
+                <iframe name="hiddenFrame" title='hidden' width="0" height="0" border="0" style={{display: 'none'}}></iframe>
             </div>
         );
     }
