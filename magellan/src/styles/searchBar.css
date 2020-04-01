@@ -1,0 +1,10 @@
+#searchBar {
+    text-align: center;
+}
+
+#iframe {
+    display: none;
+    width: 0;
+    height: 0;
+    border: 0;
+}
