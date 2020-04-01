@@ -61,13 +61,13 @@ class SearchBar extends Component {
                     <input
                         type='text'
                         autoComplete='off'
-                        placeholder="Search for recipes"
+                        placeholder='Search for recipes'
                         name='search'
                         onChange={this.updateInput}>
                     </input>
 
-                    <button type='submit'>Submit</button>
-                    
+                    <button type='submit' id='searchButton'className='fa fa-search'></button>
+
                     <div name='loadingBar'>
                         <br></br>
                         { this.state.loading ? 
@@ -85,7 +85,7 @@ class SearchBar extends Component {
                     : <h3>No results found. Try again</h3>
                 }
 
-                <iframe name="hiddenFrame" title='hidden' width="0" height="0" border="0" style={{display: 'none'}}></iframe>
+                <iframe name='hiddenFrame' title='hidden' width='0' height='0' border='0' style={{display: 'none'}}></iframe>
             </div>
         );
     }
