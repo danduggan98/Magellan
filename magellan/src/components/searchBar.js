@@ -69,7 +69,10 @@ class SearchBar extends Component {
                     <div name='loadingBar'>
                         <br></br>
                         { this.state.loading ? 
-                            <BarLoader />
+                            <div>
+                                Searching...
+                                <BarLoader />
+                            </div>
                             : <p></p>
                         }
                     </div>
