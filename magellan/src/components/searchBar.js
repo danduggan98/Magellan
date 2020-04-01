@@ -55,12 +55,13 @@ class SearchBar extends Component {
         return (
             <div>
                 <form
-                    name='searchbar'
+                    name='searchBar'
                     target='hiddenFrame'
                     onSubmit={this.getResults}>
 
                     <input
                         name='search'
+                        id='searchInput'
                         type='text'
                         autoComplete='off'
                         placeholder='Search for recipes'
