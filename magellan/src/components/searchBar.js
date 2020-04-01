@@ -48,9 +48,7 @@ class SearchBar extends Component {
     render() {
         const res = Array.from(this.state.results);
         const list = res.map(result => (
-            <div>
-                <SearchCard info={result} />
-            </div>
+            <SearchCard info={result} />
         ));
 
         return (
