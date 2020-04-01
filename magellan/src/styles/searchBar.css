@@ -1,5 +1,6 @@
-#searchBar {
-    text-align: center;
+#searchInput {
+    text-align: left;
+    height: 28px;
 }
 
 #iframe {
@@ -7,4 +8,10 @@
     width: 0;
     height: 0;
     border: 0;
+}
+
+#searchButton {
+    color:black;
+    height: 32px;
+    cursor: pointer;
 }
