@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import '../styles/searchCard.css';
 
 class SearchCard extends Component {
     constructor(props) {
@@ -10,10 +11,18 @@ class SearchCard extends Component {
 
     render() {
         const data = this.state.recipe;
-        
+        const link = `/recipe/${data._id}`;
+
         return (
             <div id='card'>
-                <h5>{data.recipeName}</h5>
+                <div id='recipeName'>
+                    <a className='recipeLink'
+                       href={link}>
+                        {data.recipeName}
+                    </a>
+                </div>
+                <div id='author'>by {data.author}</div>
+                <div id='totalTime'>{data.totalTime}</div>
             </div>
         );
     }
