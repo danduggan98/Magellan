@@ -1,0 +1,33 @@
+#card {
+    border: 1px solid black;
+    padding-bottom: 5px;
+    padding: 10px;
+    margin-bottom: 20px;
+    width: 250px;
+}
+
+#recipeName {
+    color: black;
+    font-size: 23px;
+    margin-bottom: 6px;
+}
+
+#author {
+    color: midnightblue;
+    font-size: 16px;
+    margin-bottom: 6px;
+}
+
+#totalTime {
+    color: purple;
+    font-size: 16px;
+}
+
+.recipeLink {
+    color: inherit;
+    text-decoration: none;
+}
+
+.recipeLink:visited {
+    color: inherit;
+}
