@@ -6,6 +6,7 @@ class SearchBar extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            searchType: 'name',
             status: 1,
             input: '',
             results: [],
@@ -15,8 +16,9 @@ class SearchBar extends Component {
 
     //Launch a search in the server and store the results
     getResults = async () => {
+        const fetchURL = `/search/${this.state.searchType}/${this.state.input}`;
         this.setState({ results: '', loading: true });
-        const res = await fetch('/search/' + this.state.input);
+        const res = await fetch(fetchURL);
         const data = await res.json();
 
         //No search results
@@ -42,7 +44,7 @@ class SearchBar extends Component {
         this.setState({ input: vals.target.value });
     }
 
-    //Search bar - form takes an input and redirects to an invisible
+    // Search bar - form takes an input and redirects to an invisible
     // iframe on the same page after querying the db and displaying 
     // the results below
     render() {

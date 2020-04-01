@@ -15,6 +15,11 @@
 // Sidebar with links
 // Logins + saved recipes
 
+// Add service worker for production
+// Add unique keys to all react lists, ensure existing keys are unique
+// Search by/exclude ingredients
+// Vegan, gluten-free, etc. notices
+
 //Set up Express app
 const express = require('express');
 const app = express();
@@ -57,7 +62,6 @@ app.get('/recipe/:recipeid', (req, res) => {
             if (!result.length) {
                 res.json({ error: 'Recipe not found' });
             }
-
             //Recipe found
             else {
                 const data = result[0];
@@ -85,10 +89,18 @@ app.get('/recipe/:recipeid', (req, res) => {
 });
 
 //Search for recipes
-app.get('/search/:terms', (req, res) => {
+// Type 'name' searches by recipe name,
+// Type 'ing' searches by ingredient
+
+app.get('/search/:type/:terms', (req, res) => {
+    const type = req.params.type;
     const terms = req.params.terms;
 
     //Search algorithm
+
+    //ADD:
+    // BREAK UP TERMS INTO PIECES, SEARCH WITH EACH INDIVIDUALLY
+    // SEARCH BY INGREDIENT (OPTION IN TERMS)
     const pattern = new RegExp(`.*${terms}.*`, 'i');
 
     //DOES NOT WORK IF IT MATCHES THE FIRST WORD?????????
@@ -98,9 +110,11 @@ app.get('/search/:terms', (req, res) => {
     recipes.find(query).toArray((err, result) => {
         if (err) throw err;
 
+        //No results
         if (!result.length) {
             res.json({ error: 'No search results' });
         }
+        //Matches found
         else {
             res.json({ searchResults: result });
         }
