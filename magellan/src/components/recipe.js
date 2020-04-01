@@ -101,12 +101,12 @@ class Recipe extends Component {
                     <h3>Courtesy of {this.state.source}</h3>
 
                     { this.state.imageURL ?
-                        <img src={this.state.imageURL} alt="" width="600"></img> :
+                        <img src={this.state.imageURL} alt='' width='600'></img> :
                         <p></p>
                     }
 
                     <br></br>
-                    <a target="_blank" rel="noopener noreferrer" href={this.state.URL}>Original Recipe</a>
+                    <a target='_blank' rel='noopener noreferrer' href={this.state.URL}>Original Recipe</a>
                     
                     <br></br>
                     <h3>Difficulty: {this.state.difficulty} | Yield: {this.state.yield}</h3>
