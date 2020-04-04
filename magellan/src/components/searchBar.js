@@ -8,8 +8,9 @@ class SearchBar extends Component {
         super(props);
         this.state = {
             searchType: 'name',
-            status: 1,
             input: '',
+            emptyInput: false,
+            resultsFound: true,
             results: [],
             loading: false
         };
@@ -17,24 +18,43 @@ class SearchBar extends Component {
 
     //Launch a search in the server and store the results
     getResults = async () => {
-        const fetchURL = `/search/${this.state.searchType}/${this.state.input}`;
-        this.setState({ results: '', loading: true });
 
-        const res = await fetch(fetchURL); //Execute the search
-        const data = await res.json();
+        //Ensure they have entered something
+        if (this.state.input) {
+            const fetchURL = `/search/${this.state.searchType}/${this.state.input}`;
+            this.setState({
+                results: [],
+                loading: true,
+                emptyInput: false
+            });
 
-        //No search results
-        if (data.error) {
-            this.setState({ status: 0, loading: false });
-        }
-        //Create a list of items
-        else {
-            let itemNames = [];
-            const vals = data.searchResults;
-            for (let i = 0; i < vals.length; i++) {
-                itemNames.push(vals[i]);
+            const res = await fetch(fetchURL); //Execute the search
+            const data = await res.json();
+
+            //No search results
+            if (data.error) {
+                this.setState({ resultsFound: false, loading: false });
             }
-            this.setState({ status: 1, loading: false, results: itemNames });
+            //Create a list of items
+            else {
+                let itemNames = [];
+                const vals = data.searchResults;
+                for (let i = 0; i < vals.length; i++) {
+                    itemNames.push(vals[i]);
+                }
+
+                this.setState({
+                    resultsFound: true,
+                    loading: false,
+                    results: itemNames
+                });
+            }
+        }
+        else {
+            this.setState({
+                emptyInput: true,
+                resultsFound: true //Hide this notice if last search found nothing
+            });
         }
     }
 
@@ -74,8 +94,14 @@ class SearchBar extends Component {
                         className='fa fa-search'>
                     </button>
 
+                    <div id='inputReminder'>
+                        { this.state.emptyInput ?
+                            <h4>Please enter something to search</h4>
+                            : <p></p>
+                        }
+                    </div>
+
                     <div id='loadingBar'>
-                        <br></br>
                         { this.state.loading ? 
                             <div>
                                 Searching...
@@ -87,7 +113,7 @@ class SearchBar extends Component {
                 </form>
                 
                 <div id='results'>
-                    { this.state.status ? 
+                    { this.state.resultsFound ? 
                         <h2>{list}</h2>
                         : <h3>No results found. Try again</h3>
                     }

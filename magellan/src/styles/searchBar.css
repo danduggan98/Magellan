@@ -14,4 +14,9 @@
     color:black;
     height: 32px;
     cursor: pointer;
+    margin-bottom: 10px;
+}
+
+#inputReminder {
+    height: 12px;
 }
