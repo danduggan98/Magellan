@@ -116,12 +116,16 @@ app.get('/search/:type/:terms', (req, res) => {
     const len = terms.length;
 
     for (let i = 0; i <= len; i++) {
-        if (terms.charAt(i) === ' ' || i === len) {
+        //Lazy attempt to handle bad inputs / weird user syntax
+        const seperators = [' ', '  ', '   ', '-', '/', ',', '+', '.' ];
+
+        if (seperators.includes(terms.charAt(i)) || i === len) {
             let nextWord = terms.slice(lastWordIndex, i);
             lastWordIndex = ++i;
             parsedTerms.push(nextWord);
         }
     }
+    console.log('Parsed terms:\n', parsedTerms);
 
     //Place each term in a mongo regex expression for searching
     let exprList = [];
@@ -130,6 +134,7 @@ app.get('/search/:type/:terms', (req, res) => {
         let newQuery = { [field] : {$regex: newPattern}};
         exprList.push(newQuery);
     }
+    console.log('Final Expression: \n', exprList, '\n');
 
     //Combine list items into a single 'or' query
     //const pattern = new RegExp(`.*${terms}.*`, 'i');
