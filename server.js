@@ -7,6 +7,8 @@
     // Filter helper words (and, with, or, etc.) before search takes place
     // Make secondary sort something other than chef name (popularity?)
     // Tweak algo to allow ingredient search as well
+
+// Pull search results to a SearchResults component
 // Mini search bar above recipe page
 // Clean + finalize data in Mongo (REMOVE DUPLICATES, ETC.)
 
@@ -96,7 +98,7 @@ app.get('/recipe/:recipeid', (req, res) => {
 
 app.get('/search/:type/:terms', (req, res) => {
     const type = req.params.type;
-    const terms = req.params.terms;
+    const terms = req.params.terms.toLowerCase();
 
     //Search algorithm!
 
@@ -117,15 +119,27 @@ app.get('/search/:type/:terms', (req, res) => {
     const len = terms.length;
 
     for (let i = 0; i <= len; i++) {
-        //Lazy attempt to handle bad inputs, ignore garbage characters
-        const seperators = [' ', '  ', '   ', '-', '/', ',', '+', '.', "'", '"', '(', ')', '&', '%'];
+        //Lazy attempt to handle bad inputs, ignore useless words/chars
+        const seperators = [' ', '-', '/', ','];
 
+        const ignoredTerms = [
+            'and', 'with', 'the', 'n', 'on', 'above', 'best', 'for', 'of', 'most', 'ever'
+        ];
+
+        //Isolate words seperated by one of our seperating characters
         if (seperators.includes(terms.charAt(i)) || i === len) {
             let nextWord = terms.slice(lastWordIndex, i);
-            lastWordIndex = ++i;
-            parsedTerms.push(nextWord);
+
+            //Remvoe whitespace, symbols, quotes
+            nextWordClean = nextWord.trim().replace(/[!@#$%^&*()+.'"]+/g, '');
+            lastWordIndex = ++i; 
+
+            if (!ignoredTerms.includes(nextWordClean)){
+                parsedTerms.push(nextWordClean);
+            }
         }
     }
+    console.log(parsedTerms);
 
     //Place each term in a mongo regex expression for searching
     let exprList = [];
@@ -134,44 +148,51 @@ app.get('/search/:type/:terms', (req, res) => {
         let newQuery = { [field] : {$regex: newPattern}};
         exprList.push(newQuery);
     }
+    console.log(exprList);
 
     //Combine all expressions into a single query
     const query = { $or: exprList };
 
-    //Query the database
-    recipes.find(query).toArray((err, result) => {
-        if (err) throw err;
+    //Query the database given a valid submission
+    if (!parsedTerms.length) {
+        res.json({ error: 'No search results' });
+    }
+    else {
+        //Search
+        recipes.find(query).toArray((err, result) => {
+            if (err) throw err;
 
-        //No results
-        if (!result.length) {
-            res.json({ error: 'No search results' });
-        }
-        //Matches found
-        else {
-
-            //Determine how close each recipe name is to the search query
-            // Results which contain more of the given fields are ranked higher
-            //WILL NEED TWEAKING TO HANDLE INGREDIENT SEARCHES
-            const numTerms = parsedTerms.length;
-            const numResults = result.length;
-            let matches = 0, check = '';
-
-            for (let k = 0; k < numResults; k++) {
-                for (l = 0; l < numTerms; l++) {
-                    check = new RegExp(`.*${parsedTerms[l]}.*`, 'i');
-                    if (check.test(result[k].recipeName)) {
-                        matches++;
-                    }
-                }
-                result[k].accuracy = matches;
-                matches = 0;
+            //No results
+            if (!result.length) {
+                res.json({ error: 'No search results' });
             }
+            //Matches found
+            else {
 
-            //Sort + send the data
-            result.sort((a, b) => parseFloat(b.accuracy) - parseFloat(a.accuracy));
-            res.json({ searchResults: result });
-        }
-    });
+                //Determine how close each recipe name is to the search query
+                // Results which contain more of the given fields are ranked higher
+                //WILL NEED TWEAKING TO HANDLE INGREDIENT SEARCHES
+                const numTerms = parsedTerms.length;
+                const numResults = result.length;
+                let matches = 0, check = '';
+
+                for (let k = 0; k < numResults; k++) {
+                    for (l = 0; l < numTerms; l++) {
+                        check = new RegExp(`.*${parsedTerms[l]}.*`, 'i');
+                        if (check.test(result[k].recipeName)) {
+                            matches++;
+                        }
+                    }
+                    result[k].accuracy = matches;
+                    matches = 0;
+                }
+
+                //Sort + send the data
+                result.sort((a, b) => parseFloat(b.accuracy) - parseFloat(a.accuracy));
+                res.json({ searchResults: result });
+            }
+        });
+    }
 });
 
 //Handle 404 errors
