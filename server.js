@@ -4,15 +4,15 @@
 
 //TO-DO
 // Finish search bar + search algorithm
-    // SORT RESULTS BY ACCURACY
     // Filter helper words (and, with, or, etc.) before search takes place
+    // Make secondary sort something other than chef name (popularity?)
+    // Tweak algo to allow ingredient search as well
 // Mini search bar above recipe page
 // Clean + finalize data in Mongo (REMOVE DUPLICATES, ETC.)
 
 // Host on Amazon
 // Make db connection code a github secret
 // Use Passport for authentication
-// use nodemon
 // Recipe submission page
 // Sidebar with links
 // Logins + saved recipes
@@ -117,8 +117,8 @@ app.get('/search/:type/:terms', (req, res) => {
     const len = terms.length;
 
     for (let i = 0; i <= len; i++) {
-        //Lazy attempt to handle bad inputs / weird user syntax
-        const seperators = [' ', '  ', '   ', '-', '/', ',', '+', '.' ];
+        //Lazy attempt to handle bad inputs, ignore garbage characters
+        const seperators = [' ', '  ', '   ', '-', '/', ',', '+', '.', "'", '"', '(', ')', '&', '%'];
 
         if (seperators.includes(terms.charAt(i)) || i === len) {
             let nextWord = terms.slice(lastWordIndex, i);
