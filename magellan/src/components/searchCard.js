@@ -17,6 +17,8 @@ class SearchCard extends Component {
             <div id='card'>
                 <div id='recipeName'>
                     <a className='recipeLink'
+                       target='_blank'
+                       rel='noopener noreferrer'
                        href={link}>
                         {data.recipeName}
                     </a>
