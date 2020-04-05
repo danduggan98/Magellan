@@ -119,45 +119,45 @@ app.get('/search/:type/:terms', (req, res) => {
     const len = terms.length;
 
     for (let i = 0; i <= len; i++) {
-        //Lazy attempt to handle bad inputs, ignore useless words/chars
+        //Valid chars used to seperate search terms
         const seperators = [' ', '-', '/', ','];
 
+        //Useless words to ignore
         const ignoredTerms = [
             'and', 'with', 'the', 'n', 'on', 'above', 'best', 'for', 'of', 'most', 'ever'
         ];
 
-        //Isolate words seperated by one of our seperating characters
+        //Isolate properly seperated words
         if (seperators.includes(terms.charAt(i)) || i === len) {
             let nextWord = terms.slice(lastWordIndex, i);
 
-            //Remvoe whitespace, symbols, quotes
+            //Remove whitespace, symbols, quotes
             nextWordClean = nextWord.trim().replace(/[!@#$%^&*()+.'"]+/g, '');
             lastWordIndex = ++i; 
 
-            if (!ignoredTerms.includes(nextWordClean)){
+            if (!ignoredTerms.includes(nextWordClean)) {
                 parsedTerms.push(nextWordClean);
             }
         }
     }
-    console.log(parsedTerms);
 
     //Place each term in a mongo regex expression for searching
-    let exprList = [];
+    let exprList = [], newPattern, newQuery;
+
     for (let j = 0; j < parsedTerms.length; j++) {
-        let newPattern = new RegExp(`.*${parsedTerms[j]}.*`, 'i');
-        let newQuery = { [field] : {$regex: newPattern}};
+        newPattern = new RegExp(`.*${parsedTerms[j]}.*`, 'i');
+        newQuery = { [field] : {$regex: newPattern}};
         exprList.push(newQuery);
     }
-    console.log(exprList);
-
-    //Combine all expressions into a single query
-    const query = { $or: exprList };
 
     //Query the database given a valid submission
     if (!parsedTerms.length) {
         res.json({ error: 'No search results' });
     }
     else {
+        //Combine all expressions into a single query
+        const query = { $or: exprList };
+
         //Search
         recipes.find(query).toArray((err, result) => {
             if (err) throw err;
@@ -174,10 +174,10 @@ app.get('/search/:type/:terms', (req, res) => {
                 //WILL NEED TWEAKING TO HANDLE INGREDIENT SEARCHES
                 const numTerms = parsedTerms.length;
                 const numResults = result.length;
-                let matches = 0, check = '';
+                let matches = 0, check;
 
                 for (let k = 0; k < numResults; k++) {
-                    for (l = 0; l < numTerms; l++) {
+                    for (let l = 0; l < numTerms; l++) {
                         check = new RegExp(`.*${parsedTerms[l]}.*`, 'i');
                         if (check.test(result[k].recipeName)) {
                             matches++;
