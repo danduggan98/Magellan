@@ -5,6 +5,7 @@
 //TO-DO
 // Finish search bar + search algorithm
     // SORT RESULTS BY ACCURACY
+    // Filter helper words (and, with, or, etc.) before search takes place
 // Mini search bar above recipe page
 // Clean + finalize data in Mongo (REMOVE DUPLICATES, ETC.)
 
@@ -125,7 +126,6 @@ app.get('/search/:type/:terms', (req, res) => {
             parsedTerms.push(nextWord);
         }
     }
-    console.log('Parsed terms:\n', parsedTerms);
 
     //Place each term in a mongo regex expression for searching
     let exprList = [];
@@ -134,11 +134,8 @@ app.get('/search/:type/:terms', (req, res) => {
         let newQuery = { [field] : {$regex: newPattern}};
         exprList.push(newQuery);
     }
-    console.log('Final Expression: \n', exprList, '\n');
 
-    //Combine list items into a single 'or' query
-    //const pattern = new RegExp(`.*${terms}.*`, 'i');
-    //const query = {recipeName: {$regex: pattern}};
+    //Combine all expressions into a single query
     const query = { $or: exprList };
 
     //Query the database
@@ -152,10 +149,26 @@ app.get('/search/:type/:terms', (req, res) => {
         //Matches found
         else {
 
-            //Sort results by their accuracy
-            // Results which contain more of the given fields go on top
+            //Determine how close each recipe name is to the search query
+            // Results which contain more of the given fields are ranked higher
+            //WILL NEED TWEAKING TO HANDLE INGREDIENT SEARCHES
+            const numTerms = parsedTerms.length;
+            const numResults = result.length;
+            let matches = 0, check = '';
 
-            // ------------------------------------------ HERE!
+            for (let k = 0; k < numResults; k++) {
+                for (l = 0; l < numTerms; l++) {
+                    check = new RegExp(`.*${parsedTerms[l]}.*`, 'i');
+                    if (check.test(result[k].recipeName)) {
+                        matches++;
+                    }
+                }
+                result[k].accuracy = matches;
+                matches = 0;
+            }
+
+            //Sort + send the data
+            result.sort((a, b) => parseFloat(b.accuracy) - parseFloat(a.accuracy));
             res.json({ searchResults: result });
         }
     });
