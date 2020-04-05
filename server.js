@@ -4,8 +4,9 @@
 
 //TO-DO
 // Finish search bar + search algorithm
+    // SORT RESULTS BY ACCURACY
 // Mini search bar above recipe page
-// Clean + finalize data in Mongo
+// Clean + finalize data in Mongo (REMOVE DUPLICATES, ETC.)
 
 // Host on Amazon
 // Make db connection code a github secret
@@ -96,15 +97,44 @@ app.get('/search/:type/:terms', (req, res) => {
     const type = req.params.type;
     const terms = req.params.terms;
 
-    //Search algorithm
+    //Search algorithm!
 
-    //ADD:
-    // BREAK UP TERMS INTO PIECES, SEARCH WITH EACH INDIVIDUALLY
-    // SEARCH BY INGREDIENT (OPTION IN TERMS)
-    const pattern = new RegExp(`.*${terms}.*`, 'i');
+    //Determine which document field to use based on the search type
+    let field;
+    switch (type) {
+        case 'name':
+            field = 'recipeName'; break;
+        case 'ing':
+            field = 'ingredients'; break;
+        default:
+            field = 'recipeName'; break;
+    }
 
-    //DOES NOT WORK IF IT MATCHES THE FIRST WORD?????????
-    const query = {recipeName: {$regex: pattern}};
+    //Parse individual search terms into a list
+    let parsedTerms = [];
+    let lastWordIndex = 0;
+    const len = terms.length;
+
+    for (let i = 0; i <= len; i++) {
+        if (terms.charAt(i) === ' ' || i === len) {
+            let nextWord = terms.slice(lastWordIndex, i);
+            lastWordIndex = ++i;
+            parsedTerms.push(nextWord);
+        }
+    }
+
+    //Place each term in a mongo regex expression for searching
+    let exprList = [];
+    for (let j = 0; j < parsedTerms.length; j++) {
+        let newPattern = new RegExp(`.*${parsedTerms[j]}.*`, 'i');
+        let newQuery = { [field] : {$regex: newPattern}};
+        exprList.push(newQuery);
+    }
+
+    //Combine list items into a single 'or' query
+    //const pattern = new RegExp(`.*${terms}.*`, 'i');
+    //const query = {recipeName: {$regex: pattern}};
+    const query = { $or: exprList };
 
     //Query the database
     recipes.find(query).toArray((err, result) => {
@@ -116,6 +146,11 @@ app.get('/search/:type/:terms', (req, res) => {
         }
         //Matches found
         else {
+
+            //Sort results by their accuracy
+            // Results which contain more of the given fields go on top
+
+            // ------------------------------------------ HERE!
             res.json({ searchResults: result });
         }
     });
