@@ -4,7 +4,6 @@
 
 //TO-DO
 // Finish search bar + search algorithm
-    // Filter helper words (and, with, or, etc.) before search takes place
     // Make secondary sort something other than chef name (popularity?)
     // Tweak algo to allow ingredient search as well
 
@@ -147,6 +146,7 @@ app.get('/search/:type/:terms', (req, res) => {
     for (let j = 0; j < parsedTerms.length; j++) {
         newPattern = new RegExp(`.*${parsedTerms[j]}.*`, 'i');
         newQuery = { [field] : {$regex: newPattern}};
+        //{'ingredients.main': {$in: [/.*horseradish.*/]}} - WORKS JUST FOR MAIN
         exprList.push(newQuery);
     }
 
