@@ -5,9 +5,8 @@
 //TO-DO
 // Finish search bar + search algorithm
     // Make secondary sort something other than chef name (popularity?)
-    // Tweak algo to allow ingredient search as well
 
-// Pull search results to a SearchResults component
+// Pull search results to a SearchResults component, limit the immediate number shown
 // Mini search bar above recipe page
 // Clean + finalize data in Mongo (REMOVE DUPLICATES, ETC.)
 
@@ -101,17 +100,6 @@ app.get('/search/:type/:terms', (req, res) => {
 
     //Search algorithm!
 
-    //Determine which document field to use based on the search type
-    let field;
-    switch (type) {
-        case 'name':
-            field = 'recipeName'; break;
-        case 'ing':
-            field = 'ingredients'; break;
-        default:
-            field = 'recipeName'; break;
-    }
-
     //Parse individual search terms into a list
     let parsedTerms = [];
     let lastWordIndex = 0;
@@ -141,14 +129,21 @@ app.get('/search/:type/:terms', (req, res) => {
     }
 
     //Place each term in a mongo regex expression for searching
-    let exprList = [], newPattern, newQuery;
+    let exprList = [], newPattern, searchPattern, newQuery;
 
     for (let j = 0; j < parsedTerms.length; j++) {
         newPattern = new RegExp(`.*${parsedTerms[j]}.*`, 'i');
-        newQuery = { [field] : {$regex: newPattern}};
-        //{'ingredients.main': {$in: [/.*horseradish.*/]}} - WORKS JUST FOR MAIN
+
+        if (type ==='name') {
+            newQuery = { recipeName : {$regex: newPattern}};
+        }
+        else if (type === 'ing') {
+            newQuery = { ingredients: {$elemMatch: {$elemMatch: {$regex: newPattern}}}};
+        }
         exprList.push(newQuery);
     }
+
+    console.log(exprList);
 
     //Query the database given a valid submission
     if (!parsedTerms.length) {
