@@ -1,24 +1,29 @@
 import React, {Component} from 'react';
 
-//Parse an object into a JSX list
-function ObjectToList(props) {
+//Parse an array of ingredients or directions into a JSX list
+function ArrayToList(props) {
     let items = [];
 
-    //Iterate through the object
-    Object.keys(props.list).forEach((header, ings) => {
-        let section = [];
-        const itemList = props.list[header]; //Grab the array
+    //Iterate through each section
+    const numSections = props.list.length;
 
-        //Store each item in the array as an HTML list item
-        for (let i = 0; i < itemList.length; i++) {
+    for (let i = 0; i < numSections; i++) {
+        let section = [];
+        let itemList = props.list[i];
+
+        //Store each item in the inner array as an HTML list item
+        let numItems = itemList.length;
+        let header = itemList[0];
+
+        for (let j = 1; j < numItems; j++) {
             section.push (
-                <li key={itemList[i].toString()}>
-                    {itemList[i]}
+                <li key={itemList[j].toString()}>
+                    {itemList[j]}
                 </li>
             );
         }
 
-        //Print the header for each section
+        //Print the section header if noteworthy
         if (header !== 'main') {
             items.push (
                 <h4 key={header.toString()}>
@@ -33,7 +38,7 @@ function ObjectToList(props) {
                 {section}
             </ul>
         );
-    });
+    }
 
     return (
         <div>{items}</div>
@@ -146,11 +151,11 @@ class Recipe extends Component {
 
                     <br></br>
                     <h2>Ingredients:</h2>
-                    <ObjectToList list={this.state.ingredients} />
+                    <ArrayToList list={this.state.ingredients} />
                     <br></br>
 
                     <h2>Directions:</h2>
-                    <ObjectToList list={this.state.directions} />
+                    <ArrayToList list={this.state.directions} />
                 </div>
             );
         }
