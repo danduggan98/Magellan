@@ -11,8 +11,8 @@ class SearchBar extends Component {
             input: '',
             emptyInput: false,
             resultsFound: true,
-            results: [],
-            loading: false
+            loading: false,
+            results: []
         };
     }
 
@@ -59,8 +59,13 @@ class SearchBar extends Component {
     }
 
     //Save the user's current input in state
-    updateInput = (vals) => {
-        this.setState({ input: vals.target.value });
+    updateInput = (val) => {
+        this.setState({ input: val.target.value });
+    }
+
+    //Change the search type
+    updateSearchType = (val) => {
+        this.setState({ searchType: val.currentTarget.value });
     }
 
     // Search bar - form takes an input and redirects to an invisible
@@ -93,6 +98,31 @@ class SearchBar extends Component {
                         id='searchButton'
                         className='fa fa-search'>
                     </button>
+
+                    <div id='searchType'>
+                        <input
+                            type='radio'
+                            id='searchTypeName'
+                            name='searchType'
+                            value='name'
+                            onChange={this.updateSearchType}
+                            checked>
+                        </input>
+
+                        <label htmlFor="name">Recipe Name</label>
+                        <br></br>
+
+                        <input
+                            type='radio'
+                            id='searchTypeIng'
+                            name='searchType'
+                            value='ing'
+                            onChange={this.updateSearchType}>
+                        </input>
+
+                        <label htmlFor="ing">Ingredient</label>
+                        <br></br>
+                    </div>
 
                     <div id='inputReminder'>
                         { this.state.emptyInput ?
