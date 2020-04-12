@@ -38,7 +38,7 @@ const validMongoID = /^[0-9a-fA-F]{24}$/;
     const dbClient = require('./database/dbConnect.js').client;
     dbClient.connect((err, db) => {
         if (err) throw err;
-        console.log('Connected to Mongo cluster');
+        console.log('- Connected to Mongo cluster');
         database = db; //Save the connection
         recipes = database.db('recipeData').collection('recipes'); //Save the recipe collection
     });
@@ -97,6 +97,7 @@ app.get('/recipe/:recipeid', (req, res) => {
 app.get('/search/:type/:terms', (req, res) => {
     const type = req.params.type;
     const terms = req.params.terms.toLowerCase();
+    console.log(`- Executing search with type '${type}' and terms '${terms}'`);
 
     //Search algorithm!!!
 
@@ -217,5 +218,5 @@ app.use((err, req, res, next) => {
 //Server listens on native port, or on 3000 if in a local environment
 const port = process.env.PORT || 5000;
 const server = app.listen(port, () => {
-    console.log('Magellan server listening on port', port);
+    console.log('- Magellan server listening on port', port);
 });
