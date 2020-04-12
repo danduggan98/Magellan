@@ -5,14 +5,13 @@
 //TO-DO
 // Finish search bar + search algorithm
     // Make secondary sort something other than chef name (popularity?)
-    // Tweak algo to allow ingredient search as well
 
-// Pull search results to a SearchResults component
+// Pull search results to a SearchResults component, limit the immediate number shown to <10
 // Mini search bar above recipe page
 // Clean + finalize data in Mongo (REMOVE DUPLICATES, ETC.)
 
 // Host on Amazon
-// Make db connection code a github secret
+// Make db connection code a (github?) secret
 // Use Passport for authentication
 // Recipe submission page
 // Sidebar with links
@@ -20,7 +19,7 @@
 
 // Add service worker for production
 // Add unique keys to all react lists, ensure existing keys are unique
-// Search by/exclude ingredients
+// Exclude ingredients
 // Vegan, gluten-free, etc. notices
 
 //Set up Express app
@@ -99,18 +98,7 @@ app.get('/search/:type/:terms', (req, res) => {
     const type = req.params.type;
     const terms = req.params.terms.toLowerCase();
 
-    //Search algorithm!
-
-    //Determine which document field to use based on the search type
-    let field;
-    switch (type) {
-        case 'name':
-            field = 'recipeName'; break;
-        case 'ing':
-            field = 'ingredients'; break;
-        default:
-            field = 'recipeName'; break;
-    }
+    //Search algorithm!!!
 
     //Parse individual search terms into a list
     let parsedTerms = [];
@@ -122,9 +110,7 @@ app.get('/search/:type/:terms', (req, res) => {
         const seperators = [' ', '-', '/', ','];
 
         //Useless words to ignore
-        const ignoredTerms = [
-            'and', 'with', 'the', 'n', 'on', 'above', 'best', 'for', 'of', 'most', 'ever'
-        ];
+        const ignoredTerms = ['and', 'with', 'the', 'n', 'on', 'or', 'best', 'for', 'of', 'most', 'ever', 'my', 'our'];
 
         //Isolate properly seperated words
         if (seperators.includes(terms.charAt(i)) || i === len) {
@@ -141,17 +127,26 @@ app.get('/search/:type/:terms', (req, res) => {
     }
 
     //Place each term in a mongo regex expression for searching
-    let exprList = [], newPattern, newQuery;
+    let exprList = [];
+    let newPattern, newQuery;
+    const numTerms = parsedTerms.length;
 
-    for (let j = 0; j < parsedTerms.length; j++) {
-        newPattern = new RegExp(`.*${parsedTerms[j]}.*`, 'i');
-        newQuery = { [field] : {$regex: newPattern}};
-        //{'ingredients.main': {$in: [/.*horseradish.*/]}} - WORKS JUST FOR MAIN
+    for (let j = 0; j < numTerms; j++) {
+        newPattern = new RegExp(`.*${parsedTerms[j]}.*`, 'i'); //Is the term anywhere in the string?
+
+        //Search recipe names
+        if (type ==='name') {
+            newQuery = { recipeName : { $regex: newPattern} };
+        }
+        //Search the ingredient list
+        else if (type === 'ing') {
+            newQuery = { ingredients: { $elemMatch: { $elemMatch: { $regex: newPattern} } } };
+        }
         exprList.push(newQuery);
     }
 
     //Query the database given a valid submission
-    if (!parsedTerms.length) {
+    if (!numTerms) {
         res.json({ error: 'No search results' });
     }
     else {
@@ -169,25 +164,38 @@ app.get('/search/:type/:terms', (req, res) => {
             //Matches found
             else {
 
-                //Determine how close each recipe name is to the search query
+                //Determine how close each recipe is to the search query
                 // Results which contain more of the given fields are ranked higher
-                //WILL NEED TWEAKING TO HANDLE INGREDIENT SEARCHES
-                const numTerms = parsedTerms.length;
                 const numResults = result.length;
                 let matches = 0, check;
 
+                //Iterate through the search results
                 for (let k = 0; k < numResults; k++) {
+                    const name = result[k].recipeName;
+                    const ings = result[k].ingredients;
+                    matches = 0;
+
+                    //Go through each term and assign the result an accuracy score
                     for (let l = 0; l < numTerms; l++) {
-                        check = new RegExp(`.*${parsedTerms[l]}.*`, 'i');
-                        if (check.test(result[k].recipeName)) {
+                        check = new RegExp(`.*${parsedTerms[l]}.*`, 'i'); //Is the term anywhere in the string?
+
+                        //Check if the term is in the name (runs for both name and ing searches)
+                        if (check.test(name)) {
                             matches++;
                         }
+                        //Check if the term is in the ingredient list
+                        if (type === 'ing') { //Just for ingredient searches
+                            for (let m = 0; m < ings.length; m++) {
+                                if (check.test(ings[m].toString())) { //Convert the section to a string and look for it
+                                    matches++;
+                                }
+                            }    
+                        }
                     }
-                    result[k].accuracy = matches;
-                    matches = 0;
+                    result[k].accuracy = matches; //Add the number of 'hits' as a property on the result
                 }
 
-                //Sort + send the data
+                //Sort the data by accuracy, send the response as JSON
                 result.sort((a, b) => parseFloat(b.accuracy) - parseFloat(a.accuracy));
                 res.json({ searchResults: result });
             }
