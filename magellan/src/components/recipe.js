@@ -6,6 +6,7 @@ function ArrayToList(props) {
 
     //Iterate through each section
     const numSections = props.list.length;
+    const ordered = props.ordered;
 
     for (let i = 0; i < numSections; i++) {
         let section = [];
@@ -34,9 +35,14 @@ function ArrayToList(props) {
 
         //Print the list of items
         items.push (
-            <ul key={section.toString()}>
-                {section}
-            </ul>
+            ordered ?
+                <ol key={section.toString()}>
+                    {section}
+                </ol>
+                :
+                <ul key={section.toString()}>
+                    {section}
+                </ul>
         );
     }
 
@@ -151,11 +157,11 @@ class Recipe extends Component {
 
                     <br></br>
                     <h2>Ingredients:</h2>
-                    <ArrayToList list={this.state.ingredients} />
+                    <ArrayToList list={this.state.ingredients} ordered={false}/>
                     <br></br>
 
                     <h2>Directions:</h2>
-                    <ArrayToList list={this.state.directions} />
+                    <ArrayToList list={this.state.directions} ordered={true}/>
                 </div>
             );
         }
