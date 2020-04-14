@@ -109,7 +109,7 @@ class SearchBar extends Component {
                             checked={this.state.searchType === 'name' ? true : false}>
                         </input>
 
-                        <label htmlFor="name">Recipe Name</label>
+                        <label htmlFor="searchTypeName">Recipe Name</label>
                         <br></br>
 
                         <input
@@ -120,8 +120,8 @@ class SearchBar extends Component {
                             onChange={this.updateSearchType}
                             checked={this.state.searchType === 'ing' ? true : false}>
                         </input>
-
-                        <label htmlFor="ing">Ingredient</label>
+                        
+                        <label htmlFor="searchTypeIng">Ingredient</label>
                         <br></br>
                     </div>
 
