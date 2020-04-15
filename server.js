@@ -5,15 +5,14 @@
 //TO-DO
 // Finish search bar + search algorithm
     // Make secondary sort something other than chef name (popularity?)
-        //BY WHAT PERCENTAGE OF THE WORDS ARE SEARCH TERMS
     // handle common misspellings? (potatos -> potatoes)
 
 // Pull search results to a SearchResults component, limit the immediate number shown to <10
 // Mini search bar above recipe page
 // Clean + finalize data in Mongo (REMOVE DUPLICATES, ETC.)
 
-// Host on Amazon
-// Make db connection code a (github?) secret
+// Make db connection code a (github?) secret, encrypt it!!!!!!!!!
+// HOST ON AMAZON!!!!!!!!!!!!!!
 // Use Passport for authentication
 // Recipe submission page
 // Sidebar with links
@@ -139,12 +138,12 @@ app.get('/search/:type/:terms', (req, res) => {
         newPattern = new RegExp(`.*${parsedTerms[j]}.*`, 'i'); //Is the term anywhere in the string?
 
         //Search recipe names
-        if (type ==='name') {
-            newQuery = { recipeName : { $regex: newPattern} };
+        if (type === 'name') {
+            newQuery = {recipeName: {$regex: newPattern}};
         }
         //Search the ingredient list
         else if (type === 'ing') {
-            newQuery = { ingredients: { $elemMatch: { $elemMatch: { $regex: newPattern} } } };
+            newQuery = {ingredients: {$elemMatch: {$elemMatch: {$regex: newPattern}}}};
         }
         exprList.push(newQuery);
     }
@@ -152,6 +151,7 @@ app.get('/search/:type/:terms', (req, res) => {
     //Query the database given a valid submission
     if (!numTerms) {
         res.json({ error: 'No search results' });
+        console.timeEnd('  > Search execution time');
     }
     else {
         //Combine all expressions into a single query
@@ -164,6 +164,7 @@ app.get('/search/:type/:terms', (req, res) => {
             //No results
             if (!result.length) {
                 res.json({ error: 'No search results' });
+                console.timeEnd('  > Search execution time');
             }
             //Matches found
             else {
@@ -195,7 +196,7 @@ app.get('/search/:type/:terms', (req, res) => {
                             matches++;
                         }
                         //Check if the term is in the ingredient list
-                        if (hasIngs && type === 'ing') { //Just for ingredient searches with actual ingredients
+                        if (type === 'ing' && hasIngs) { //Just for ingredient searches with actual ingredients
                             if (check.test(ings)) {
                                 matches++;
                             }
@@ -207,7 +208,7 @@ app.get('/search/:type/:terms', (req, res) => {
                 //Sort the data by accuracy, send the response as JSON
                 result.sort((a, b) => parseFloat(b.accuracy) - parseFloat(a.accuracy));
                 res.json({ searchResults: result });
-                console.timeEnd('  > Search execution time')
+                console.timeEnd('  > Search execution time');
             }
         });
     }
