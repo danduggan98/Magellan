@@ -149,7 +149,7 @@ app.get('/search/:type/:terms', (req, res) => {
     }
 
     //Query the database given a valid submission
-    if (!numTerms) {
+    if (!numTerms || terms.length < 3) {
         res.json({ error: 'No search results' });
         console.timeEnd('  > Search execution time');
     }
