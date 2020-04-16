@@ -14,18 +14,17 @@ class SearchCard extends Component {
         const link = `/recipe/${data._id}`;
 
         return (
-            <div id='card'>
-                <div id='recipeName'>
-                    <a className='recipeLink'
-                       target='_blank'
-                       rel='noopener noreferrer'
-                       href={link}>
-                        {data.recipeName}
-                    </a>
+            <a className='recipeLink'
+            target='_blank'
+            rel='noopener noreferrer'
+            href={link}>
+                <div id='card'>
+                    {data.recipeName}
+                    <div id='recipeName'></div>
+                    <div id='author'>by {data.author}</div>
+                    <div id='totalTime'>{data.totalTime}</div>
                 </div>
-                <div id='author'>by {data.author}</div>
-                <div id='totalTime'>{data.totalTime}</div>
-            </div>
+            </a>
         );
     }
 }
