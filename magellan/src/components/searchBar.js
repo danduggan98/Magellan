@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import BarLoader from 'react-spinners/BarLoader';
 import SearchResults from './searchResults.js';
-import SearchCard from './searchCard.js';
 import '../styles/searchBar.css';
 
 class SearchBar extends Component {
@@ -22,6 +21,8 @@ class SearchBar extends Component {
 
         //Ensure they have entered something
         if (this.state.input) {
+
+            //If so, querty the db
             const fetchURL = `/search/${this.state.searchType}/${this.state.input}`;
             this.setState({
                 results: [],
@@ -72,15 +73,8 @@ class SearchBar extends Component {
         this.setState({ searchType: val.currentTarget.value });
     }
 
-    // Search bar - form takes an input and redirects to an invisible
-    // iframe on the same page after querying the db and displaying 
-    // the results below
+    // Search bar - form accepts the search and queries the db
     render() {
-        const res = Array.from(this.state.results);
-        const list = res.map(result => (
-            <SearchCard info={result} />
-        ));
-
         return (
             <div>
                 <form
@@ -148,12 +142,17 @@ class SearchBar extends Component {
                 </form>
                 
                 <div id='results'>
-                    { this.state.resultsFound ? 
-                        <h2>{list}</h2>
-                        : <h3>No results found. Try again</h3>
+                    { !this.state.resultsFound ?
+                        <h3>No results found. Try again</h3>
+                        : <p></p>
+                    }
+                    { this.state.results.length ?
+                        <SearchResults data={this.state.results} />
+                        : <p></p>
                     }
                 </div>
 
+                {/* Form redirects to this invisible iframe, keeping it on the same page */}
                 <iframe name='hiddenFrame' id='iframe' title='hidden'></iframe>
             </div>
         );
