@@ -111,7 +111,8 @@ app.get('/search/:type/:terms', (req, res) => {
         const seperators = [' ', '-', '/', ',', '+', '&']; //FAILS WITH /
 
         //Useless words to ignore
-        const ignoredTerms = ['and', 'with', 'the', 'n', 'on', 'or', 'best', 'for', 'of', 'most', 'ever', 'my', 'our'];
+        const ignoredTerms = ['and', 'with', 'the', 'n', 'on', 'or', 'best',
+                              'for', 'of', 'most', 'ever', 'my', 'our', 'plus'];
 
         //Isolate properly seperated words
         if (seperators.includes(terms.charAt(i)) || i === len) {
