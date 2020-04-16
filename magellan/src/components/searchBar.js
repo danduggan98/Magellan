@@ -37,16 +37,18 @@ class SearchBar extends Component {
             }
             //Create a list of items
             else {
-                let itemNames = [];
+                let items = [];
                 const vals = data.searchResults;
-                for (let i = 0; i < vals.length; i++) {
-                    itemNames.push(vals[i]);
+                const numItems = vals.length;
+                
+                for (let i = 0; i < numItems; i++) {
+                    items.push(vals[i]);
                 }
 
                 this.setState({
                     resultsFound: true,
                     loading: false,
-                    results: itemNames
+                    results: items
                 });
             }
         }
