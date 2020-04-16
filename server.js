@@ -161,6 +161,7 @@ app.get('/search/:type/:terms', (req, res) => {
         //Search
         recipes.find(query).toArray((err, result) => {
             if (err) throw err;
+            console.log('  > Found', result.length, 'results');
 
             //No results
             if (!result.length) {
