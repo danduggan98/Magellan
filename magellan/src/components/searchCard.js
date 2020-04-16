@@ -5,7 +5,7 @@ class SearchCard extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            recipe: props.info
+            recipe: this.props.info
         };
     }
 
