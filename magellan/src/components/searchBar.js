@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import BarLoader from 'react-spinners/BarLoader';
+import SearchResults from './searchResults.js';
 import SearchCard from './searchCard.js';
 import '../styles/searchBar.css';
 
@@ -40,7 +41,7 @@ class SearchBar extends Component {
                 let items = [];
                 const vals = data.searchResults;
                 const numItems = vals.length;
-                
+
                 for (let i = 0; i < numItems; i++) {
                     items.push(vals[i]);
                 }
@@ -55,7 +56,8 @@ class SearchBar extends Component {
         else {
             this.setState({
                 emptyInput: true,
-                resultsFound: true //Hide this notice if last search found nothing
+                resultsFound: true, //Hide this notice if last search found nothing
+                results: []
             });
         }
     }
