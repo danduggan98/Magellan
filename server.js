@@ -5,9 +5,11 @@
 //TO-DO
 // Finish search bar + search algorithm
     // Make secondary sort something other than chef name (popularity?)
-    // handle common misspellings? (potatos -> potatoes)
+    // SANITIZE INPUTS DEAR GOD
+    // Organize search results using CSS grid or something
+    // 'See all/more' option allows you to slide through sets of the data
+    //      or go to a new page with all/more of the options
 
-// Pull search results to a SearchResults component, limit the immediate number shown to <10
 // Mini search bar above recipe page
 // Clean + finalize data in Mongo (REMOVE DUPLICATES, ETC.)
 
@@ -119,10 +121,10 @@ app.get('/search/:type/:terms', (req, res) => {
             let nextWord = terms.slice(lastWordIndex, i);
 
             //Remove whitespace, symbols, quotes, and numbers
-            nextWordClean = nextWord.trim().replace(/[!@#$%^*().'"1234567890]+/g, '');
-            lastWordIndex = ++i; 
+            nextWordClean = nextWord.trim().replace(/[!@#$%^*(){}.'"1234567890]+/g, '');
+            lastWordIndex = ++i;
 
-            if (!ignoredTerms.includes(nextWordClean)) {
+            if (!ignoredTerms.includes(nextWordClean) && nextWordClean.length > 2) {
                 parsedTerms.push(nextWordClean);
             }
         }
@@ -150,7 +152,7 @@ app.get('/search/:type/:terms', (req, res) => {
     }
 
     //Query the database given a valid submission
-    if (!numTerms || terms.length < 3) {
+    if (!numTerms) {
         res.json({ error: 'No search results' });
         console.timeEnd('  > Search execution time');
     }
