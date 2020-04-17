@@ -75,6 +75,8 @@ class SearchBar extends Component {
 
     // Search bar - form accepts the search and queries the db
     render() {
+        const limit = 8; //Max number of recipes to print
+
         return (
             <div>
                 <form
@@ -147,7 +149,7 @@ class SearchBar extends Component {
                         : <p></p>
                     }
                     { this.state.results.length ?
-                        <SearchResults data={this.state.results} />
+                        <SearchResults data={this.state.results} lmt={limit} />
                         : <p></p>
                     }
                 </div>
