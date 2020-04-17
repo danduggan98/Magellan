@@ -1,14 +1,17 @@
 #card {
     border: 1px solid black;
-    padding-bottom: 5px;
-    padding: 10px;
     margin-bottom: 20px;
     width: 250px;
 }
 
+#cardInfo {
+    padding-bottom: 5px;
+    padding: 10px;
+}
+
 #recipeName {
     color: black;
-    font-size: 23px;
+    font-size: 20px;
     margin-bottom: 6px;
 }
 
