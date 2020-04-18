@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import SearchCard from './searchCard.js';
+import '../styles/searchResults.css';
 
 class SearchResults extends Component {
     constructor(props) {
@@ -24,9 +25,9 @@ class SearchResults extends Component {
         ));
 
         return (
-            <div>
-                <h2>Results:</h2>
-                <h3>{list}</h3>
+            <div id='resultsContainer'>
+                <h2>Top Results:</h2>
+                <div id='resultsList'>{list}</div>
 
                 { overflow ?
                     <div>See more results</div>
