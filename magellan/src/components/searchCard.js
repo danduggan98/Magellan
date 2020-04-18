@@ -19,7 +19,7 @@ class SearchCard extends Component {
                     target='_blank'
                     rel='noopener noreferrer'
                     href={link}>
-                        
+                    
                     <div id='cardInfo'>
                         <div id='recipeName'>{data.recipeName}</div>
                         <div id='author'>by {data.author}</div>
