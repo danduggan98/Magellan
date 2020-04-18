@@ -75,7 +75,7 @@ class SearchBar extends Component {
 
     // Search bar - form accepts the search and queries the db
     render() {
-        const limit = 8; //Max number of recipes to print
+        const limit = 9; //Max number of recipes to print
 
         return (
             <div>
