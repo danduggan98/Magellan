@@ -6,9 +6,9 @@
 // Finish search bar + search algorithm
     // Make secondary sort something other than chef name (popularity?)
     // SANITIZE INPUTS DEAR GOD
-    // Organize search results using CSS grid or something
     // 'See all/more' option allows you to slide through sets of the data
     //      or go to a new page with all/more of the options
+    //Make search reuslts grid auto-sized
 
 // Mini search bar above recipe page
 // Clean + finalize data in Mongo (REMOVE DUPLICATES, ETC.)
@@ -17,7 +17,7 @@
 // HOST ON AMAZON!!!!!!!!!!!!!!
 // Use Passport for authentication
 // Recipe submission page
-// Sidebar with links
+// Sidebar with links (account, saved recipes, etc.)
 // Logins + saved recipes
 
 // Add service worker for production
@@ -39,10 +39,11 @@ const validMongoID = /^[0-9a-fA-F]{24}$/;
 //Automatically connect to database, store the connection for reuse
 (function connectToMongo() {
     const dbClient = require('./database/dbConnect.js').client;
-    dbClient.connect((err, db) => {
+    dbClient.connect((err, database) => {
         if (err) throw err;
         console.log('- Connected to Mongo cluster');
-        database = db; //Save the connection
+        
+        //Save the connection
         recipes = database.db('recipeData').collection('recipes'); //Save the recipe collection
     });
 })();
