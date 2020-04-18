@@ -1,4 +1,10 @@
+#resultsContainer {
+    margin: auto;
+    max-width: 800px;
+}
+
 #resultsList {
     display: grid;
-    grid-template-columns: 275px 275px 275px;
+    grid-template-columns: repeat(3, minmax(150px, 1fr));
+    gap: 1rem;
 }
