@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import { Helmet } from 'react-helmet';
 
 //Parse an array of ingredients or directions into a JSX list
 function ArrayToList(props) {
@@ -107,6 +108,16 @@ class Recipe extends Component {
         else {
             return (
                 <div>
+                    { this.state.recipeName ?
+                        <Helmet>
+                            <title>{ "Magellan - " + this.state.recipeName }</title>
+                        </Helmet>
+                        :
+                        <Helmet>
+                            <title>{ "Magellan" }</title>
+                        </Helmet>
+                    }
+
                     <h1>{this.state.recipeName}</h1>
                     <h2>by {this.state.author}</h2>
                     <h3>Courtesy of {this.state.source}</h3>
