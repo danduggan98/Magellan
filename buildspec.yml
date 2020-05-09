@@ -7,7 +7,3 @@ phases:
     commands:
       - echo Installing NPM dependencies ...
       - npm install
-  build:
-    commands:
-      - echo Starting servers ...
-      - npm run dev
