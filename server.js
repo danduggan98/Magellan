@@ -4,16 +4,16 @@
 
 //TO-DO
 // Finish search bar + search algorithm
+    // Improve search performance
     // Make secondary sort something other than chef name (popularity?)
     // SANITIZE INPUTS DEAR GOD
     // 'See all/more' option allows you to slide through sets of the data
-    //      or go to a new page with all/more of the options
-    //Make search reuslts grid auto-sized
+    // Center/enlarge search bar
+    // Search card - cut off long titles with ellipses, lower max height
 
 // Mini search bar above recipe page
 // Clean + finalize data in Mongo (REMOVE DUPLICATES, ETC.)
 
-// Make db connection code a (github?) secret, encrypt it!!!!!!!!!
 // HOST ON AMAZON!!!!!!!!!!!!!!
 // Use Passport for authentication
 // Recipe submission page
@@ -30,10 +30,10 @@ const express = require('express');
 const app = express();
 app.use(express.static(__dirname + '/'));
 
-let database; //Maintains a persistent connection to the Mongo cluster
-let recipes; //Persistent connection to our recipe collection
-
+require('dotenv').config(); //Setup environment to hold Mongo connection string
 const ObjectId = require('mongodb').ObjectID;
+
+let recipes; //Persistent connection to our recipe collection
 const validMongoID = /^[0-9a-fA-F]{24}$/;
 
 //Automatically connect to database, store the connection for reuse
