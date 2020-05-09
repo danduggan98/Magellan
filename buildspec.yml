@@ -1,10 +1,9 @@
 version: 0.2
 
 phases:
-  install:
+  pre-build:
     runtime-versions:
       nodejs: 10
-  pre-build:
     commands:
       - echo Installing NPM dependencies ...
       - npm install
