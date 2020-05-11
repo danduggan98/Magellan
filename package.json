@@ -4,7 +4,7 @@
     "authors": "Dan Duggan",
     "license": "MIT",
     "version": "1.1.0",
-    "main": "npm start",
+    "main": "server.js",
     "private": true,
     "scripts": {
         "start": "concurrently \"npm run server\" \"npm run magellan\"",
