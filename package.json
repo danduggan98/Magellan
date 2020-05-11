@@ -4,7 +4,6 @@
     "authors": "Dan Duggan",
     "license": "MIT",
     "version": "1.1.0",
-    "main": "index.html",
     "private": true,
     "scripts": {
         "start": "npm run dev",
