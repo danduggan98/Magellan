@@ -7,7 +7,7 @@
     "private": true,
     "main": "server.js",
     "scripts": {
-        "start": "node server.js",
+        "start": "concurrently \"npm run server\" \"npm run magellan\"",
         "server": "nodemon server.js",
         "magellan": "npm start --prefix magellan",
         "dev": "concurrently \"npm run server\" \"npm run magellan\""
@@ -15,6 +15,7 @@
     "dependencies": {
         "concurrently": "^5.1.0",
         "dotenv": "^8.2.0",
+        "eb": "0.0.1",
         "express": "4.17.1",
         "nodemon": "^2.0.3",
         "react": "^16.13.1",
