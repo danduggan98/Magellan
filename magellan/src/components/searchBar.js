@@ -78,7 +78,7 @@ class SearchBar extends Component {
         const limit = 9; //Max number of recipes to print
 
         return (
-            <div>
+            <div id='searchBarContainer'>
                 <form
                     name='searchBar'
                     target='hiddenFrame'
