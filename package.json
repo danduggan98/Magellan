@@ -4,13 +4,13 @@
     "authors": "Dan Duggan",
     "license": "MIT",
     "version": "1.1.0",
-    "main": "server.js",
+    "main": "index.html",
     "private": true,
     "scripts": {
-        "start": "concurrently \"npm run server\" \"npm run magellan\"",
+        "start": "npm run dev",
         "server": "nodemon server.js",
         "magellan": "npm start --prefix magellan",
-        "build": "react-scripts build",
+        "build": "npm run build",
         "dev": "concurrently \"npm run server\" \"npm run magellan\""
     },
     "dependencies": {
