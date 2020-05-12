@@ -9,7 +9,7 @@
         "start": "npm run dev",
         "server": "nodemon server.js",
         "magellan": "npm start --prefix magellan",
-        "build": "npm run build",
+        "build": "react-scripts build",
         "dev": "concurrently \"npm run server\" \"npm run magellan\""
     },
     "dependencies": {
