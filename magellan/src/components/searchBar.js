@@ -78,28 +78,35 @@ class SearchBar extends Component {
         const limit = 9; //Max number of recipes to print
 
         return (
-            <div id='searchBarContainer'>
+            <div id='searchContainer'>
+                <div id="notice">
+                    Find your next meal!
+                </div>
+
                 <form
                     name='searchBar'
                     target='hiddenFrame'
                     onSubmit={this.getResults}>
 
-                    <input
-                        name='search'
-                        id='searchInput'
-                        type='text'
-                        autoComplete='off'
-                        placeholder='Search for recipes'
-                        onChange={this.updateInput}>
-                    </input>
+                    <div id="searchBarWrapper">
+                        <input
+                            name='search'
+                            id='searchInput'
+                            type='text'
+                            autoComplete='off'
+                            placeholder='Search for recipes'
+                            onChange={this.updateInput}>
+                        </input>
 
-                    <button
-                        type='submit'
-                        id='searchButton'
-                        className='fa fa-search'>
-                    </button>
-
+                        <button
+                            type='submit'
+                            id='searchButton'
+                            className='fa fa-search'>
+                        </button>
+                    </div>
+                    
                     <div id='searchType'>
+                        Search by:
                         <input
                             type='radio'
                             id='searchTypeName'
@@ -110,7 +117,6 @@ class SearchBar extends Component {
                         </input>
 
                         <label htmlFor="searchTypeName">Recipe Name</label>
-                        <br></br>
 
                         <input
                             type='radio'
@@ -122,7 +128,6 @@ class SearchBar extends Component {
                         </input>
                         
                         <label htmlFor="searchTypeIng">Ingredient</label>
-                        <br></br>
                     </div>
 
                     <div id='inputReminder'>

@@ -10,7 +10,6 @@ class Home extends Component {
     render() {
         return (
             <div>
-                <h2>Find your next meal!</h2>
                 <SearchBar />
             </div>
         );
