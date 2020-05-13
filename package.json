@@ -6,11 +6,13 @@
     "version": "1.1.0",
     "private": true,
     "scripts": {
-        "start": "npm run dev",
+        "start": "npm run prod",
         "server": "nodemon server.js",
         "magellan": "npm start --prefix magellan",
         "build": "react-scripts build",
-        "dev": "concurrently \"npm run server\" \"npm run magellan\""
+        "live": "serve -l 3000 -s build",
+        "dev": "concurrently \"npm run server\" \"npm run magellan\"",
+        "prod": "concurrently \"npm run server\" \"npm run live\""
     },
     "dependencies": {
         "concurrently": "^5.1.0",
@@ -25,5 +27,6 @@
     },
     "devDependencies": {
         "react-scripts": "^3.4.1"
-    }
+    },
+    "proxy": "http://localhost:5000"
 }
