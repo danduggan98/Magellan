@@ -1,11 +1,19 @@
 #searchBarContainer {
     margin: auto;
-    /* SET WIDTH */
+    width: 800px;
+    text-align: center;
 }
 
 #searchInput {
+    margin: auto;
     text-align: left;
-    height: 28px;
+    height: 45px;
+    border: 1px solid black;
+    border-radius: 20px;
+    font-size: large;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    padding-left: 15px;
+    width: 700px;
 }
 
 #iframe {
@@ -17,9 +25,19 @@
 
 #searchButton {
     color:black;
-    height: 32px;
+    height: 45px;
+    width: 45px;
     cursor: pointer;
-    margin-bottom: 10px;
+    text-align: center;
+    border: 1px solid black;
+    border-radius: 10px;
+    background-color: lightgray;
+}
+
+#searchType {
+    padding-top: 35px;
+    padding-left: 20px;
+    text-align: left;
 }
 
 #inputReminder {
