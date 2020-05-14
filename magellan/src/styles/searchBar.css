@@ -47,11 +47,13 @@
     border-top-right-radius: 20px;
     border-bottom-right-radius: 20px;
     background-color: silver;
+    font-size: x-large;
 }
 
 #searchType {
     padding-top: 25px;
     padding-left: 20px;
+    padding-bottom: 10px;
     text-align: left;
 }
 
@@ -67,5 +69,18 @@
 }
 
 #inputReminder {
-    height: 12px;
+    max-height: 12px;
+    font-size: large;
+}
+
+#loadingBar {
+    text-align: center;
+    font-size: x-large;
+    font-weight: bold;
+}
+
+#failNotice {
+    text-align: center;
+    font-size: x-large;
+    font-weight: bold;
 }

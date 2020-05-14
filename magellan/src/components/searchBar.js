@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import { css } from '@emotion/core';
 import BarLoader from 'react-spinners/BarLoader';
 import SearchResults from './searchResults.js';
 import '../styles/searchBar.css';
@@ -26,6 +27,7 @@ class SearchBar extends Component {
             const fetchURL = `/search/${this.state.searchType}/${this.state.input}`;
             this.setState({
                 results: [],
+                resultsFound: true,
                 loading: true,
                 emptyInput: false
             });
@@ -37,6 +39,7 @@ class SearchBar extends Component {
             if (data.error) {
                 this.setState({ resultsFound: false, loading: false });
             }
+
             //Create a list of items
             else {
                 let items = [];
@@ -77,9 +80,17 @@ class SearchBar extends Component {
     render() {
         const limit = 9; //Max number of recipes to print
 
+        //CSS for loading bar
+        const override = css`
+            width: 285px;
+            padding-top: 10px;
+            background-color: white;
+            margin: 0 auto;
+        `;
+
         return (
             <div id='searchContainer'>
-                <div id="notice">
+                <div id='notice'>
                     Find your next meal!
                 </div>
 
@@ -88,7 +99,7 @@ class SearchBar extends Component {
                     target='hiddenFrame'
                     onSubmit={this.getResults}>
 
-                    <div id="searchBarWrapper">
+                    <div id='searchBarWrapper'>
                         <input
                             name='search'
                             id='searchInput'
@@ -108,7 +119,7 @@ class SearchBar extends Component {
                     <div id='searchType'>
                         Search by:
 
-                        <div id="searchTypeNameWrapper">
+                        <div id='searchTypeNameWrapper'>
                             <input
                                 type='radio'
                                 id='searchTypeNameButton'
@@ -118,7 +129,7 @@ class SearchBar extends Component {
                                 checked={this.state.searchType === 'name' ? true : false}>
                             </input>
 
-                            <label htmlFor="searchTypeNameButton">Recipe Name</label>
+                            <label htmlFor='searchTypeNameButton'>Recipe Name</label>
                         </div>
 
                         <div id='searchTypeIngWrapper'>
@@ -131,7 +142,7 @@ class SearchBar extends Component {
                                 checked={this.state.searchType === 'ing' ? true : false}>
                             </input>
                             
-                            <label htmlFor="searchTypeIngButton">Ingredient</label>
+                            <label htmlFor='searchTypeIngButton'>Ingredient</label>
                         </div>
                     </div>
 
@@ -146,7 +157,7 @@ class SearchBar extends Component {
                         { this.state.loading ? 
                             <div>
                                 Searching...
-                                <BarLoader />
+                                <BarLoader height={6} css={override}/>
                             </div>
                             : <p></p>
                         }
@@ -155,7 +166,7 @@ class SearchBar extends Component {
                 
                 <div id='results'>
                     { !this.state.resultsFound ?
-                        <h3>No results found. Try again</h3>
+                        <div id='failNotice'>No results found. Try again</div>
                         : <p></p>
                     }
                     { this.state.results.length ?
