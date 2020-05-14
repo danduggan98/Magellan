@@ -8,7 +8,6 @@
     // Make secondary sort something other than chef name (popularity?)
     // SANITIZE INPUTS DEAR GOD
     // 'See all/more' option allows you to slide through sets of the data
-    // Center/enlarge search bar
     // Search card - cut off long titles with ellipses, lower max height
 
 // Mini search bar above recipe page
@@ -20,7 +19,6 @@
 // Sidebar with links (account, saved recipes, etc.)
 // Logins + saved recipes
 
-// Add service worker for production
 // Add unique keys to all react lists, ensure existing keys are unique
 // Exclude ingredients
 // Vegan, gluten-free, etc. notices
