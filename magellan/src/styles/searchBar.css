@@ -36,7 +36,7 @@
 }
 
 #searchButton {
-    color:black;
+    color: black;
     height: 49px;
     width: 60px;
     cursor: pointer;
@@ -46,8 +46,12 @@
     border: 1px solid black;
     border-top-right-radius: 20px;
     border-bottom-right-radius: 20px;
-    background-color: silver;
+    background-color: lightsteelblue;
     font-size: x-large;
+}
+
+#searchButton:hover {
+    color: grey;
 }
 
 #searchType {
