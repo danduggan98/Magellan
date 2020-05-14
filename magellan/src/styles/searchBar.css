@@ -1,6 +1,6 @@
 #searchContainer {
     margin: auto;
-    width: 800px;
+    max-width: 800px;
 }
 
 #notice {
@@ -13,6 +13,7 @@
 
 #searchBarWrapper {
     text-align: center;
+    position: relative;
 }
 
 #searchInput {
@@ -24,7 +25,7 @@
     font-size: large;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     padding-left: 15px;
-    width: 700px;
+    width: 750px;
 }
 
 #iframe {
@@ -36,13 +37,16 @@
 
 #searchButton {
     color:black;
-    height: 45px;
-    width: 45px;
+    height: 49px;
+    width: 60px;
     cursor: pointer;
     text-align: center;
+    position: absolute;
+    right: 15px;
     border: 1px solid black;
-    border-radius: 20px;
-    background-color: lightgray;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    background-color: silver;
 }
 
 #searchType {
