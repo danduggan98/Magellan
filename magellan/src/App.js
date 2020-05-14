@@ -1,6 +1,7 @@
 import React from 'react';
 import Recipe from './components/recipe.js';
 import Home from './components/home.js';
+import Login from './components/login.js';
 import {
   BrowserRouter as Router,
   Switch,
@@ -25,6 +26,7 @@ export default function App() {
         <Switch>
           <Route path={'/recipe/:recipeid'} component={Recipe} />
           <Route path={'/home'} component={Home} />
+          <Route path={'/login'} component={Login} />
           <Route path={'/'}>
             <Redirect to={'/home'} />
           </Route>
