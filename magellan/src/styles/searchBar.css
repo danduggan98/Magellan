@@ -4,9 +4,9 @@
 }
 
 #notice {
-    font-size: large;
+    font-size: x-large;
     font-weight: bolder;
-    padding-bottom: 15px;
+    padding-bottom: 20px;
     text-align: left;
     padding-left: 20px;
 }
@@ -46,9 +46,20 @@
 }
 
 #searchType {
-    padding-top: 35px;
+    padding-top: 25px;
     padding-left: 20px;
     text-align: left;
+}
+
+#searchTypeNameWrapper {
+    padding-top: 5px;
+    display: block;
+    white-space: pre;
+}
+
+#searchTypeIngWrapper {
+    display: block;
+    white-space: pre;
 }
 
 #inputReminder {

@@ -107,27 +107,32 @@ class SearchBar extends Component {
                     
                     <div id='searchType'>
                         Search by:
-                        <input
-                            type='radio'
-                            id='searchTypeName'
-                            name='searchType'
-                            value='name'
-                            onChange={this.updateSearchType}
-                            checked={this.state.searchType === 'name' ? true : false}>
-                        </input>
 
-                        <label htmlFor="searchTypeName">Recipe Name</label>
+                        <div id="searchTypeNameWrapper">
+                            <input
+                                type='radio'
+                                id='searchTypeNameButton'
+                                name='searchType'
+                                value='name'
+                                onChange={this.updateSearchType}
+                                checked={this.state.searchType === 'name' ? true : false}>
+                            </input>
 
-                        <input
-                            type='radio'
-                            id='searchTypeIng'
-                            name='searchType'
-                            value='ing'
-                            onChange={this.updateSearchType}
-                            checked={this.state.searchType === 'ing' ? true : false}>
-                        </input>
-                        
-                        <label htmlFor="searchTypeIng">Ingredient</label>
+                            <label htmlFor="searchTypeNameButton">Recipe Name</label>
+                        </div>
+
+                        <div id='searchTypeIngWrapper'>
+                            <input
+                                type='radio'
+                                id='searchTypeIngButton'
+                                name='searchType'
+                                value='ing'
+                                onChange={this.updateSearchType}
+                                checked={this.state.searchType === 'ing' ? true : false}>
+                            </input>
+                            
+                            <label htmlFor="searchTypeIngButton">Ingredient</label>
+                        </div>
                     </div>
 
                     <div id='inputReminder'>
