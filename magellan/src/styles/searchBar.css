@@ -70,7 +70,9 @@
 
 #inputReminder {
     max-height: 12px;
-    font-size: large;
+    text-align: center;
+    font-size: x-large;
+    font-weight: bold;
 }
 
 #loadingBar {
