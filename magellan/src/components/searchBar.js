@@ -83,9 +83,10 @@ class SearchBar extends Component {
         //CSS for loading bar
         const override = css`
             width: 285px;
-            padding-top: 10px;
-            background-color: white;
-            margin: 0 auto;
+            margin-top: 10px;
+            margin-left: auto;
+            margin-right: auto;
+            background-color: lightgrey;
         `;
 
         return (
