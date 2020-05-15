@@ -217,6 +217,16 @@ app.get('/search/:type/:terms', (req, res) => {
     }
 });
 
+////////// FORM HANDLERS \\\\\\\\\\
+
+//Login requests
+app.post('/login', (req, res) => {
+    const username = req.body.username;
+    const password = req.body.password;
+});
+
+////////// ERROR PAGES \\\\\\\\\\
+
 //Handle 404 errors
 app.use((req, res) => {
     res.status(404).send('Error 404 - Page Not Found');
