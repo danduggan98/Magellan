@@ -4,8 +4,21 @@ import '../styles/login.css';
 class Login extends Component {
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {
+            username: "",
+            password: ""
+        };
     }
+
+    //Store the most recent inputs in state
+    updateInput = (val) => {
+        console.log("WHADDUP");
+        let { id, value } = val.target;
+        id = id.toString().slice(0, -5); //usernameInput -> username, passwordInput -> password
+        this.setState({ [id]: value });
+    }
+
+    submitPage = (val) => {}
 
     render() {
         return (
@@ -20,7 +33,9 @@ class Login extends Component {
                             id='usernameInput'
                             type='text'
                             autoComplete='off'
-                            placeholder='Username'>
+                            placeholder='Username'
+                            value={this.state.username}
+                            onChange={this.updateInput}>
                         </input>
                     </div>
 
@@ -30,7 +45,9 @@ class Login extends Component {
                             id='passwordInput'
                             type='password'
                             autoComplete='off'
-                            placeholder='Password'>
+                            placeholder='Password'
+                            value={this.state.password}
+                            onChange={this.updateInput}>
                         </input>
                     </div>
 
