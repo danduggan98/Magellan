@@ -1,7 +1,3 @@
-/*#loginWrapper {
-    margin: auto;
-}*/
-
 #loginHeader {
     text-align: center;
     font-size: xx-large;
@@ -16,14 +12,24 @@
 
 #usernameInput {
     width: 100%;
+    height: 40px;
+    font-size: larger;
+    border: 1px solid black;
+    border-radius: 10px;
+    padding-left: 10px;
 }
 
 #passwordInputWrapper {
     max-width: 600px;
     margin: auto;
-    padding-top: 15px;
+    margin-top: 15px;
 }
 
 #passwordInput {
     width: 100%;
+    height: 40px;
+    font-size: larger;
+    border: 1px solid black;
+    border-radius: 10px;
+    padding-left: 10px;
 }
