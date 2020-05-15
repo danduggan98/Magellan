@@ -51,7 +51,7 @@
 }
 
 #searchButton:hover {
-    color: grey;
+    background-color: cornflowerblue;
 }
 
 #searchType {
