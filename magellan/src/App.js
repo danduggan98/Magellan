@@ -16,10 +16,14 @@ export default function App() {
   return (
     <div>
       <Router>
-        
-        <div id="logoBanner">
-          <Link to='/home' className="logo">
+
+        <div id='logoBanner'>
+          <Link to='/home' className='logo'>
             MAGELLAN
+          </Link>
+
+          <Link to='/login' className='loginButton'>
+            Log In
           </Link>
         </div>
 

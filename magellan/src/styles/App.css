@@ -9,6 +9,19 @@
   margin-bottom: 50px;
 }
 
+.loginButton {
+  color: black;
+  font-size: large;
+  font-weight: bold;
+  text-decoration: none;
+  float: right;
+  padding-right: 12px;
+}
+
+.loginButton:visited {
+  color: inherit;
+}
+
 .logo {
   font-size: xx-large;
   font-family: Georgia, 'Times New Roman', Times, serif;
