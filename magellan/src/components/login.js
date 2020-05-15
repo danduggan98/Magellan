@@ -10,12 +10,14 @@ class Login extends Component {
     render() {
         return (
             <div id='loginWrapper'>
+                <div id="loginHeader">Log In</div>
                 <form
                     name='loginForm'>
 
                     <div id='usernameInputWrapper'>
                         <input
                             name='UN'
+                            id='usernameInput'
                             type='text'
                             autoComplete='off'
                             placeholder='Username'>
@@ -25,6 +27,7 @@ class Login extends Component {
                     <div id='passwordInputWrapper'>
                         <input
                             name='PW'
+                            id='passwordInput'
                             type='password'
                             autoComplete='off'
                             placeholder='Password'>

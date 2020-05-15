@@ -1,0 +1,29 @@
+/*#loginWrapper {
+    margin: auto;
+}*/
+
+#loginHeader {
+    text-align: center;
+    font-size: xx-large;
+    font-weight: bolder;
+    padding-bottom: 25px;
+}
+
+#usernameInputWrapper {
+    max-width: 600px;
+    margin: auto;
+}
+
+#usernameInput {
+    width: 100%;
+}
+
+#passwordInputWrapper {
+    max-width: 600px;
+    margin: auto;
+    padding-top: 15px;
+}
+
+#passwordInput {
+    width: 100%;
+}
