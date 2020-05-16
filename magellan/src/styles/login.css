@@ -2,12 +2,18 @@
     text-align: center;
     font-size: xx-large;
     font-weight: bolder;
-    padding-bottom: 25px;
 }
 
-#usernameInputWrapper {
+#inputWrapper {
     max-width: 600px;
     margin: auto;
+    margin-top: 20px;
+}
+
+#usernameLabel {
+    display: inline-block;
+    font-size: larger;
+    margin-bottom: 5px;
 }
 
 #usernameInput {
@@ -20,9 +26,13 @@
 }
 
 #passwordInputWrapper {
-    max-width: 600px;
-    margin: auto;
     margin-top: 15px;
+}
+
+#passwordLabel {
+    display: inline-block;
+    font-size: larger;
+    margin-bottom: 5px;
 }
 
 #passwordInput {
@@ -32,4 +42,16 @@
     border: 1px solid black;
     border-radius: 10px;
     padding-left: 10px;
+}
+
+#submitButtonWrapper {
+    width: 100px;
+    height: 30px;
+    text-align: center;
+    margin: auto;
+    margin-top: 20px;
+}
+
+#submitButton:hover {
+    background-color: lightgrey;
 }
