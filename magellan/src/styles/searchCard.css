@@ -18,7 +18,7 @@
     padding: 10px;
 }
 
-#recipeName {
+#cardRecipeName {
     color: black;
     font-size: 20px;
     font-weight: 500;
@@ -27,22 +27,22 @@
     overflow: hidden;
 }
 
-#author {
+#cardAuthor {
     color: midnightblue;
     font-size: 16px;
     margin-bottom: 6px;
 }
 
-#totalTime {
+#cardTotalTime {
     color: purple;
     font-size: 16px;
 }
 
-.recipeLink {
+.cardRecipeLink {
     color: inherit;
     text-decoration: none;
 }
 
-.recipeLink:visited {
+.cardRecipeLink:visited {
     color: inherit;
 }

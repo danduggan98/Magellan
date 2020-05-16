@@ -15,15 +15,15 @@ class SearchCard extends Component {
 
         return (
             <div id='card'>
-                 <a className='recipeLink'
+                 <a className='cardRecipeLink'
                     target='_blank'
                     rel='noopener noreferrer'
                     href={link}>
                     
                     <div id='cardInfo'>
-                        <div id='recipeName'>{data.recipeName}</div>
-                        <div id='author'>by {data.author}</div>
-                        <div id='totalTime'>{data.totalTime}</div>
+                        <div id='cardRecipeName'>{data.recipeName}</div>
+                        <div id='cardAuthor'>by {data.author}</div>
+                        <div id='cardTotalTime'>{data.totalTime}</div>
                     </div>
                 </a>
             </div>
