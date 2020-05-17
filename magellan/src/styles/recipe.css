@@ -114,3 +114,23 @@
     font-weight: bold;
     margin-right: 5px;
 }
+
+.listHeader {
+    font-size: x-large;
+    font-weight: bold;
+    margin-top: 25px;
+}
+
+.sectionHeader {
+    margin-top: 20px;
+    font-size: large;
+    margin-left: 15px;
+    text-decoration: underline;
+}
+
+.sectionData {
+    margin-bottom: 6px;
+    line-height: 25px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 18px;
+}

@@ -20,31 +20,37 @@ function ArrayToList(props) {
 
         for (let j = 1; j < numItems; j++) {
             section.push (
-                <li key={itemList[j].toString()}>
-                    {itemList[j]}
-                </li>
+                <div>
+                    <li key={itemList[j].toString()}>
+                        {itemList[j]}
+                    </li>
+                </div>
             );
         }
 
         //Print the section header if noteworthy
         if (header !== 'main') {
             items.push (
-                <h4 key={header.toString()}>
-                    <u>{header}</u>
-                </h4>
+                <div className='sectionHeader'
+                    key={header.toString()}>
+                    {header}
+                </div>
             );
         }
 
         //Print the list of items
         items.push (
-            ordered ?
-                <ol key={section.toString()}>
-                    {section}
-                </ol>
-                :
-                <ul key={section.toString()}>
-                    {section}
-                </ul>
+            <div className='sectionData'>
+                { ordered ?
+                    <ol key={section.toString()}>
+                        {section}
+                    </ol>
+                    :
+                    <ul key={section.toString()}>
+                        {section}
+                    </ul>
+                }
+            </div>
         );
     }
 
@@ -111,35 +117,35 @@ class Recipe extends Component {
                 <div>
                     { this.state.recipeName ?
                         <Helmet>
-                            <title>{ "Magellan - " + this.state.recipeName }</title>
+                            <title>{"Magellan - " + this.state.recipeName}</title>
                         </Helmet>
                         :
                         <Helmet>
-                            <title>{ "Magellan" }</title>
+                            <title>{"Magellan"}</title>
                         </Helmet>
                     }
 
                     <div id='header'>
                         <div id='recipeName'>
-                            { this.state.recipeName }
+                            {this.state.recipeName}
                         </div>
 
                         <div id='author'>
-                            by { this.state.author }
+                            by {this.state.author}
                         </div>
 
                         <div id='source'>
                             Courtesy of
                             <span id='sourceText'>
-                                { this.state.source }
+                                {this.state.source}
                             </span>
                         </div>
                     </div>
 
                     <div id='image'>
                         { this.state.imageURL ?
-                            <img src={this.state.imageURL} alt='' width='600'></img> :
-                            <p></p>
+                            <img src={this.state.imageURL} alt='' width='600'></img>
+                            : <p></p>
                         }
 
                         <div id='sourceLink'>
@@ -151,14 +157,14 @@ class Recipe extends Component {
                         <div id='difficulty'>
                             Difficulty: 
                             <span id='difficultyText'>
-                                { this.state.difficulty }
+                                {this.state.difficulty}
                             </span>
                         </div>
                         
                         <div id='yield'>
                             Yield: 
                             <span id='yieldText'>
-                                { this.state.yield }
+                                {this.state.yield}
                             </span>
                         </div>
 
@@ -166,7 +172,7 @@ class Recipe extends Component {
                             <div id='totalTime'>
                                 Total Time:
                                 <span id='totalTimeText'>
-                                    { this.state.totalTime }
+                                    {this.state.totalTime}
                                 </span>
                             </div>
 
@@ -176,7 +182,7 @@ class Recipe extends Component {
                                         { this.state.prepTime ?
                                             <li>
                                                 <span id='prepTimeText'>
-                                                    { this.state.prepTime }
+                                                    {this.state.prepTime}
                                                 </span>
                                                 prep time
                                             </li>
@@ -188,7 +194,7 @@ class Recipe extends Component {
                                         { this.state.cookTime ?
                                             <li>
                                                 <span id='cookTimeText'>
-                                                    { this.state.cookTime }
+                                                    {this.state.cookTime}
                                                 </span>
                                                 cook time
                                             </li>
@@ -200,7 +206,7 @@ class Recipe extends Component {
                                         { this.state.activeTime ?
                                             <li>
                                                 <span id='activeTimeText'>
-                                                    { this.state.activeTime }
+                                                    {this.state.activeTime}
                                                 </span>
                                                 active time
                                             </li>
@@ -212,7 +218,7 @@ class Recipe extends Component {
                                         { this.state.inactiveTime ?
                                             <li>
                                                 <span id='inactiveTimeText'>
-                                                    { this.state.inactiveTime }
+                                                    {this.state.inactiveTime}
                                                 </span>
                                                 inactive time
                                             </li>
@@ -224,12 +230,27 @@ class Recipe extends Component {
                         </div>
                     </div>
 
-                    <h2>Ingredients:</h2>
-                    <ArrayToList list={this.state.ingredients} ordered={false}/>
-                    <br></br>
+                    <div id='ingredients'>
+                        <div className='listHeader'>
+                            Ingredients
+                        </div>
 
-                    <h2>Directions:</h2>
-                    <ArrayToList list={this.state.directions} ordered={true}/>
+                        <ArrayToList
+                            list={this.state.ingredients}
+                            ordered={false}
+                        />
+                    </div>
+
+                    <div id='directions'>
+                        <div className='listHeader'>
+                            Directions
+                        </div>
+
+                        <ArrayToList
+                            list={this.state.directions}
+                            ordered={true}
+                        />
+                    </div>
                 </div>
             );
         }
