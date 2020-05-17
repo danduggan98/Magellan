@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import { Helmet } from 'react-helmet';
+import '../styles/recipe.css';
 
 //Parse an array of ingredients or directions into a JSX list
 function ArrayToList(props) {
@@ -118,53 +119,90 @@ class Recipe extends Component {
                         </Helmet>
                     }
 
-                    <h1>{this.state.recipeName}</h1>
-                    <h2>by {this.state.author}</h2>
-                    <h3>Courtesy of {this.state.source}</h3>
+                    <div id='header'>
+                        <div id='recipeName'>
+                            { this.state.recipeName }
+                        </div>
 
-                    { this.state.imageURL ?
-                        <img src={this.state.imageURL} alt='' width='600'></img> :
-                        <p></p>
-                    }
+                        <div id='author'>
+                            by { this.state.author }
+                        </div>
 
-                    <br></br>
-                    <a target='_blank' rel='noopener noreferrer' href={this.state.URL}>Original Recipe</a>
+                        <div id='source'>
+                            Courtesy of
+                            <span id='sourceText'>
+                                { this.state.source }
+                            </span>
+                        </div>
+                    </div>
+
+                    <div id='image'>
+                        { this.state.imageURL ?
+                            <img src={this.state.imageURL} alt='' width='600'></img> :
+                            <p></p>
+                        }
+
+                        <div id='sourceLink'>
+                            <a target='_blank' rel='noopener noreferrer' href={this.state.URL}>Original Recipe</a>
+                        </div>
+                    </div>
                     
-                    <br></br>
-                    <h3>Difficulty: {this.state.difficulty} | Yield: {this.state.yield}</h3>
-                    
-                    <br></br>
-                    <h2>Total Time: {this.state.totalTime}</h2>
-
-                    <ul>
-                    { this.state.prepTime ?
-                        <li>
-                            <h4>{this.state.prepTime} prep time</h4>
-                        </li>
-                        : <p></p>
-                    }
+                    <div id='details'>
+                        <div id='difficulty'>
+                            Difficulty: 
+                            <span id='difficultyText'>
+                                { this.state.difficulty }
+                            </span>
+                        </div>
                         
-                    { this.state.cookTime ?
-                        <li>
-                            <h4>{this.state.cookTime} cook time</h4>
-                        </li>
-                        : <p></p>
-                    }
+                        <div id='yield'>
+                            Yield: 
+                            <span id='yieldText'>
+                                { this.state.yield }
+                            </span>
+                        </div>
 
-                    { this.state.activeTime ?
-                        <li>
-                            <h4>{this.state.activeTime} active time</h4>
-                        </li>
-                        : <p></p>
-                    }
+                        <div id='times'>
+                            <div id='totalTime'>
+                                Total Time:
+                                <span id='totalTimeText'>
+                                    { this.state.totalTime }
+                                </span>
+                            </div>
 
-                    { this.state.inactiveTime ?
-                        <li>
-                            <h4>{this.state.inactiveTime} inactive time</h4>
-                        </li>
-                        : <p></p>
-                    }
-                    </ul>
+                            <div id='timeList'>
+                                <ul>
+                                    { this.state.prepTime ?
+                                        <li>
+                                            <h4>{this.state.prepTime} prep time</h4>
+                                        </li>
+                                        : <p></p>
+                                    }
+                                        
+                                    { this.state.cookTime ?
+                                        <li>
+                                            <h4>{this.state.cookTime} cook time</h4>
+                                        </li>
+                                        : <p></p>
+                                    }
+
+                                    { this.state.activeTime ?
+                                        <li>
+                                            <h4>{this.state.activeTime} active time</h4>
+                                        </li>
+                                        : <p></p>
+                                    }
+
+                                    { this.state.inactiveTime ?
+                                        <li>
+                                            <h4>{this.state.inactiveTime} inactive time</h4>
+                                        </li>
+                                        : <p></p>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
 
                     <br></br>
                     <h2>Ingredients:</h2>
