@@ -1,0 +1,70 @@
+#header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+#recipeName {
+    font-size: 50px;
+}
+
+#author {
+    margin-top: 5px;
+    font-size: 25px;
+}
+
+#source {
+    margin-top: 10px;
+    font-size: 16px;
+}
+
+#sourceText {
+    color: red;
+    padding-left: 5px;
+}
+
+#image {
+    text-align: center;
+}
+
+#sourceLink {
+    text-align: center;
+}
+
+#sourceLink:visited {
+    color: inherit;
+}
+
+#details {
+    text-align: center;
+    margin-top: 25px;
+}
+
+#difficulty {
+    font-size: larger;
+    margin-bottom: 5px;
+}
+
+#difficultyText {
+    font-weight: bold;
+    padding-left: 5px;
+}
+
+#yield {
+    font-size: larger;
+    margin-bottom: 5px;
+}
+
+#yieldText {
+    font-weight: bold;
+    padding-left: 5px;
+}
+
+#totalTime {
+    font-size: larger;
+    margin-bottom: 5px;
+}
+
+#totalTimeText {
+    font-weight: bold;
+    padding-left: 5px;
+}
