@@ -170,41 +170,60 @@ class Recipe extends Component {
                                 </span>
                             </div>
 
-                            <div id='timeList'>
+                            <div id='timesList'>
                                 <ul>
-                                    { this.state.prepTime ?
-                                        <li>
-                                            <h4>{this.state.prepTime} prep time</h4>
-                                        </li>
-                                        : <p></p>
-                                    }
-                                        
-                                    { this.state.cookTime ?
-                                        <li>
-                                            <h4>{this.state.cookTime} cook time</h4>
-                                        </li>
-                                        : <p></p>
-                                    }
-
-                                    { this.state.activeTime ?
-                                        <li>
-                                            <h4>{this.state.activeTime} active time</h4>
-                                        </li>
-                                        : <p></p>
-                                    }
-
-                                    { this.state.inactiveTime ?
-                                        <li>
-                                            <h4>{this.state.inactiveTime} inactive time</h4>
-                                        </li>
-                                        : <p></p>
-                                    }
+                                    <div id='prepTime'>
+                                        { this.state.prepTime ?
+                                            <li>
+                                                <span id='prepTimeText'>
+                                                    { this.state.prepTime }
+                                                </span>
+                                                prep time
+                                            </li>
+                                            : <p></p>
+                                        }
+                                    </div>
+                                    
+                                    <div id='cookTime'>
+                                        { this.state.cookTime ?
+                                            <li>
+                                                <span id='cookTimeText'>
+                                                    { this.state.cookTime }
+                                                </span>
+                                                cook time
+                                            </li>
+                                            : <p></p>
+                                        }
+                                    </div>
+                                    
+                                    <div id='activeTime'>
+                                        { this.state.activeTime ?
+                                            <li>
+                                                <span id='activeTimeText'>
+                                                    { this.state.activeTime }
+                                                </span>
+                                                active time
+                                            </li>
+                                            : <p></p>
+                                        }
+                                    </div>
+                                    
+                                    <div id='inactiveTime'>
+                                        { this.state.inactiveTime ?
+                                            <li>
+                                                <span id='inactiveTimeText'>
+                                                    { this.state.inactiveTime }
+                                                </span>
+                                                inactive time
+                                            </li>
+                                            : <p></p>
+                                        }
+                                    </div>
                                 </ul>
                             </div>
                         </div>
                     </div>
 
-                    <br></br>
                     <h2>Ingredients:</h2>
                     <ArrayToList list={this.state.ingredients} ordered={false}/>
                     <br></br>

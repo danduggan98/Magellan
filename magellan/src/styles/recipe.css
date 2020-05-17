@@ -19,7 +19,7 @@
 
 #sourceText {
     color: red;
-    padding-left: 5px;
+    margin-left: 5px;
 }
 
 #image {
@@ -46,7 +46,7 @@
 
 #difficultyText {
     font-weight: bold;
-    padding-left: 5px;
+    margin-left: 5px;
 }
 
 #yield {
@@ -56,15 +56,61 @@
 
 #yieldText {
     font-weight: bold;
-    padding-left: 5px;
+    margin-left: 5px;
 }
 
 #totalTime {
     font-size: larger;
     margin-bottom: 5px;
+    margin-top: 25px;
 }
 
 #totalTimeText {
     font-weight: bold;
-    padding-left: 5px;
+    margin-left: 5px;
+}
+
+#times {
+    text-align: center;
+}
+
+#timesList {
+    display: inline-block;
+    text-align: left;
+}
+
+#prepTime {
+    font-size: larger;
+}
+
+#prepTimeText {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+#cookTime {
+    font-size: larger;
+}
+
+#cookTimeText {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+#activeTime {
+    font-size: larger;
+}
+
+#activeTimeText {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+#inactiveTime {
+    font-size: larger;
+}
+
+#inactiveTimeText {
+    font-weight: bold;
+    margin-right: 5px;
 }
