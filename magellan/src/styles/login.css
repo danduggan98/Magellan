@@ -7,12 +7,12 @@
 #inputWrapper {
     max-width: 600px;
     margin: auto;
-    margin-top: 20px;
+    margin-top: 15px;
 }
 
 #usernameLabel {
     display: inline-block;
-    font-size: larger;
+    font-size: large;
     margin-bottom: 5px;
 }
 
@@ -31,7 +31,7 @@
 
 #passwordLabel {
     display: inline-block;
-    font-size: larger;
+    font-size: large;
     margin-bottom: 5px;
 }
 
