@@ -40,6 +40,7 @@
                     console.log("Inserted recipe by " + recipe.author + " with name '" + recipe.recipeName + "'");
                 });
             }
+            db.close();
         });
 
     } catch (err) {
