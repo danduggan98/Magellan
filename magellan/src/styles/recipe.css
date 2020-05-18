@@ -35,13 +35,22 @@
 }
 
 #details {
+    display: flex;
+    justify-content: center;
     text-align: center;
+    width: 60%;
+    margin: auto;
     margin-top: 25px;
+}
+
+#detailsLeft {
+    align-self: center;
+    margin-right: 65px;
 }
 
 #difficulty {
     font-size: larger;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
 }
 
 #difficultyText {
@@ -60,14 +69,16 @@
 }
 
 #totalTime {
-    font-size: larger;
+    font-size: 22px;
     margin-bottom: 5px;
     margin-top: 25px;
+    margin-left: 15px;
 }
 
 #totalTimeText {
     font-weight: bold;
     margin-left: 5px;
+    border-bottom: 2px solid black;
 }
 
 #times {
@@ -81,6 +92,7 @@
 
 #prepTime {
     font-size: larger;
+    margin-bottom: 10px;
 }
 
 #prepTimeText {
@@ -90,6 +102,7 @@
 
 #cookTime {
     font-size: larger;
+    margin-bottom: 10px;
 }
 
 #cookTimeText {
@@ -99,6 +112,7 @@
 
 #activeTime {
     font-size: larger;
+    margin-bottom: 10px;
 }
 
 #activeTimeText {
@@ -108,6 +122,7 @@
 
 #inactiveTime {
     font-size: larger;
+    margin-bottom: 10px;
 }
 
 #inactiveTimeText {
@@ -133,4 +148,11 @@
     line-height: 25px;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 18px;
+}
+
+.invisibleElement {
+    display: none;
+    height: 0;
+    width: 0;
+    border: 0;
 }

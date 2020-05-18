@@ -20,11 +20,9 @@ function ArrayToList(props) {
 
         for (let j = 1; j < numItems; j++) {
             section.push (
-                <div>
-                    <li key={itemList[j].toString()}>
-                        {itemList[j]}
-                    </li>
-                </div>
+                <li key={itemList[j].toString()}>
+                    {itemList[j]}
+                </li>
             );
         }
 
@@ -145,7 +143,7 @@ class Recipe extends Component {
                     <div id='image'>
                         { this.state.imageURL ?
                             <img src={this.state.imageURL} alt='' width='600'></img>
-                            : <p></p>
+                            : <p className='invisibleElement'></p>
                         }
 
                         <div id='sourceLink'>
@@ -154,18 +152,20 @@ class Recipe extends Component {
                     </div>
                     
                     <div id='details'>
-                        <div id='difficulty'>
-                            Difficulty: 
-                            <span id='difficultyText'>
-                                {this.state.difficulty}
-                            </span>
-                        </div>
-                        
-                        <div id='yield'>
-                            Yield: 
-                            <span id='yieldText'>
-                                {this.state.yield}
-                            </span>
+                        <div id='detailsLeft'>
+                            <div id='difficulty'>
+                                Difficulty:
+                                <span id='difficultyText'>
+                                    {this.state.difficulty}
+                                </span>
+                            </div>
+                            
+                            <div id='yield'>
+                                Yield:
+                                <span id='yieldText'>
+                                    {this.state.yield}
+                                </span>
+                            </div>
                         </div>
 
                         <div id='times'>
@@ -186,7 +186,7 @@ class Recipe extends Component {
                                                 </span>
                                                 prep time
                                             </li>
-                                            : <p></p>
+                                            : <p className='invisibleElement'></p>
                                         }
                                     </div>
                                     
@@ -198,7 +198,7 @@ class Recipe extends Component {
                                                 </span>
                                                 cook time
                                             </li>
-                                            : <p></p>
+                                            : <p className='invisibleElement'></p>
                                         }
                                     </div>
                                     
@@ -210,7 +210,7 @@ class Recipe extends Component {
                                                 </span>
                                                 active time
                                             </li>
-                                            : <p></p>
+                                            : <p className='invisibleElement'></p>
                                         }
                                     </div>
                                     
@@ -222,7 +222,7 @@ class Recipe extends Component {
                                                 </span>
                                                 inactive time
                                             </li>
-                                            : <p></p>
+                                            : <p className='invisibleElement'></p>
                                         }
                                     </div>
                                 </ul>
