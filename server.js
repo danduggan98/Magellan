@@ -4,7 +4,7 @@
 
 //TO-DO
 // Finish search bar + search algorithm
-    // Improve search performance
+    // Improve search performance with indexing
     // Make secondary sort something other than chef name (popularity?)
     // SANITIZE INPUTS DEAR GOD
     // 'See all/more' option allows you to slide through sets of the data
@@ -20,6 +20,7 @@
 // Logins + saved recipes
 
 // Add unique keys to all react lists, ensure existing keys are unique
+// Change all css pixel sizes to REM
 // Exclude ingredients
 // Vegan, gluten-free, etc. notices
 
