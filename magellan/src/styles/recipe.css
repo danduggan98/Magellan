@@ -4,11 +4,13 @@
 }
 
 #recipeName {
-    font-size: 50px;
+    margin: auto;
+    font-size: 45px;
+    width: 65%;
 }
 
 #author {
-    margin-top: 5px;
+    margin-top: 15px;
     font-size: 25px;
 }
 
@@ -41,6 +43,7 @@
     width: 60%;
     margin: auto;
     margin-top: 25px;
+    border: 1px solid black;
 }
 
 #detailsLeft {
