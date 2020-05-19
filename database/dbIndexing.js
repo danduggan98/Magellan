@@ -45,18 +45,32 @@
                     return trimmed;
                 });
 
-                //Remove all numbers, symbols, useless words, and extra spaces
                 const numResults = trimmedResult.length;
+                const ignoredWords = ['and', 'for', 'with', 'not', 'but', 'as', 'or', 'from', 'my', 'your', 'you', 'to', 'into', 'see', 'about',
+                                      'because', 'instead', 'of', 'by', 'if', 'made', 'it', 'until', 'buy', 'the', 'kind', 'type', 'recipe',
+                                      'follows', 'main', 'once', 'when', 'soon', 'before', 'plus', 'cup', 'teaspoon', 'tablespoon', 'quart',
+                                      'gallon', 'liter', 'ounces', 'ounce', 'in', 'on', 'all', 'store', 'bought', 's', 't', 'don', 'won', 'can',
+                                      'quarts', 'gallons', 'liters', 'cups', 'teaspoons', 'tablespoons', 'approximately', 'exactly', 'room',
+                                      'temperature', 'inch', 'inches', 'thick', 'big', 'large', 'huge', 'more', 'need', 'needed', 'necessary',
+                                      'only', 'self', 'more', 'better', 'plus', 'additional', 'i', 'll', 'we', 'recommended', 'a', 'preferably',
+                                      'ideally', 'perfect', 'perfectly', 'even', 'at', 'least', 'cut', 'fat', 'their', 'our', 'mix', 'dice', 'diced',
+                                      'chopped', 'finely', 'dry', 'wet', 'f', 'boiling', 'medium', 'small', 'el', 'la', 'removed', 'cleaned', 'dirty'
+                                     ]; //STORE IN HELPER FUNCTION OF SEPERATE FILE, expand it and make alphabetical
+
+                //Remove all numbers, symbols, useless words, and extra spaces
                 for (let i = 0; i < numResults; i++) {
                     trimmedResult[i] = trimmedResult[i].toLowerCase();
-                    trimmedResult[i] = trimmedResult[i].replace(/[!@#$%^&*()-_+{}:;"'<>,.\[\]\/\\\|~`1234567890]+/g, ' ');
-                    trimmedResult[i] = trimmedResult[i].replace(/\s+/g, ' ').trim(); //Take out extra spaces
+                    trimmedResult[i] = trimmedResult[i].replace(/[!@#$%^&*()-_+{}:;"'<>,.\[\]\/\\\|~`1234567890]+/g, ' '); //Numbers and symbols
 
-                    console.log(result[i].recipeName);
-                    console.log(result[i].ingredients);
-                    console.log(trimmedResult[i]);
+                    //Remove all useless words
+                    for (let j = 0; j < ignoredWords.length; j++) {
+                        const rgxp = new RegExp(` +${ignoredWords[j]} +`, 'g');
+                        trimmedResult[i] = trimmedResult[i].replace(rgxp, ' ');
+                    }
+                    trimmedResult[i] = trimmedResult[i].replace(/\s+/g, ' ').trim(); //Extra spaces
                 }
-                //console.log(trimmedResult);
+
+                //Find and store all the unique words in our result
             });
         });
     }
