@@ -1,3 +1,8 @@
+//
+// Indexes the database to improve search performance
+//
+
+const resources = require('../resources.js');
 
 (function indexDB() {
     try {
@@ -46,16 +51,7 @@
                 });
 
                 const numResults = trimmedResult.length;
-                const ignoredWords = ['and', 'for', 'with', 'not', 'but', 'as', 'or', 'from', 'my', 'your', 'you', 'to', 'into', 'see', 'about',
-                                      'because', 'instead', 'of', 'by', 'if', 'made', 'it', 'until', 'buy', 'the', 'kind', 'type', 'recipe',
-                                      'follows', 'main', 'once', 'when', 'soon', 'before', 'plus', 'cup', 'teaspoon', 'tablespoon', 'quart',
-                                      'gallon', 'liter', 'ounces', 'ounce', 'in', 'on', 'all', 'store', 'bought', 's', 't', 'don', 'won', 'can',
-                                      'quarts', 'gallons', 'liters', 'cups', 'teaspoons', 'tablespoons', 'approximately', 'exactly', 'room',
-                                      'temperature', 'inch', 'inches', 'thick', 'big', 'large', 'huge', 'more', 'need', 'needed', 'necessary',
-                                      'only', 'self', 'more', 'better', 'plus', 'additional', 'i', 'll', 'we', 'recommended', 'a', 'preferably',
-                                      'ideally', 'perfect', 'perfectly', 'even', 'at', 'least', 'cut', 'fat', 'their', 'our', 'mix', 'dice', 'diced',
-                                      'chopped', 'finely', 'dry', 'wet', 'f', 'boiling', 'medium', 'small', 'el', 'la', 'removed', 'cleaned', 'dirty'
-                                     ]; //STORE IN HELPER FUNCTION OF SEPERATE FILE, expand it and make alphabetical
+                const ignoredWords = resources.IGNORED_WORDS;
 
                 //Remove all numbers, symbols, useless words, and extra spaces
                 for (let i = 0; i < numResults; i++) {
