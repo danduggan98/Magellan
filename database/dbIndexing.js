@@ -107,19 +107,17 @@ const resources = require('../resources.js');
 
                     let searchWord = indexKeys[l];
                     let index = {
-                        key: searchWord,
-                        members: [],
-                        nameCount: 0,
-                        ingredientCount: 0
+                        value: searchWord,
+                        members: []
                     };
 
                     //Look through the data for this key
                     for (let m = 0; m < numRecipes; m++) {
-                        let name = recipeList[m].name;
+                        let name = recipeList[m].recipeName;
                         let ings = recipeList[m].ingredients;
 
                         if (name) {
-                            name = name.toString();
+                            name = name.toString().toLowerCase();
                             lastWordIndex = 0;
 
                             for (let n = 0; n < name.length; n++) {
@@ -128,11 +126,23 @@ const resources = require('../resources.js');
                                     lastWordIndex = ++n;
 
                                     if (nextWord === searchWord) {
-                                        index.nameCount++;
-
                                         let id = recipeList[m]._id;
-                                        if (!index.members.includes(id)) {
-                                            index.members.push(id);
+
+                                        if (!index.members.some(item => item.key === id)) {
+                                            let newVal = {
+                                                key: id,
+                                                nameCount: 1,
+                                                ingredientCount: 0
+                                            };
+                                            index.members.push(newVal);
+                                        }
+                                        else {
+                                            index.members.find((item, i) => {
+                                                if (item.key === id) {
+                                                    index.members[i].nameCount++;
+                                                    return true;
+                                                }
+                                            });
                                         }
                                     }
                                 }
@@ -140,7 +150,7 @@ const resources = require('../resources.js');
                         }
                         
                         if (ings) {
-                            ings = ings.toString();
+                            ings = ings.toString().toLowerCase();
                             lastWordIndex = 0;
 
                             for (let o = 0; o < ings.length; o++) {
@@ -149,11 +159,23 @@ const resources = require('../resources.js');
                                     lastWordIndex = ++o;
 
                                     if (nextWord === searchWord) {
-                                        index.ingredientCount++;
-
                                         let id = recipeList[m]._id;
-                                        if (!index.members.includes(id)) {
-                                            index.members.push(id);
+
+                                        if (!index.members.some(item => item.key === id)) {
+                                            let newVal = {
+                                                key: id,
+                                                nameCount: 0,
+                                                ingredientCount: 1
+                                            };
+                                            index.members.push(newVal);
+                                        }
+                                        else {
+                                            index.members.find((item, i) => {
+                                                if (item.key === id) {
+                                                    index.members[i].ingredientCount++;
+                                                    return true;
+                                                }
+                                            });
                                         }
                                     }
                                 }
