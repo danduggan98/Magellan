@@ -2,7 +2,23 @@
 // Indexes the database to improve search performance
 //
 
+//  HOLY CHRIST ALMIGHTY REFACTOR THIS SO YOU CAN LIVE WITH YOURSELF AND SEEK FORGIVENESS
+
 const resources = require('../resources.js');
+
+//Trim off unnecessary characters from a string
+function trimData(data) {
+    let trimmed = data.toString().toLowerCase();
+    trimmed = trimmed.replace(/[!@#$%^&*()-_+{}:;"'<>,.\[\]\/\\\|~`1234567890]+/g, ' '); //Remove numbers and symbols
+
+    const ignoredWords = resources.IGNORED_WORDS;
+
+    for (let i = 0; i < ignoredWords.length; i++) {
+        const rgxp = new RegExp(` +${ignoredWords[i]} +`, 'g');
+        trimmed = trimmed.replace(rgxp, ' ');
+    }
+    return trimmed.replace(/\s+/g, ' ').trim(); //Remove extra spaces
+}
 
 (function indexDB() {
     try {
@@ -12,80 +28,60 @@ const resources = require('../resources.js');
 
         connection.connect((err, database) => {
             if (err) throw err;
-            console.log('- Connected to Mongo cluster - preparing to index database');
 
             const recipeDB = database.db('recipeData'); //Connect to our main database
+            console.log('- Connected to Mongo cluster - indexing database now');
 
-            //Create an index collection if it does not currently exist
-            recipeDB.listCollections({name: 'index'})
-                .next((err, coll) => {
-                    if (err) throw err;
-
-                    if (!coll) {
-                        //Create the new collection
-                        recipeDB.createCollection('index', (err, res) => {
-                            if (err) throw err;
-                            console.log('-- Collection "index" not found. Creating it now');
-                        });
-                    }
-                    else {
-                        console.log('-- Found collection "index"');
-                    }
-                });
-
-            //Get all contents from the database, and store all the unique words it contains
-            console.log('- Gathering list of unique words to index');
-            let recipeList;
-
-            //Gather all the recipes
+            //Get the database contents, and store all the unique words it contains
             process.stdout.write('  > Retrieving recipes from database ... ');
-            recipeDB.collection('recipes').find({}).toArray((err, result) => {
+
+            recipeDB.collection('recipes').find({}).toArray((err, results) => {
                 if (err) throw err;
                 console.log('done');
-                recipeList = result;
 
-                //Cut the results down to just the recipe name and ingredient list
+                //Cut the results down to just the recipe name and ingredients
+                // Remove unnecessary characters, concatenate the two, and store the index that seperates them
                 process.stdout.write('  > Cleaning up recipe info ... ');
-                let trimmedResult = recipeList.map(element => {
-                    let trimmed = '';
-                    if (element.recipeName) trimmed += element.recipeName.toString() + ' ';
-                    if (element.ingredients) trimmed += element.ingredients.toString();
-                    return trimmed;
-                });
 
-                const numResults = trimmedResult.length;
-                const ignoredWords = resources.IGNORED_WORDS;
+                const trimmedResults = results.map(element => {
+                    let data = '';
+                    let threshold = 0; //Index that seperates the name and ingredients
 
-                //Remove all numbers, symbols, useless words, and extra spaces
-                for (let i = 0; i < numResults; i++) {
-                    trimmedResult[i] = trimmedResult[i].toLowerCase();
-                    trimmedResult[i] = trimmedResult[i].replace(/[!@#$%^&*()-_+{}:;"'<>,.\[\]\/\\\|~`1234567890]+/g, ' '); //Numbers and symbols
+                    const name = element.recipeName;
+                    const ings = element.ingredients;
 
-                    //Remove all useless words
-                    for (let j = 0; j < ignoredWords.length; j++) {
-                        const rgxp = new RegExp(` +${ignoredWords[j]} +`, 'g');
-                        trimmedResult[i] = trimmedResult[i].replace(rgxp, ' ');
+                    if (name) {
+                        data += name + ' ';
+                        threshold = data.length;
                     }
-                    trimmedResult[i] = trimmedResult[i].replace(/\s+/g, ' ').trim(); //Extra spaces
-                }
+                    if (ings) {
+                        data += ings;
+                        if (!name) threshold = data.length;
+                    }
+
+                    let item = {
+                        data: trimData(data),
+                        threshold: threshold
+                    }
+                    return item;
+                });
                 console.log('done');
 
                 //Find and store all the unique words in our result
-                const numTrimmedResults = trimmedResult.length;
-                let lastWordIndex = 0;
+                process.stdout.write('  > Finding all unique words ... ');
+                const numResults = trimmedResults.length;
                 let indexKeys = [];
 
-                process.stdout.write('  > Finding all unique words ... ');
-
-                for (let j = 0; j < numTrimmedResults; j++) {
-                    let nextResult = trimmedResult[j];
-                    const nextResultLen = nextResult.length;
+                for (let i = 0; i < numResults; i++) {
+                    const nextItem = trimmedResults[i].data;
+                    const nextItemLen = nextItem.length;
+                    let lastWordIndex = 0;
 
                     //Isolate each word seperated by spaces and store it if not seen yet
-                    for (let k = 0; k < nextResultLen; k++) {
-                        if (nextResult.charAt(k) === ' ' || k === nextResultLen) {
-                            let nextWord = nextResult.slice(lastWordIndex, k);
-                            lastWordIndex = ++k; //Move the index forward and skip the space
+                    for (let j = 0; j < nextItemLen; j++) {
+                        if (nextItem.charAt(j) === ' ' || j === nextItemLen) {
+                            let nextWord = nextItem.slice(lastWordIndex, j);
+                            lastWordIndex = ++j; //Move the index forward and skip the space
                             
                             //Add the word if unseen so far
                             if (!indexKeys.includes(nextWord) && nextWord !== '') {
@@ -94,13 +90,14 @@ const resources = require('../resources.js');
                         }
                     }
                 }
+                console.log(indexKeys);
                 console.log('done');
 
                 //Create indexes
-                process.stdout.write('  > Counting occurrences of unique words ... ');
+                /*process.stdout.write('  > Counting occurrences of unique words ... ');
 
                 //Find the occurrences of each unique word
-                const numRecipes = recipeList.length;
+                const numRecipes = result.length;
                 const numKeys = indexKeys.length;
 
                 for (let l = 0; l < numKeys; l++) {
@@ -113,11 +110,60 @@ const resources = require('../resources.js');
 
                     //Look through the data for this key
                     for (let m = 0; m < numRecipes; m++) {
-                        let name = recipeList[m].recipeName;
-                        let ings = recipeList[m].ingredients;
+                        let data = '';
+                        let threshold = 0;
+                        let name = result[m].recipeName;
+                        let ings = result[m].ingredients;
 
                         if (name) {
-                            name = name.toString().toLowerCase();
+                            data += name.toString().toLowerCase();
+                            threshold = data.length;
+                        }
+                        if (ings) {
+                            data += ings.toString().toLowerCase();
+                            if (!name) threshold = data.length;
+                        }
+
+                        console.log(data);
+                    }
+
+                        for (let n = 0; n < name.length; n++) {
+                            if (name.charAt(n) === ' ' || n === name.length) {
+                                let nextWord = name.slice(lastWordIndex, n);
+                                lastWordIndex = ++n;
+
+                                if (nextWord === searchWord) {
+                                    let id = result[m]._id;
+
+                                    if (!index.members.some(item => item.key === id)) {
+                                        let newVal = {
+                                            key: id,
+                                            nameCount: 1,
+                                            ingredientCount: 0
+                                        };
+                                        index.members.push(newVal);
+                                    }
+                                    else {
+                                        index.members.find((item, i) => {
+                                            if (item.key === id) {
+                                                index.members[i].nameCount++;
+                                                return true;
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+                        }
+
+
+
+
+
+
+
+                        ///////////////////////////////////////////////
+                        if (name) {
+                            name = name
                             lastWordIndex = 0;
 
                             for (let n = 0; n < name.length; n++) {
@@ -126,7 +172,7 @@ const resources = require('../resources.js');
                                     lastWordIndex = ++n;
 
                                     if (nextWord === searchWord) {
-                                        let id = recipeList[m]._id;
+                                        let id = result[m]._id;
 
                                         if (!index.members.some(item => item.key === id)) {
                                             let newVal = {
@@ -159,7 +205,7 @@ const resources = require('../resources.js');
                                     lastWordIndex = ++o;
 
                                     if (nextWord === searchWord) {
-                                        let id = recipeList[m]._id;
+                                        let id = result[m]._id;
 
                                         if (!index.members.some(item => item.key === id)) {
                                             let newVal = {
@@ -184,6 +230,26 @@ const resources = require('../resources.js');
                     }
                     console.log(index);
                 }
+
+                //Store the indexes in the database
+                // TO-DO
+
+                //Create an index collection if it does not currently exist
+                recipeDB.listCollections({name: 'index'}).next((err, coll) => {
+                    if (err) throw err;
+
+                    if (!coll) {
+                        //Create the new collection
+                        recipeDB.createCollection('index', (err, res) => {
+                            if (err) throw err;
+                            console.log('-- Collection "index" not found. Creating it now');
+                        });
+                    }
+                    else {
+                        console.log('-- Found collection "index"');
+                    }
+                });*/
+
                 console.log('done');
                 database.close();
             });
