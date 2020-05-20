@@ -38,11 +38,14 @@ const resources = require('../resources.js');
             let recipeList;
 
             //Gather all the recipes
+            process.stdout.write('  > Retrieving recipes from database ... ');
             recipeDB.collection('recipes').find({}).toArray((err, result) => {
                 if (err) throw err;
+                console.log('done');
                 recipeList = result;
 
                 //Cut the results down to just the recipe name and ingredient list
+                process.stdout.write('  > Cleaning up recipe info ... ');
                 let trimmedResult = recipeList.map(element => {
                     let trimmed = '';
                     if (element.recipeName) trimmed += element.recipeName.toString() + ' ';
@@ -54,8 +57,6 @@ const resources = require('../resources.js');
                 const ignoredWords = resources.IGNORED_WORDS;
 
                 //Remove all numbers, symbols, useless words, and extra spaces
-                process.stdout.write('  > Cleaning up recipe info ... ');
-
                 for (let i = 0; i < numResults; i++) {
                     trimmedResult[i] = trimmedResult[i].toLowerCase();
                     trimmedResult[i] = trimmedResult[i].replace(/[!@#$%^&*()-_+{}:;"'<>,.\[\]\/\\\|~`1234567890]+/g, ' '); //Numbers and symbols
@@ -74,7 +75,6 @@ const resources = require('../resources.js');
                 let lastWordIndex = 0;
                 let indexKeys = [];
 
-                //Iterate over the results
                 process.stdout.write('  > Finding all unique words ... ');
 
                 for (let j = 0; j < numTrimmedResults; j++) {
@@ -95,7 +95,74 @@ const resources = require('../resources.js');
                     }
                 }
                 console.log('done');
-                console.log(indexKeys);
+
+                //Create indexes
+                process.stdout.write('  > Counting occurrences of unique words ... ');
+
+                //Find the occurrences of each unique word
+                const numRecipes = recipeList.length;
+                const numKeys = indexKeys.length;
+
+                for (let l = 0; l < numKeys; l++) {
+
+                    let searchWord = indexKeys[l];
+                    let index = {
+                        key: searchWord,
+                        members: [],
+                        nameCount: 0,
+                        ingredientCount: 0
+                    };
+
+                    //Look through the data for this key
+                    for (let m = 0; m < numRecipes; m++) {
+                        let name = recipeList[m].name;
+                        let ings = recipeList[m].ingredients;
+
+                        if (name) {
+                            name = name.toString();
+                            lastWordIndex = 0;
+
+                            for (let n = 0; n < name.length; n++) {
+                                if (name.charAt(n) === ' ' || n === name.length) {
+                                    let nextWord = name.slice(lastWordIndex, n);
+                                    lastWordIndex = ++n;
+
+                                    if (nextWord === searchWord) {
+                                        index.nameCount++;
+
+                                        let id = recipeList[m]._id;
+                                        if (!index.members.includes(id)) {
+                                            index.members.push(id);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        
+                        if (ings) {
+                            ings = ings.toString();
+                            lastWordIndex = 0;
+
+                            for (let o = 0; o < ings.length; o++) {
+                                if (ings.charAt(o) === ' ' || o === ings.length) {
+                                    let nextWord = ings.slice(lastWordIndex, o);
+                                    lastWordIndex = ++o;
+
+                                    if (nextWord === searchWord) {
+                                        index.ingredientCount++;
+
+                                        let id = recipeList[m]._id;
+                                        if (!index.members.includes(id)) {
+                                            index.members.push(id);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    console.log(index);
+                }
+                console.log('done');
                 database.close();
             });
         });
