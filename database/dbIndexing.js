@@ -47,6 +47,7 @@ function trimData(data) {
                     let data = '';
                     let threshold = 0; //Index that seperates the name and ingredients
 
+                    const recipeID = element._id;
                     const name = element.recipeName;
                     const ings = element.ingredients;
 
@@ -60,6 +61,7 @@ function trimData(data) {
                     }
 
                     let item = {
+                        id: recipeID,
                         data: trimData(data),
                         threshold: threshold
                     }
@@ -70,12 +72,13 @@ function trimData(data) {
                 //Find and store all the unique words in our result
                 process.stdout.write('  > Finding all unique words ... ');
                 const numResults = trimmedResults.length;
+                let lastWordIndex = 0;
                 let indexKeys = [];
 
                 for (let i = 0; i < numResults; i++) {
                     const nextItem = trimmedResults[i].data;
                     const nextItemLen = nextItem.length;
-                    let lastWordIndex = 0;
+                    lastWordIndex = 0;
 
                     //Isolate each word seperated by spaces and store it if not seen yet
                     for (let j = 0; j < nextItemLen; j++) {
@@ -90,26 +93,71 @@ function trimData(data) {
                         }
                     }
                 }
-                console.log(indexKeys);
                 console.log('done');
 
-                //Create indexes
-                /*process.stdout.write('  > Counting occurrences of unique words ... ');
+                //Create indexes for each key
+                process.stdout.write('  > Counting occurrences of unique words ...');
 
-                //Find the occurrences of each unique word
-                const numRecipes = result.length;
                 const numKeys = indexKeys.length;
-
-                for (let l = 0; l < numKeys; l++) {
-
-                    let searchWord = indexKeys[l];
+                let indexes = []; //Stores our final list
+                
+                for (let i = 0; i < numKeys; i++) {
+                    let nextKey = indexKeys[i];
                     let index = {
-                        value: searchWord,
-                        members: []
+                        key: nextKey,
+                        recipes: []
                     };
 
                     //Look through the data for this key
-                    for (let m = 0; m < numRecipes; m++) {
+                    for (let j = 0; j < numResults; j++) {
+                        const nextID = trimmedResults[j].id;
+                        const nextItem = trimmedResults[j].data;
+                        const nextThreshold = trimmedResults[j].threshold;
+                        const nextItemLen = nextItem.length;
+
+                        for (let k = 0; k < nextItemLen; k++) {
+                            lastWordIndex = 0;
+
+                            if (nextItem.charAt(k) === ' ' || k === nextItemLen) {
+                                let nextWord = nextItem.slice(lastWordIndex, k);
+                                lastWordIndex = ++k;
+
+                                //If the key is found, store its information in the index
+                                if (nextWord === nextKey) {
+
+                                    //Recipe ID not in the index yet - add it
+                                    if (!index.recipes.some(item => item.key === nextID)) {
+                                        let indexEntry = {
+                                            recipe: nextID,
+                                            nameCount: (k < nextThreshold ? 1 : 0),
+                                            ingredientCount: (k >= nextThreshold ? 1 : 0)
+                                        };
+                                        index.recipes.push(indexEntry);
+                                    }
+
+                                    //Recipe ID already in the index - increment the appropriate counter
+                                    else {
+                                        index.recipes.find((item, l) => {
+                                            if (item.recipe === nextID) {
+                                                k < nextThreshold ?
+                                                    index.recipes[l].nameCount++
+                                                    : index.recipes[l].ingredientCount++;
+                                                return true;
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (i % math.ceil((numKeys / 10)) === 0) process.stdout.write('.'); //Indicator that something is actually happening
+                    indexes.push(index); //Save our result
+                }
+                console.log(indexes.slice(0,20));
+                console.log('done');
+
+                    //Look through the data for this key
+                    /*for (let m = 0; m < numRecipes; m++) {
                         let data = '';
                         let threshold = 0;
                         let name = result[m].recipeName;
@@ -154,12 +202,6 @@ function trimData(data) {
                                 }
                             }
                         }
-
-
-
-
-
-
 
                         ///////////////////////////////////////////////
                         if (name) {
@@ -229,7 +271,7 @@ function trimData(data) {
                         }
                     }
                     console.log(index);
-                }
+                
 
                 //Store the indexes in the database
                 // TO-DO
