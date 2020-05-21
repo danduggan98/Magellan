@@ -25,6 +25,7 @@ function trimData(data) {
         //Connect to the database
         require('dotenv').config();
         const connection = require('./dbConnect.js').client;
+        console.time('  > Indexing completed in');
 
         connection.connect((err, database) => {
             if (err) throw err;
@@ -97,11 +98,10 @@ function trimData(data) {
 
                 //Create indexes for each key
                 process.stdout.write('  > Counting occurrences of unique words ...');
-
                 const numKeys = indexKeys.length;
                 let indexes = []; //Stores our final list
                 
-                for (let i = 0; i < numKeys; i++) {
+                for (let i = 0; i < 10/*numKeys*/; i++) {
                     let nextKey = indexKeys[i];
                     let index = {
                         key: nextKey,
@@ -150,150 +150,45 @@ function trimData(data) {
                             }
                         }
                     }
-                    if (i % math.ceil((numKeys / 10)) === 0) process.stdout.write('.'); //Indicator that something is actually happening
+                    if (i % Math.ceil((numKeys / 10)) === 0) process.stdout.write('.'); //Indicator that something is actually happening
                     indexes.push(index); //Save our result
                 }
-                console.log(indexes.slice(0,20));
-                console.log('done');
-
-                    //Look through the data for this key
-                    /*for (let m = 0; m < numRecipes; m++) {
-                        let data = '';
-                        let threshold = 0;
-                        let name = result[m].recipeName;
-                        let ings = result[m].ingredients;
-
-                        if (name) {
-                            data += name.toString().toLowerCase();
-                            threshold = data.length;
-                        }
-                        if (ings) {
-                            data += ings.toString().toLowerCase();
-                            if (!name) threshold = data.length;
-                        }
-
-                        console.log(data);
-                    }
-
-                        for (let n = 0; n < name.length; n++) {
-                            if (name.charAt(n) === ' ' || n === name.length) {
-                                let nextWord = name.slice(lastWordIndex, n);
-                                lastWordIndex = ++n;
-
-                                if (nextWord === searchWord) {
-                                    let id = result[m]._id;
-
-                                    if (!index.members.some(item => item.key === id)) {
-                                        let newVal = {
-                                            key: id,
-                                            nameCount: 1,
-                                            ingredientCount: 0
-                                        };
-                                        index.members.push(newVal);
-                                    }
-                                    else {
-                                        index.members.find((item, i) => {
-                                            if (item.key === id) {
-                                                index.members[i].nameCount++;
-                                                return true;
-                                            }
-                                        });
-                                    }
-                                }
-                            }
-                        }
-
-                        ///////////////////////////////////////////////
-                        if (name) {
-                            name = name
-                            lastWordIndex = 0;
-
-                            for (let n = 0; n < name.length; n++) {
-                                if (name.charAt(n) === ' ' || n === name.length) {
-                                    let nextWord = name.slice(lastWordIndex, n);
-                                    lastWordIndex = ++n;
-
-                                    if (nextWord === searchWord) {
-                                        let id = result[m]._id;
-
-                                        if (!index.members.some(item => item.key === id)) {
-                                            let newVal = {
-                                                key: id,
-                                                nameCount: 1,
-                                                ingredientCount: 0
-                                            };
-                                            index.members.push(newVal);
-                                        }
-                                        else {
-                                            index.members.find((item, i) => {
-                                                if (item.key === id) {
-                                                    index.members[i].nameCount++;
-                                                    return true;
-                                                }
-                                            });
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        
-                        if (ings) {
-                            ings = ings.toString().toLowerCase();
-                            lastWordIndex = 0;
-
-                            for (let o = 0; o < ings.length; o++) {
-                                if (ings.charAt(o) === ' ' || o === ings.length) {
-                                    let nextWord = ings.slice(lastWordIndex, o);
-                                    lastWordIndex = ++o;
-
-                                    if (nextWord === searchWord) {
-                                        let id = result[m]._id;
-
-                                        if (!index.members.some(item => item.key === id)) {
-                                            let newVal = {
-                                                key: id,
-                                                nameCount: 0,
-                                                ingredientCount: 1
-                                            };
-                                            index.members.push(newVal);
-                                        }
-                                        else {
-                                            index.members.find((item, i) => {
-                                                if (item.key === id) {
-                                                    index.members[i].ingredientCount++;
-                                                    return true;
-                                                }
-                                            });
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    console.log(index);
-                
+                console.log(' done');
 
                 //Store the indexes in the database
-                // TO-DO
-
-                //Create an index collection if it does not currently exist
+                console.log('  > Adding indexes to database');
                 recipeDB.listCollections({name: 'index'}).next((err, coll) => {
                     if (err) throw err;
 
-                    if (!coll) {
-                        //Create the new collection
-                        recipeDB.createCollection('index', (err, res) => {
+                    //Delete the index collection if it already exists
+                    if (coll) {
+                        process.stdout.write('    * Found index collection. Deleting now ... ');
+                        recipeDB.dropCollection('index', (err) => { 
                             if (err) throw err;
-                            console.log('-- Collection "index" not found. Creating it now');
+                            console.log('done');
                         });
                     }
                     else {
-                        console.log('-- Found collection "index"');
+                        console.log('    * Index collection not found ');
                     }
-                });*/
 
-                console.log('done');
-                database.close();
+                    //Create the index collection
+                    process.stdout.write('    * Creating index collection ... ');
+                    recipeDB.createCollection('index', (err) => {
+                        if (err) throw err;
+                        console.log('done');
+                    });
+
+                    //Add the data
+                    for (let i = 0; i < indexes.length; i++) {
+                        recipeDB.collection('index').insertOne(indexes[i], (err) => {
+                            if (err) throw err;
+                        });
+                    }
+                    console.log('    * Added indexes to database');
+                    console.timeEnd('  > Indexing completed in');
+                    database.close();
+                });
             });
         });
     }
