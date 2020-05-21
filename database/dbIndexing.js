@@ -99,7 +99,7 @@ function trimData(data) {
         const numKeys = indexKeys.length;
         let indexes = []; //Stores our final list
 
-        for (let i = 0; i < 10/*numKeys*/; i++) {
+        for (let i = 0; i < numKeys; i++) {
             const nextKey = indexKeys[i];
 
             let index = {
@@ -111,28 +111,29 @@ function trimData(data) {
             for (let j = 0; j < numResults; j++) {
                 const nextItem = trimmedResults[j].data;
                 const nextItemLen = nextItem.length;
-                console.log(nextItem, 'LENGTH:', nextItemLen);
 
                 const nextID = trimmedResults[j].id;
                 const nextThreshold = trimmedResults[j].threshold;
+                let lastWordIndex = 0;
 
                 for (let k = 0; k < nextItemLen; k++) {
-                    lastWordIndex = 0;
-
                     if (nextItem.charAt(k) === ' ' || k === nextItemLen) {
-                        const nextWord = nextItem.slice(lastWordIndex, k);
+                        let nextWord = nextItem.slice(lastWordIndex, k);
                         lastWordIndex = ++k;
 
                         //When the key is found, store its information in the index
                         if (nextWord === nextKey) {
                             let found = false;
+                            let recipeList = index.recipes;
 
                             //If a recipe with this ID is already in the index, increment the appropriate counter
-                            for (let l = 0; l < index.recipes.length; l++) {
-                                if (index.recipes[l].id === nextID) {
+                            for (let l = 0; l < recipeList.length; l++) {
+                                let current = recipeList[l];
+
+                                if (current.id === nextID) {
                                     k < nextThreshold ?
-                                        index.recipes[l].nameCount = index.recipes[l].nameCount + 1 :
-                                        index.recipes[l].ingredientCount = index.recipes[l].ingredientCount + 1;
+                                        current.nameCount++ :
+                                        current.ingredientCount++;
                                     found = true;
                                     break;
                                 }
@@ -145,7 +146,7 @@ function trimData(data) {
                                     nameCount: (k < nextThreshold ? 1 : 0),
                                     ingredientCount: (k >= nextThreshold ? 1 : 0)
                                 };
-                                index.recipes.push(indexEntry);
+                                recipeList.push(indexEntry);
                             }
                         }
                     }
