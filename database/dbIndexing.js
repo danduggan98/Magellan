@@ -32,7 +32,8 @@ function trimData(data) {
         const recipeDB = database.db('recipeData');
         console.log('- Connected to Mongo cluster - indexing database now');
 
-        //Get the database contents, and store all the unique words it contains
+        //////////  STEP 1. Store all the unique words in the database  \\\\\\\\\\
+
         process.stdout.write('  > Retrieving recipes from database ... ');
         const results = await recipeDB.collection('recipes').find({}).toArray();
         console.log('done');
@@ -92,7 +93,8 @@ function trimData(data) {
         }
         console.log('done');
 
-        //Create indexes for each key
+        //////////  STEP 2. Create indexes for each key  \\\\\\\\\\
+
         process.stdout.write('  > Counting occurrences of unique words ...');
         const numKeys = indexKeys.length;
         let indexes = []; //Stores our final list
@@ -107,10 +109,12 @@ function trimData(data) {
 
             //Look through the data for this key
             for (let j = 0; j < numResults; j++) {
-                const nextID = trimmedResults[j].id;
                 const nextItem = trimmedResults[j].data;
-                const nextThreshold = trimmedResults[j].threshold;
                 const nextItemLen = nextItem.length;
+                console.log(nextItem, 'LENGTH:', nextItemLen);
+
+                const nextID = trimmedResults[j].id;
+                const nextThreshold = trimmedResults[j].threshold;
 
                 for (let k = 0; k < nextItemLen; k++) {
                     lastWordIndex = 0;
@@ -119,44 +123,45 @@ function trimData(data) {
                         const nextWord = nextItem.slice(lastWordIndex, k);
                         lastWordIndex = ++k;
 
-                        //If the key is found, store its information in the index
+                        //When the key is found, store its information in the index
                         if (nextWord === nextKey) {
+                            let found = false;
+
+                            //If a recipe with this ID is already in the index, increment the appropriate counter
+                            for (let l = 0; l < index.recipes.length; l++) {
+                                if (index.recipes[l].id === nextID) {
+                                    k < nextThreshold ?
+                                        index.recipes[l].nameCount = index.recipes[l].nameCount + 1 :
+                                        index.recipes[l].ingredientCount = index.recipes[l].ingredientCount + 1;
+                                    found = true;
+                                    break;
+                                }
+                            }
 
                             //Recipe ID not in the index yet - add it
-                            if (!index.recipes.some(item => item.key === nextID)) {
-                                const indexEntry = {
-                                    recipe: nextID,
+                            if (!found) {
+                                let indexEntry = {
+                                    id: nextID,
                                     nameCount: (k < nextThreshold ? 1 : 0),
                                     ingredientCount: (k >= nextThreshold ? 1 : 0)
                                 };
                                 index.recipes.push(indexEntry);
-                            }
-
-                            //Recipe ID already in the index - increment the appropriate counter
-                            else {
-                                await index.recipes.find((item, l) => {
-                                    if (item.recipe === nextID) {
-                                        k < nextThreshold ?
-                                            index.recipes[l].nameCount++
-                                            : index.recipes[l].ingredientCount++;
-                                        return true;
-                                    }
-                                });
                             }
                         }
                     }
                 }
             }
 
-            //Progress indicator - adds a dot with each additional 10% complete
+            //Console progress indicator - adds a dot with each additional 10% complete
             if (i % Math.ceil((numKeys / 10)) === 0) process.stdout.write('.');
 
             indexes.push(index); //Save our result
         }
         console.log(' done');
 
-        //Store the indexes in the database
-        console.log('  > Adding indexes to database');
+        //////////  STEP 3. Store the indexes in the database  \\\\\\\\\\
+
+        console.log('  > Storing indexes');
         const coll = await recipeDB.listCollections({name: 'index'}).next();
 
         //Delete the index collection if it already exists
