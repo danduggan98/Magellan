@@ -163,12 +163,13 @@ function trimData(data) {
         //////////  STEP 3. Store the indexes in the database  \\\\\\\\\\
 
         console.log('  > Storing indexes');
-        const coll = await recipeDB.listCollections({name: 'index'}).next();
+        const collName = 'index';
+        const coll = await recipeDB.listCollections({name: collName}).next();
 
         //Delete the index collection if it already exists
         if (coll) {
             process.stdout.write('    * Found index collection. Deleting now ... ');
-            await recipeDB.dropCollection('index');
+            await recipeDB.dropCollection(collName);
             console.log('done');
         }
         else {
@@ -177,17 +178,13 @@ function trimData(data) {
 
         //Create the index collection
         process.stdout.write('    * Creating index collection ... ');
-        await recipeDB.createCollection('index');
+        await recipeDB.createCollection(collName);
         console.log('done');
 
         //Add the data
         process.stdout.write('    * Adding indexes to database ... ');
-        const idx = recipeDB.collection('index');
-        const numIndexes = indexes.length;
-    
-        for (let i = 0; i < numIndexes; i++) {
-            await idx.insertOne(indexes[i]);
-        }
+        const idx = recipeDB.collection(collName);
+        await idx.insertMany(indexes);
 
         console.log('done');
         console.timeEnd('- Indexing completed in');
