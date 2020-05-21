@@ -20,6 +20,19 @@ function trimData(data) {
     return trimmed.replace(/\s+/g, ' ').trim(); //Remove extra spaces
 }
 
+//Add the data
+async function addData(db, indexes) {
+    process.stdout.write('    * Adding indexes to database ... ');
+    const idx = db.collection('index');
+
+    for (let i = 0; i < indexes.length; i++) {
+        await idx.insertOne(indexes[i], (err) => {
+            if (err) throw err;
+        });
+    }
+    console.log('done');
+}
+
 (function indexDB() {
     try {
         //Connect to the database
@@ -36,7 +49,7 @@ function trimData(data) {
             //Get the database contents, and store all the unique words it contains
             process.stdout.write('  > Retrieving recipes from database ... ');
 
-            recipeDB.collection('recipes').find({}).toArray((err, results) => {
+            recipeDB.collection('recipes').find({}).toArray(async (err, results) => {
                 if (err) throw err;
                 console.log('done');
 
@@ -102,7 +115,7 @@ function trimData(data) {
                 let indexes = []; //Stores our final list
                 
                 for (let i = 0; i < 10/*numKeys*/; i++) {
-                    let nextKey = indexKeys[i];
+                    const nextKey = indexKeys[i];
                     let index = {
                         key: nextKey,
                         recipes: []
@@ -127,7 +140,7 @@ function trimData(data) {
 
                                     //Recipe ID not in the index yet - add it
                                     if (!index.recipes.some(item => item.key === nextID)) {
-                                        let indexEntry = {
+                                        const indexEntry = {
                                             recipe: nextID,
                                             nameCount: (k < nextThreshold ? 1 : 0),
                                             ingredientCount: (k >= nextThreshold ? 1 : 0)
@@ -137,7 +150,7 @@ function trimData(data) {
 
                                     //Recipe ID already in the index - increment the appropriate counter
                                     else {
-                                        index.recipes.find((item, l) => {
+                                        await index.recipes.find((item, l) => {
                                             if (item.recipe === nextID) {
                                                 k < nextThreshold ?
                                                     index.recipes[l].nameCount++
@@ -157,16 +170,14 @@ function trimData(data) {
 
                 //Store the indexes in the database
                 console.log('  > Adding indexes to database');
-                recipeDB.listCollections({name: 'index'}).next((err, coll) => {
+                recipeDB.listCollections({name: 'index'}).next(async (err, coll) => {
                     if (err) throw err;
 
                     //Delete the index collection if it already exists
                     if (coll) {
                         process.stdout.write('    * Found index collection. Deleting now ... ');
-                        recipeDB.dropCollection('index', (err) => { 
-                            if (err) throw err;
-                            console.log('done');
-                        });
+                        await recipeDB.dropCollection('index');
+                        console.log('done');
                     }
                     else {
                         console.log('    * Index collection not found ');
@@ -174,18 +185,12 @@ function trimData(data) {
 
                     //Create the index collection
                     process.stdout.write('    * Creating index collection ... ');
-                    recipeDB.createCollection('index', (err) => {
-                        if (err) throw err;
-                        console.log('done');
-                    });
+                    await recipeDB.createCollection('index');
+                    console.log('done');
 
-                    //Add the data
-                    for (let i = 0; i < indexes.length; i++) {
-                        recipeDB.collection('index').insertOne(indexes[i], (err) => {
-                            if (err) throw err;
-                        });
-                    }
-                    console.log('    * Added indexes to database');
+                    await addData(recipeDB, indexes, (err) => {
+                        if (err) throw err;
+                    });
                     console.timeEnd('  > Indexing completed in');
                     database.close();
                 });
