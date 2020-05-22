@@ -13,7 +13,8 @@ class SearchBar extends Component {
             emptyInput: false,
             resultsFound: true,
             loading: false,
-            results: []
+            results: [],
+            maxResults: 36 //Arbitrary
         };
     }
 
@@ -24,7 +25,7 @@ class SearchBar extends Component {
         if (this.state.input) {
 
             //If so, querty the db
-            const fetchURL = `/search/${this.state.searchType}/${this.state.input}`;
+            const fetchURL = `/search/${this.state.searchType}/${this.state.input}/${this.state.maxResults}`;
             this.setState({
                 results: [],
                 resultsFound: true,
@@ -78,8 +79,6 @@ class SearchBar extends Component {
 
     // Search bar - form accepts the search and queries the db
     render() {
-        const limit = 9; //Max number of recipes to print
-
         //CSS for loading bar
         const override = css`
             width: 285px;
@@ -171,7 +170,7 @@ class SearchBar extends Component {
                         : <p></p>
                     }
                     { this.state.results.length ?
-                        <SearchResults data={this.state.results} lmt={limit} />
+                        <SearchResults data={this.state.results}/>
                         : <p></p>
                     }
                 </div>
