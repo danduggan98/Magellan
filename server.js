@@ -202,9 +202,12 @@ app.get('/search/:type/:terms', async (req, res) => {
 
         //Get the top results and pass their data as JSON
         const topResults = masterList.slice(0, limit).map(element => ObjectId(element.id));
-        const finalQuery = { '_id': { $in: topResults } };
+        const finalResult = [];
 
-        const finalResult = await recipeCollection.find(finalQuery).toArray();
+        for (let i = 0; i < topResults.length; i++) {
+            const nextRecipe = await recipeCollection.findOne(topResults[i]);
+            finalResult.push(nextRecipe);
+        }
 
         //Send back the sorted results
         res.json({ searchResults: finalResult });
