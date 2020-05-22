@@ -3,45 +3,72 @@
 //
 
 //Main function - calls itself automatically and adds our JSON data to the database
-(function populateDB() {
+(async function populateDB() {
     try {
+        const fs = require('fs');
+
+        const DATA_FILES = [
+            {
+                filePath: '../scrapers/FoodNetworkRecipeData.json',
+                source: 'Food Network'
+            }
+        ];
+
         //Connect to Mongo
         const connection = require('./dbConnect.js').client;
+        const database = await connection.connect();
+        const recipeDB = database.db("recipeData");
 
-        connection.connect((err, db) => {
-            if (err) throw err;
-            console.log("Connected to Mongo cluster");
+        console.log("- Connected to Mongo cluster - populating recipes database now");
+        console.time('');
 
-            const recipeDB = db.db("recipeData"); //Connect to our main database
+        //Rebuild the recipes collection from scratch
+        const collName = 'recipes';
+        let coll = await recipeDB.listCollections({name: collName}).next();
 
-            //Create a 'recipes' collection if it does not currently exist
-            if (!(recipeDB.listCollections({name: 'recipes'})).hasNext()) {
-                recipeDB.createCollection("recipes", (err, res) => {
-                    if (err) throw err;
-                    console.log("Collection 'recipes' not found. Creating from scratch");
-                });
-            }
+        //Collection already exists - delete it
+        if (coll) {
+            process.stdout.write('  > Found recipes collection. Deleting now ... ');
+            await recipeDB.dropCollection(collName);
+            console.log('done');
+        }
+        else {
+            console.log('  > Recipes collection not found')
+        }
 
-            //Add FoodNetwork recipes to our collection
-            const coll = recipeDB.collection('recipes'); //Jump to our collection
+        //Add the collection
+        process.stdout.write('  > Creating index collection ... ');
+        await recipeDB.createCollection(collName);
+        console.log('done');
 
-            const jsonData = JSON.parse(require('fs').readFileSync('../scrapers/FoodNetworkRecipeData.json')); //Read through the JSON file
+        coll = recipeDB.collection(collName); //Jump to our collection
+
+        //Add each set of recipes to our collection
+        for (let i = 0; i < DATA_FILES.length; i++) {
+            const current = DATA_FILES[i];
+
+            process.stdout.write(`  > Adding recipes from ${current.source} ...`);
+            const jsonData = JSON.parse(fs.readFileSync(current.filePath)); //Read through the JSON file
             const recipes = jsonData.data;
 
-            for (let i = 0; i < recipes.length; i++) {
-                const recipe = recipes[i];
-                recipe.author = fixAuthorName(recipe.author); //Fix the author name
-                recipe.source = "Food Network"; //Add a 'source' column to note which site this recipe is from
+            const numRecipes = recipes.length;
+            for (let j = 0; j < numRecipes; j++) {
+                const nextRecipe = recipes[j];
+                nextRecipe.author = fixAuthorName(nextRecipe.author); //Fix the author name
+                nextRecipe.source = current.source; //Add a 'source' column to note which site this recipe is from
 
                 //Add the recipe to our collection
                 //If the recipe already exists, sets the recipe name to itself (no change), and inserts it otherwise
-                coll.updateOne(recipe, {$set: {recipeName: recipe.recipeName} }, {upsert: true}, (err) => {
-                    if (err) throw err;
-                    console.log("Inserted recipe by " + recipe.author + " with name '" + recipe.recipeName + "'");
-                });
+                await coll.updateOne(nextRecipe, {$set: {recipeName: nextRecipe.recipeName} }, {upsert: true});
+
+                if (j % Math.ceil((numRecipes / 7)) === 0) process.stdout.write('.'); //Visual progress indicator
             }
-            db.close();
-        });
+            console.log('done');
+        }
+        database.close();
+
+        process.stdout.write('- Successfully populated database in');
+        console.timeEnd('');
 
     } catch (err) {
         console.log("Error in 'populateDB':", err);
