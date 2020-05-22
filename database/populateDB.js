@@ -47,22 +47,18 @@
         for (let i = 0; i < DATA_FILES.length; i++) {
             const current = DATA_FILES[i];
 
-            process.stdout.write(`  > Adding recipes from ${current.source} ...`);
+            process.stdout.write(`  > Adding recipes from ${current.source} ... `);
             const jsonData = JSON.parse(fs.readFileSync(current.filePath)); //Read through the JSON file
             const recipes = jsonData.data;
 
-            const numRecipes = recipes.length;
-            for (let j = 0; j < numRecipes; j++) {
-                const nextRecipe = recipes[j];
-                nextRecipe.author = fixAuthorName(nextRecipe.author); //Fix the author name
-                nextRecipe.source = current.source; //Add a 'source' column to note which site this recipe is from
+            //Fix author names and add a 'source' property
+            const cleanedRecipes = recipes.map(nextRecipe => {
+                nextRecipe.author = fixAuthorName(nextRecipe.author);
+                nextRecipe.source = current.source;
+                return nextRecipe;
+            });
 
-                //Add the recipe to our collection
-                //If the recipe already exists, sets the recipe name to itself (no change), and inserts it otherwise
-                await coll.updateOne(nextRecipe, {$set: {recipeName: nextRecipe.recipeName} }, {upsert: true});
-
-                if (j % Math.ceil((numRecipes / 7)) === 0) process.stdout.write('.'); //Visual progress indicator
-            }
+            await coll.insertMany(cleanedRecipes);
             console.log('done');
         }
         database.close();
