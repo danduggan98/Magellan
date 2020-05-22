@@ -93,12 +93,13 @@ app.get('/recipe/:recipeid', async (req, res) => {
 //Search for recipes
 // Type 'name' searches by recipe name,
 // Type 'ing' searches by ingredient
+// qty determines the number of results we want
 
-app.get('/search/:type/:terms', async (req, res) => {
+app.get('/search/:type/:terms/:qty', async (req, res) => {
     console.time('  > Search execution time');
     const type = req.params.type;
     const terms = req.params.terms.toLowerCase();
-    const limit = 9; //GET THIS FROM URL LATER
+    const limit = parseFloat(req.params.qty);
     
     //Search algorithm!
     //Parse individual search terms into a list
