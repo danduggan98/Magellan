@@ -4,8 +4,8 @@
 
 //TO-DO
 // Finish search bar + search algorithm
-    // Improve search performance with indexing
     // Make secondary sort something other than chef name (popularity?)
+    // Fix search to be more accurate
     // SANITIZE INPUTS DEAR GOD
     // 'See all/more' option allows you to slide through sets of the data
     // Search card - cut off long titles with ellipses, lower max height
@@ -98,10 +98,11 @@ app.get('/search/:type/:terms', async (req, res) => {
     console.time('  > Search execution time');
     const type = req.params.type;
     const terms = req.params.terms.toLowerCase();
+    const limit = 9; //GET THIS FROM URL LATER
     
     //Search algorithm!
     //Parse individual search terms into a list
-    let parsedTerms = []; 
+    let parsedTerms = [];
     let lastWordIndex = 0;
 
     for (let i = 0; i <= terms.length; i++) {
@@ -145,7 +146,6 @@ app.get('/search/:type/:terms', async (req, res) => {
         //Search
         const results = await indexCollection.find(query).toArray();
         const numResults = results.length;
-        console.log('  > Found', numResults, 'results');
 
         //No results
         if (!numResults) {
@@ -182,17 +182,32 @@ app.get('/search/:type/:terms', async (req, res) => {
             //Sort by whatever the user is looking for
             if (type === 'name') {
                 //Name, then ingredients
-                masterList.sort((a, b) => parseFloat(b.nameCount) - parseFloat(a.nameCount));
+                masterList.sort((a, b) => {
+                    if (parseFloat(a.nameCount) === parseFloat(b.nameCount)) {
+                        return parseFloat(b.ingredientCount) - parseFloat(a.ingredientCount);
+                    }
+                    return parseFloat(b.nameCount) - parseFloat(a.nameCount);
+                });
             }
             else {
                 //Ingredients, then name
-                masterList.sort((a, b) => parseFloat(b.ingredientCount) - parseFloat(a.ingredientCount));
+                masterList.sort((a, b) => {
+                    if (parseFloat(a.ingredientCount) === parseFloat(b.ingredientCount)) {
+                        return parseFloat(b.nameCount) - parseFloat(a.nameCount);
+                    }
+                    return parseFloat(b.ingredientCount) - parseFloat(a.ingredientCount);
+                });
             }
         }
-        console.log(masterList.slice(0, 20));
+
+        //Get the top results and pass their data as JSON
+        const topResults = masterList.slice(0, limit).map(element => ObjectId(element.id));
+        const finalQuery = { '_id': { $in: topResults } };
+
+        const finalResult = await recipeCollection.find(finalQuery).toArray();
 
         //Send back the sorted results
-        res.json({ searchResults: masterList });
+        res.json({ searchResults: finalResult });
         console.timeEnd('  > Search execution time');
     }
 });
