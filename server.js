@@ -12,7 +12,7 @@
 
 // Mini search bar above recipe page
 // Clean + finalize data in Mongo (REMOVE DUPLICATES, ETC.)
-// Make populateDB dynamic so we can add any number of recipe lists
+// SCRAPE + ADD TASTE OF HOME, BON APPETIT, AND OTHERS
 
 // HOST ON AMAZON!!!!!!!!!!!!!!
 // Use Passport for authentication
@@ -25,28 +25,33 @@
 // Exclude ingredients
 // Vegan, gluten-free, etc. notices
 
-//Set up Express app
-const express = require('express');
-const app = express();
-app.use(express.static(__dirname + '/'));
+////////// SETUP \\\\\\\\\\
 
-require('dotenv').config(); //Setup environment to hold Mongo connection string
-const resources = require('./resources.js'); //Grab lists of valid search terms
-const ObjectId = require('mongodb').ObjectID;
+//Imports
+const express   = require('express');
+const mongo     = require('mongodb');
+const resources = require('./resources.js');
+const dbConnect = require('./database/dbConnect.js');
 
-let recipeCollection; //Persistent connection to our recipe collection
+//Constants
+const ObjectId = mongo.ObjectID;
+let recipeCollection, indexCollection; //Persistent connections for each collection
 const validMongoID = /^[0-9a-fA-F]{24}$/;
+const port = process.env.PORT || 5000;
 
 //Automatically connect to database, store the connection for reuse
 (async function connectToMongo() {
-    const dbClient = require('./database/dbConnect.js').client;
-    const database = await dbClient.connect();
+    const database = await dbConnect.client.connect();
     console.log('- Connected to Mongo cluster');
 
     //Save connections to the collections we will use later
     recipeCollection = database.db('recipeData').collection('recipes');
     indexCollection = database.db('recipeData').collection('index');
 })();
+
+//Set up Express app
+const app = express();
+app.use(express.static(__dirname + '/'));
 
 ////////// PAGES \\\\\\\\\\
 
@@ -237,8 +242,9 @@ app.use((err, req, res, next) => {
     res.status(500).send('Error 500 - Internal Server Error');
 });
 
-//Server listens on native port, or on 3000 if in a local environment
-const port = process.env.PORT || 5000;
+////////// LISTENER \\\\\\\\\\
+
+//Server listens on native port, or on 5000 if in a local environment
 const server = app.listen(port, () => {
     console.log('- Magellan server listening on port', port);
 });
