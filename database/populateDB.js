@@ -6,7 +6,7 @@
 (async function populateDB() {
     try {
         const fs = require('fs');
-        const root = require('app-root-path') + '/scrapers/';
+        const root = require('app-root-path') + '/recipeData/';
 
         const DATA_FILES = [
             {
@@ -20,7 +20,7 @@
         const database = await connection.connect();
         const recipeDB = database.db("recipeData");
 
-        console.log("- Connected to Mongo cluster - populating recipes database now");
+        console.log("- Connected to Mongo cluster - populating recipes database");
         console.time('');
 
         //Rebuild the recipes collection from scratch
@@ -43,12 +43,13 @@
         console.log('done');
 
         coll = recipeDB.collection(collName); //Jump to our collection
+        console.log('  > Inserting all recipes');
 
         //Add each set of recipes to our collection
         for (let i = 0; i < DATA_FILES.length; i++) {
             const current = DATA_FILES[i];
 
-            process.stdout.write(`  > Adding recipes from ${current.source} ... `);
+            process.stdout.write(`    * Adding recipes from ${current.source} ... `);
             const jsonData = JSON.parse(fs.readFileSync(current.filePath)); //Read through the JSON file
             const recipes = jsonData.data;
 
