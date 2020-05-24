@@ -24,7 +24,6 @@ function trimData(data) {
         console.time('- Indexing completed in');
 
         //Connect to the database client
-        require('dotenv').config();
         const connection = require('./dbConnect.js').client;
 
         //Connect to our main database
