@@ -13,9 +13,7 @@
         "live": "serve -l 3000 -s build",
         "dev": "concurrently \"npm run server\" \"npm run magellan\"",
         "prod": "concurrently \"npm run server\" \"npm run live\"",
-        "populate_database": "node database/populateDB.js",
-        "index_database": "node database/dbIndexing.js",
-        "rebuild_database": "npm run populate_database && npm run index_database"
+        "rebuild_database": "node database/populateDB.js && node database/dbIndexing.js"
     },
     "dependencies": {
         "app-root-path": "^3.0.0",
