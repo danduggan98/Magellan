@@ -4,14 +4,16 @@
 
 //TO-DO
 // Finish search bar + search algorithm
-    // Improve search performance with indexing
     // Make secondary sort something other than chef name (popularity?)
+    // Fix search to be more accurate
     // SANITIZE INPUTS DEAR GOD
     // 'See all/more' option allows you to slide through sets of the data
     // Search card - cut off long titles with ellipses, lower max height
 
 // Mini search bar above recipe page
 // Clean + finalize data in Mongo (REMOVE DUPLICATES, ETC.)
+// SCRAPE + ADD TASTE OF HOME, BON APPETIT, AND OTHERS
+// Figure out how to rebuild database while keeping customer recipes
 
 // HOST ON AMAZON!!!!!!!!!!!!!!
 // Use Passport for authentication
@@ -21,103 +23,99 @@
 
 // Add unique keys to all react lists, ensure existing keys are unique
 // Change all css pixel sizes to REM
+// Let users change number of servings
 // Exclude ingredients
 // Vegan, gluten-free, etc. notices
 
-//Set up Express app
-const express = require('express');
-const app = express();
-app.use(express.static(__dirname + '/'));
+////////// SETUP \\\\\\\\\\
 
-require('dotenv').config(); //Setup environment to hold Mongo connection string
-const ObjectId = require('mongodb').ObjectID;
+//Imports
+const express   = require('express');
+const mongo     = require('mongodb');
+const resources = require('./resources.js');
+const dbConnect = require('./database/dbConnect.js');
 
-let recipes; //Persistent connection to our recipe collection
+//Constants
+const ObjectId = mongo.ObjectID;
+let recipeCollection, indexCollection; //Persistent connections for each collection
 const validMongoID = /^[0-9a-fA-F]{24}$/;
+const port = process.env.PORT || 5000;
 
 //Automatically connect to database, store the connection for reuse
-(function connectToMongo() {
-    const dbClient = require('./database/dbConnect.js').client;
-    dbClient.connect((err, database) => {
-        if (err) throw err;
-        console.log('- Connected to Mongo cluster');
-        
-        //Save the connection
-        recipes = database.db('recipeData').collection('recipes'); //Save the recipe collection
-    });
+(async function connectToMongo() {
+    const database = await dbConnect.client.connect();
+    console.log('- Connected to Mongo cluster');
+
+    //Save connections to the collections we will use later
+    recipeCollection = database.db('recipeData').collection('recipes');
+    indexCollection = database.db('recipeData').collection('index');
 })();
+
+//Set up Express app
+const app = express();
+app.use(express.static(__dirname + '/'));
 
 ////////// PAGES \\\\\\\\\\
 
 //Load a recipe
-app.get('/recipe/:recipeid', (req, res) => {
+app.get('/recipe/:recipeid', async (req, res) => {
     const id = req.params.recipeid;
 
-    //Check for invalid recipe id string
+    //Check for valid recipe id string
     if (!(validMongoID.test(id))) {
         res.json({ error: 'Recipe not found' });
     }
-    //Potentially valid recipe id
     else {
-        //Grab recipe info from database
-        recipes.find(ObjectId(id)).toArray((err, result) => {
-            if (err) throw err;
+        //Valid id - grab recipe from database
+        const result = await recipeCollection.findOne(ObjectId(id));
 
-            //Recipe not found
-            if (!result.length) {
-                res.json({ error: 'Recipe not found' });
-            }
-            //Recipe found
-            else {
-                const data = result[0];
-
-                //Pass each data point
-                res.json({
-                    URL:          data.URL,
-                    imageURL:     data.imageURL,
-                    author:       data.author,
-                    recipeName:   data.recipeName,
-                    difficulty:   data.difficulty,
-                    totalTime:    data.totalTime,
-                    prepTime:     data.prepTime,
-                    inactiveTime: data.inactiveTime,
-                    activeTime:   data.activeTime,
-                    cookTime:     data.cookTime,
-                    yield:        data.yield,
-                    ingredients:  data.ingredients,
-                    directions:   data.directions,
-                    source:       data.source
-                });
-            }
-        });
+        if (!result) {
+            res.json({ error: 'Recipe not found' });
+        }
+        //Recipe found - pass each data point
+        else {
+            res.json({
+                URL:          result.URL,
+                imageURL:     result.imageURL,
+                author:       result.author,
+                recipeName:   result.recipeName,
+                difficulty:   result.difficulty,
+                totalTime:    result.totalTime,
+                prepTime:     result.prepTime,
+                inactiveTime: result.inactiveTime,
+                activeTime:   result.activeTime,
+                cookTime:     result.cookTime,
+                yield:        result.yield,
+                ingredients:  result.ingredients,
+                directions:   result.directions,
+                source:       result.source
+            });
+        }
     }
 });
 
 //Search for recipes
 // Type 'name' searches by recipe name,
 // Type 'ing' searches by ingredient
+// qty determines the number of results we want
 
-app.get('/search/:type/:terms', (req, res) => {
+app.get('/search/:type/:terms/:qty', async (req, res) => {
+    console.time('  > Search execution time');
     const type = req.params.type;
     const terms = req.params.terms.toLowerCase();
-    console.time('  > Search execution time');
-
+    const limit = parseFloat(req.params.qty);
+    
     //Search algorithm!
     //Parse individual search terms into a list
     let parsedTerms = [];
     let lastWordIndex = 0;
-    const len = terms.length;
 
-    for (let i = 0; i <= len; i++) {
-        //Valid chars used to seperate search terms
-        const seperators = [' ', '-', '/', ',', '+', '&']; //FAILS WITH /
-
-        //Useless words to ignore
-        const ignoredTerms = ['and', 'with', 'the', 'n', 'on', 'or', 'best',
-                              'for', 'of', 'most', 'ever', 'my', 'our', 'plus'];
+    for (let i = 0; i <= terms.length; i++) {
+        const seperators = resources.VALID_SEPERATORS; //Valid chars used to seperate search terms
+        const ignoredTerms = resources.IGNORED_WORDS; //Useless words to ignore
 
         //Isolate properly seperated words
-        if (seperators.includes(terms.charAt(i)) || i === len) {
+        if (seperators.includes(terms.charAt(i)) || i === terms.length) {
             let nextWord = terms.slice(lastWordIndex, i);
 
             //Remove whitespace, symbols, quotes, and numbers
@@ -131,25 +129,7 @@ app.get('/search/:type/:terms', (req, res) => {
     }
 
     console.log(`- Executing search with type '${type}' and terms '${parsedTerms}'`);
-
-    //Place each term in a mongo regex expression for searching
-    let exprList = [];
-    let newPattern, newQuery;
     const numTerms = parsedTerms.length;
-
-    for (let j = 0; j < numTerms; j++) {
-        newPattern = new RegExp(`.*${parsedTerms[j]}.*`, 'i'); //Is the term anywhere in the string?
-
-        //Search recipe names
-        if (type === 'name') {
-            newQuery = {recipeName: {$regex: newPattern}};
-        }
-        //Search the ingredient list
-        else if (type === 'ing') {
-            newQuery = {ingredients: {$elemMatch: {$elemMatch: {$regex: newPattern}}}};
-        }
-        exprList.push(newQuery);
-    }
 
     //Query the database given a valid submission
     if (!numTerms) {
@@ -157,71 +137,89 @@ app.get('/search/:type/:terms', (req, res) => {
         console.timeEnd('  > Search execution time');
     }
     else {
-        //Combine all expressions into a single query
-        const query = { $or: exprList };
+        let masterList = []; //Will hold our final sorted results
+
+        //Place each term in a mongo expression
+        let exprList = [];
+        for (let i = 0; i < numTerms; i++) {
+            exprList.push(
+                { key: parsedTerms[i] }
+            );
+        }
+        const query = { $or: exprList }; //Combine all expressions into a single query
 
         //Search
-        recipes.find(query).toArray((err, result) => {
-            if (err) throw err;
-            console.log('  > Found', result.length, 'results');
+        const results = await indexCollection.find(query).toArray();
+        const numResults = results.length;
 
-            //No results
-            if (!result.length) {
-                res.json({ error: 'No search results' });
-                console.timeEnd('  > Search execution time');
+        //No results
+        if (!numResults) {
+            res.json({ error: 'No search results' });
+            console.timeEnd('  > Search execution time');
+        }
+        //Matches found
+        else {
+            //Lazily combine the results into one array
+            for (let j = 0; j < numResults; j++) {
+                masterList = masterList.concat(results[j].recipes);
             }
-            //Matches found
-            else {
 
-                //Determine how close each recipe is to the search query
-                // Results which contain more of the given fields are ranked higher
-                const numResults = result.length;
-                let hasIngs, matches, name, ings, check;
+            //Merge items with the same recipe id
+            let numRecipes = masterList.length;
 
-                //Iterate through the search results
-                for (let k = 0; k < numResults; k++) {
-                    hasIngs = true;
-                    matches = 0;
+            for (let k = 0; k < numRecipes; k++) {
+                let current = masterList[k];
+                
+                for (let l = k + 1; l < numRecipes; l++) {
+                    let next = masterList[l];
 
-                    //Store the name and the ingredients, if there are any
-                    name = result[k].recipeName;
+                    //Duplicate id found - move the counts from the second one to the first
+                    if (current.id === next.id) {
+                        current.nameCount += next.nameCount;
+                        current.ingredientCount += next.ingredientCount;
 
-                    if (result[k].ingredients)
-                        ings = result[k].ingredients.toString(); //Stringify to avoid iterating through sections
-                    else
-                        hasIngs = false;
-
-                    //Go through each term and assign the result an accuracy score
-                    for (let l = 0; l < numTerms; l++) {
-                        check = new RegExp(`.*${parsedTerms[l]}.*`, 'i'); //Is the term anywhere in the string?
-
-                        //Check if the term is in the name (runs for both search types)
-                        if (check.test(name)) {
-                            matches++;
-                        }
-                        //Check if the term is in the ingredient list
-                        if (type === 'ing' && hasIngs) { //Just for ingredient searches with actual ingredients
-                            if (check.test(ings)) {
-                                matches++;
-                            }
-                        }
+                        masterList.splice(k, 1); //Remove this item
+                        numRecipes--;
                     }
-                    result[k].accuracy = matches; //Add the number of 'hits' as a property on the result
                 }
-
-                //Sort the data by accuracy, send the response as JSON
-                result.sort((a, b) => parseFloat(b.accuracy) - parseFloat(a.accuracy));
-                res.json({ searchResults: result });
-                console.timeEnd('  > Search execution time');
             }
-        });
+
+            //Sort by whatever the user is looking for
+            if (type === 'name') {
+                //Name, then ingredients
+                masterList.sort((a, b) => {
+                    if (parseFloat(a.nameCount) === parseFloat(b.nameCount)) {
+                        return parseFloat(b.ingredientCount) - parseFloat(a.ingredientCount);
+                    }
+                    return parseFloat(b.nameCount) - parseFloat(a.nameCount);
+                });
+            }
+            else {
+                //Ingredients, then name
+                masterList.sort((a, b) => {
+                    if (parseFloat(a.ingredientCount) === parseFloat(b.ingredientCount)) {
+                        return parseFloat(b.nameCount) - parseFloat(a.nameCount);
+                    }
+                    return parseFloat(b.ingredientCount) - parseFloat(a.ingredientCount);
+                });
+            }
+        }
+
+        //Retrieve all info about each result from the database
+        const topResults = masterList.slice(0, limit).map(element => ObjectId(element.id));
+        const finalQuery = {_id: { $in: topResults } };
+        const finalResult = await recipeCollection.find(finalQuery).toArray();
+
+        //Send back the top results as JSON
+        res.json({ searchResults: finalResult });
+        console.timeEnd('  > Search execution time');
     }
 });
 
 ////////// FORM HANDLERS \\\\\\\\\\
 
 //Login requests
-app.post('/login', (req, res) => {
+app.post('/login', async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
 });
@@ -239,8 +237,9 @@ app.use((err, req, res, next) => {
     res.status(500).send('Error 500 - Internal Server Error');
 });
 
-//Server listens on native port, or on 3000 if in a local environment
-const port = process.env.PORT || 5000;
+////////// LISTENER \\\\\\\\\\
+
+//Server listens on native port, or on 5000 if in a local environment
 const server = app.listen(port, () => {
     console.log('- Magellan server listening on port', port);
 });

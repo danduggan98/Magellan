@@ -12,9 +12,13 @@
         "build": "react-scripts build",
         "live": "serve -l 3000 -s build",
         "dev": "concurrently \"npm run server\" \"npm run magellan\"",
-        "prod": "concurrently \"npm run server\" \"npm run live\""
+        "prod": "concurrently \"npm run server\" \"npm run live\"",
+        "index_database": "node database/dbIndexing.js",
+        "populate_database": "node database/populateDB.js",
+        "rebuild_database": "npm run populate_database && npm run index_database"
     },
     "dependencies": {
+        "app-root-path": "^3.0.0",
         "concurrently": "^5.1.0",
         "dotenv": "^8.2.0",
         "express": "4.17.1",
