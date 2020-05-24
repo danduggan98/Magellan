@@ -13,6 +13,7 @@
 // Mini search bar above recipe page
 // Clean + finalize data in Mongo (REMOVE DUPLICATES, ETC.)
 // SCRAPE + ADD TASTE OF HOME, BON APPETIT, AND OTHERS
+// Figure out how to rebuild database while keeping customer recipes
 
 // HOST ON AMAZON!!!!!!!!!!!!!!
 // Use Passport for authentication
@@ -22,6 +23,7 @@
 
 // Add unique keys to all react lists, ensure existing keys are unique
 // Change all css pixel sizes to REM
+// Let users change number of servings
 // Exclude ingredients
 // Vegan, gluten-free, etc. notices
 
@@ -59,22 +61,19 @@ app.use(express.static(__dirname + '/'));
 app.get('/recipe/:recipeid', async (req, res) => {
     const id = req.params.recipeid;
 
-    //Check for invalid recipe id string
+    //Check for valid recipe id string
     if (!(validMongoID.test(id))) {
         res.json({ error: 'Recipe not found' });
     }
-    //Potentially valid recipe id
     else {
-        //Grab recipe info from database
+        //Valid id - grab recipe from database
         const result = await recipeCollection.findOne(ObjectId(id));
 
-        //Recipe not found
         if (!result) {
             res.json({ error: 'Recipe not found' });
         }
-        //Recipe found
+        //Recipe found - pass each data point
         else {
-            //Pass each data point
             res.json({
                 URL:          result.URL,
                 imageURL:     result.imageURL,
@@ -206,16 +205,12 @@ app.get('/search/:type/:terms/:qty', async (req, res) => {
             }
         }
 
-        //Get the top results and pass their data as JSON
+        //Retrieve all info about each result from the database
         const topResults = masterList.slice(0, limit).map(element => ObjectId(element.id));
-        const finalResult = [];
+        const finalQuery = {_id: { $in: topResults } };
+        const finalResult = await recipeCollection.find(finalQuery).toArray();
 
-        for (let i = 0; i < topResults.length; i++) {
-            const nextRecipe = await recipeCollection.findOne(topResults[i]);
-            finalResult.push(nextRecipe);
-        }
-
-        //Send back the sorted results
+        //Send back the top results as JSON
         res.json({ searchResults: finalResult });
         console.timeEnd('  > Search execution time');
     }
