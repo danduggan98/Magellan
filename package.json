@@ -15,7 +15,7 @@
         "prod": "concurrently \"npm run server\" \"npm run live\"",
         "index_database": "node database/dbIndexing.js",
         "populate_database": "node database/populateDB.js",
-        "rebuild_database": "npm run index_database && npm run populate_database"
+        "rebuild_database": "npm run populate_database && npm run index_database"
     },
     "dependencies": {
         "app-root-path": "^3.0.0",
