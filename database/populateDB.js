@@ -6,10 +6,11 @@
 (async function populateDB() {
     try {
         const fs = require('fs');
+        const root = require('app-root-path') + '/scrapers/';
 
         const DATA_FILES = [
             {
-                filePath: '../scrapers/FoodNetworkRecipeData.json',
+                filePath: root + 'FoodNetworkRecipeData.json',
                 source: 'Food Network'
             }
         ];
@@ -37,7 +38,7 @@
         }
 
         //Add the collection
-        process.stdout.write('  > Creating index collection ... ');
+        process.stdout.write('  > Creating recipes collection ... ');
         await recipeDB.createCollection(collName);
         console.log('done');
 
