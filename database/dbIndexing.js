@@ -102,8 +102,9 @@ function trimData(data) {
             const nextKey = indexKeys[i];
 
             let index = {
-                key: nextKey,
-                recipes: []
+                key: nextKey, //The word
+                recipes: [],  //All items that contain the word
+                frequency: 0  //How many items contain the word
             };
 
             //Look through the data for this key
@@ -114,46 +115,53 @@ function trimData(data) {
                 const nextID = trimmedResults[j].id;
                 const nextThreshold = trimmedResults[j].threshold;
                 let lastWordIndex = 0;
+                let nextWord = '';
 
-                for (let k = 0; k < nextItemLen; k++) {
-                    if (nextItem.charAt(k) === ' ' || k === nextItemLen) {
-                        let nextWord = nextItem.slice(lastWordIndex, k);
+                let name = false;
+                let ings = false;
+
+                //If this key is anywhere in the name, note it and skip to the ingredients
+                for (let k = 0; k < nextThreshold; k++) {
+                    if (nextItem.charAt(k) === ' ' || k === nextThreshold) {
+                        nextWord = nextItem.slice(lastWordIndex, k);
                         lastWordIndex = ++k;
 
-                        //When the key is found, store its information in the index
                         if (nextWord === nextKey) {
-                            let found = false;
-                            let recipeList = index.recipes;
-
-                            //If a recipe with this ID is already in the index, increment the appropriate counter
-                            for (let l = 0; l < recipeList.length; l++) {
-                                let current = recipeList[l];
-
-                                if (current.id === nextID) {
-                                    k < nextThreshold ?
-                                        current.nameCount++ :
-                                        current.ingredientCount++;
-                                    found = true;
-                                    break;
-                                }
-                            }
-
-                            //Recipe ID not in the index yet - add it
-                            if (!found) {
-                                let indexEntry = {
-                                    id: nextID,
-                                    nameCount: (k < nextThreshold ? 1 : 0),
-                                    ingredientCount: (k >= nextThreshold ? 1 : 0)
-                                };
-                                recipeList.push(indexEntry);
-                            }
+                            name = true;
+                            break;
                         }
                     }
                 }
+
+                //If this word is anywhere in the ingredients, note it and searching
+                lastWordIndex = nextThreshold;
+                for (let l = nextThreshold; l < nextItemLen; l++) {
+                    if (nextItem.charAt(l) === ' ' || l === nextItemLen) {
+                        nextWord = nextItem.slice(lastWordIndex, l);
+                        lastWordIndex = ++l;
+
+                        if (nextWord === nextKey) {
+                            ings = true;
+                            break;
+                        }
+                    }
+                }
+
+                //Add the recipe to the index if the word was found anywhere
+                if (name || ings) {
+                    let indexEntry = {
+                        id: nextID,
+                        inName: name ? 1 : 0,
+                        inIngs: ings ? 1 : 0
+                    };
+                    index.recipes.push(indexEntry);
+                }
             }
 
+            index.frequency = index.recipes.length;
+
             //Console progress indicator - adds a dot with each additional 10% complete
-            if (i % Math.ceil((numKeys / 10)) === 0) process.stdout.write('.');
+            if (i % Math.ceil((numKeys / 7)) === 0) process.stdout.write('.');
 
             indexes.push(index); //Save our result
         }
