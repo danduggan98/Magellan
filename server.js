@@ -5,6 +5,7 @@
 //TO-DO
 // Finish search bar + search algorithm
     // Make secondary sort something other than chef name (popularity?)
+    // Make plurals and singulars give same results (i.e. sandwich vs. sandwiches, leaf vs. leaves, salad vs salads, etc.)
     // Fix search to be more accurate
     // SANITIZE INPUTS DEAR GOD
     // 'See all/more' option allows you to slide through sets of the data
@@ -142,13 +143,11 @@ app.get('/search/:type/:terms/:qty', async (req, res) => {
         //Place each term in a mongo expression
         let exprList = [];
         for (let i = 0; i < numTerms; i++) {
-            exprList.push(
-                { key: parsedTerms[i] }
-            );
+            exprList.push( { key: parsedTerms[i] } );
         }
-        const query = { $or: exprList }; //Combine all expressions into a single query
+        const query = { $or: exprList }; //Combine all expressions into a single 'or' query
 
-        //Search
+        //Search!
         const results = await indexCollection.find(query).toArray();
         const numResults = results.length;
 
@@ -159,26 +158,25 @@ app.get('/search/:type/:terms/:qty', async (req, res) => {
         }
         //Matches found
         else {
-            //Lazily combine the results into one array
+            //Combine the results into one array
             for (let j = 0; j < numResults; j++) {
                 masterList = masterList.concat(results[j].recipes);
             }
-
-            //Merge items with the same recipe id
             let numRecipes = masterList.length;
 
+            //Merge items with the same recipe id
             for (let k = 0; k < numRecipes; k++) {
                 let current = masterList[k];
                 
                 for (let l = k + 1; l < numRecipes; l++) {
                     let next = masterList[l];
 
-                    //Duplicate id found - move the counts from the second one to the first
-                    if (current.id === next.id) {
-                        current.nameCount += next.nameCount;
-                        current.ingredientCount += next.ingredientCount;
+                    //Duplicate id found - add the counts from the second one to the first
+                    if (current.id.toString() === next.id.toString()) {
+                        current.inName += next.inName;
+                        current.inIngs += next.inIngs;
 
-                        masterList.splice(k, 1); //Remove this item
+                        masterList.splice(l, 1); //Remove this item
                         numRecipes--;
                     }
                 }
@@ -188,26 +186,26 @@ app.get('/search/:type/:terms/:qty', async (req, res) => {
             if (type === 'name') {
                 //Name, then ingredients
                 masterList.sort((a, b) => {
-                    if (parseFloat(a.nameCount) === parseFloat(b.nameCount)) {
-                        return parseFloat(b.ingredientCount) - parseFloat(a.ingredientCount);
+                    if (parseFloat(a.inName) === parseFloat(b.inName)) {
+                        return parseFloat(b.inIngs) - parseFloat(a.inIngs);
                     }
-                    return parseFloat(b.nameCount) - parseFloat(a.nameCount);
+                    return parseFloat(b.inName) - parseFloat(a.inName);
                 });
             }
             else {
                 //Ingredients, then name
                 masterList.sort((a, b) => {
-                    if (parseFloat(a.ingredientCount) === parseFloat(b.ingredientCount)) {
+                    if (parseFloat(a.inIngs) === parseFloat(b.inIngs)) {
                         return parseFloat(b.nameCount) - parseFloat(a.nameCount);
                     }
-                    return parseFloat(b.ingredientCount) - parseFloat(a.ingredientCount);
+                    return parseFloat(b.inIngs) - parseFloat(a.inIngs);
                 });
             }
         }
 
         //Retrieve all info about each result from the database
         const topResults = masterList.slice(0, limit).map(element => ObjectId(element.id));
-        const finalQuery = {_id: { $in: topResults } };
+        const finalQuery = { _id: { $in: topResults } };
         const finalResult = await recipeCollection.find(finalQuery).toArray();
 
         //Send back the top results as JSON
