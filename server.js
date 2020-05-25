@@ -201,13 +201,38 @@ app.get('/search/:type/:terms/:qty', async (req, res) => {
             }
         }
 
+        //Pull just the ids out of each result as strings
+        const topResultsRaw = masterList.slice(0, limit).map(element => element.id + '');
+        console.log("RAW DATA:", masterList.slice(0, 9));
+
         //Retrieve all info about each result from the database
-        const topResults = masterList.slice(0, limit).map(element => ObjectId(element.id));
+        const topResults = topResultsRaw.map(element => ObjectId(element));
         const finalQuery = { _id: { $in: topResults } };
-        const finalResult = await recipeCollection.find(finalQuery).toArray();
+        const dbResults = await recipeCollection.find(finalQuery).toArray();
+
+        //Store the database results in the same order as the raw data
+        const dbResultsRaw = dbResults.map(element => element._id + ''); //Pull out the ids as strings
+        let finalResults = [];
+
+        for (let m = 0; m < topResultsRaw.length; m++) {
+            const next = topResultsRaw[m];
+
+            for (let n = 0; n < dbResultsRaw.length; n++) {
+                const current = dbResultsRaw[n];
+
+                //Match found - add the full item to a final results array
+                if (current === next) {
+                    finalResults.push(dbResults[n]);
+                    break;
+                }
+            }
+        }
+
+        console.log("DB DATA AFTER SORTING:");
+        finalResults.slice(0, 9).map(element => { console.log(element._id, ' : ', element.recipeName) });
 
         //Send back the top results as JSON
-        res.json({ searchResults: finalResult });
+        res.json({ searchResults: finalResults });
         console.timeEnd('  > Search execution time');
     }
 });
