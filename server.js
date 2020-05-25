@@ -6,7 +6,7 @@
 // Finish search bar + search algorithm
     // Make secondary sort something other than chef name (popularity?)
     // Make plurals and singulars give same results (i.e. sandwich vs. sandwiches, leaf vs. leaves, salad vs salads, etc.)
-    // Fix search to be more accurate
+    // RESULTS SHOW IN WRONG ORDER!!!!
     // SANITIZE INPUTS DEAR GOD
     // 'See all/more' option allows you to slide through sets of the data
     // Search card - cut off long titles with ellipses, lower max height
@@ -159,11 +159,7 @@ app.get('/search/:type/:terms/:qty', async (req, res) => {
         //Matches found
         else {
             //Combine the results into one array
-            for (let j = 0; j < numResults; j++) {
-                let list = results[j].recipes;
-                list.map(element => { element.id = element.id.toString() }); //Coerce the ids to strings
-                masterList = masterList.concat(list);
-            }
+            results.map(element => { masterList = masterList.concat(element.recipes) });
             let numRecipes = masterList.length;
 
             //Merge items with the same recipe id
