@@ -160,7 +160,9 @@ app.get('/search/:type/:terms/:qty', async (req, res) => {
         else {
             //Combine the results into one array
             for (let j = 0; j < numResults; j++) {
-                masterList = masterList.concat(results[j].recipes);
+                let list = results[j].recipes;
+                list.map(element => { element.id = element.id.toString() }); //Coerce the ids to strings
+                masterList = masterList.concat(list);
             }
             let numRecipes = masterList.length;
 
@@ -172,7 +174,7 @@ app.get('/search/:type/:terms/:qty', async (req, res) => {
                     let next = masterList[l];
 
                     //Duplicate id found - add the counts from the second one to the first
-                    if (current.id.toString() === next.id.toString()) {
+                    if (current.id === next.id) {
                         current.inName += next.inName;
                         current.inIngs += next.inIngs;
 
