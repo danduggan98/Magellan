@@ -4,9 +4,8 @@
 
 //TO-DO
 // Finish search bar + search algorithm
-    // Make secondary sort something other than chef name (popularity?)
+    // Make tertiary sort something other than id (similarity/length? popularity?)
     // Make plurals and singulars give same results (i.e. sandwich vs. sandwiches, leaf vs. leaves, salad vs salads, etc.)
-    // RESULTS SHOW IN WRONG ORDER!!!!
     // SANITIZE INPUTS DEAR GOD
     // 'See all/more' option allows you to slide through sets of the data
     // Search card - cut off long titles with ellipses, lower max height
@@ -203,7 +202,6 @@ app.get('/search/:type/:terms/:qty', async (req, res) => {
 
         //Pull just the ids out of each result as strings
         const topResultsRaw = masterList.slice(0, limit).map(element => element.id + '');
-        console.log("RAW DATA:", masterList.slice(0, 9));
 
         //Retrieve all info about each result from the database
         const topResults = topResultsRaw.map(element => ObjectId(element));
