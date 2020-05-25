@@ -44,7 +44,6 @@ function trimData(data) {
             let data = '';
             let threshold = 0; //Index that seperates the name and ingredients
 
-            const recipeID = element._id;
             const name = element.recipeName;
             const ings = element.ingredients;
 
@@ -57,12 +56,11 @@ function trimData(data) {
                 if (!name) threshold = data.length;
             }
 
-            let item = {
-                id: recipeID,
+            return {
+                id: element._id.toString(),
                 data: trimData(data),
                 threshold: threshold
             }
-            return item;
         });
         console.log('done');
 
@@ -70,12 +68,11 @@ function trimData(data) {
         process.stdout.write('  > Finding all unique words ... ');
         const numResults = trimmedResults.length;
         let lastWordIndex = 0;
-        let indexKeys = [];
+        let indexKeys = []; //Stores the unique words
 
         for (let i = 0; i < numResults; i++) {
             const nextItem = trimmedResults[i].data;
             const nextItemLen = nextItem.length;
-            lastWordIndex = 0;
 
             //Isolate each word seperated by spaces and store it if not seen yet
             for (let j = 0; j < nextItemLen; j++) {
@@ -89,6 +86,7 @@ function trimData(data) {
                     }
                 }
             }
+            lastWordIndex = 0;
         }
         console.log('done');
 
