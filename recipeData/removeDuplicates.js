@@ -18,13 +18,14 @@
             const nextFile = args[i];
             const jsonData = JSON.parse(fs.readFileSync(nextFile));
             const recipes = jsonData.data;
+            let numRecipes = recipes.length;
 
             //Go through the file and find the indexes of each duplicate, if any exist
-            for (let j = 0; j < recipes.length; j++) {
+            for (let j = 0; j < numRecipes; j++) {
                 let current = recipes[j];
                 let duplicates = [];
 
-                for (let k = j + 1; k < recipes.length; k++) {
+                for (let k = j + 1; k < numRecipes; k++) {
                     let next = recipes[k];
 
                     //Same author and recipe name = duplicate found - add index to list of duplicates
@@ -40,7 +41,6 @@
                     console.log('Duplicates:', duplicates.map(idx => idx + 3))
 
                     //Determine which one to keep
-                    let finalChoice;
                     let candidates = [];
                     let maxScore = 0;
 
@@ -63,7 +63,7 @@
                     //Step 2 - Find all items with the max score
                     console.log('Duplicates:', duplicates.map(idx => idx + 3))
 
-                    finalChoice = candidates.sort((a, b) => { //Sort them based on whether the imageURL is present
+                    let finalChoice = candidates.sort((a, b) => { //Sort them based on whether the imageURL is present
                         return !!recipes[b].imageURL - !!recipes[a].imageURL;
                     })[0];
                     console.log('Candidates:', candidates.map(idx => idx + 3))
@@ -74,9 +74,18 @@
                             duplicates.splice(z, 1);
                         }
                     }
+
                     console.log('Remaining duplicates:', duplicates.map(idx => idx + 3), '\n');
+
+                    //Remove all duplicates
+                    for (let y = 0; y < duplicates.length; y++) {
+                        recipes.splice(duplicates[y], 1);
+                        numRecipes--;
+                        duplicates = duplicates.map(idx => idx - 1);
+                    }
                 }
             }
+            recipes.map(element => console.log(element.recipeName));
         }
     }
     catch (err) {
