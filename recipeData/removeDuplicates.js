@@ -32,6 +32,8 @@
                 let current = recipes[j];
                 let duplicates = [];
 
+                recipes[j].author = fixAuthorName(recipes[j].author); //Properly format the author
+
                 for (let k = j + 1; k < numRecipes; k++) {
                     let next = recipes[k];
 
@@ -100,3 +102,17 @@
         console.log('Error in removeDuplicates:', err);
     }
 })();
+
+//Convert an author name from all caps to normal
+function fixAuthorName(name) {
+    let fixedName = name.toString().toLowerCase(); //Make lowercase
+    fixedName = fixedName.charAt(0).toUpperCase() + fixedName.slice(1); //Capitalize first letter
+
+    //Capitalize the rest
+    for (let i = 0; i < fixedName.length; i++) {
+        if (fixedName.charAt(i) === ' ') {
+            fixedName = fixedName.slice(0, i+1) + fixedName.charAt(i+1).toUpperCase() + fixedName.slice(i+2);
+        }
+    }
+    return fixedName;
+}

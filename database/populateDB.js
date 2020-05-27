@@ -53,9 +53,8 @@
             const jsonData = JSON.parse(fs.readFileSync(current.filePath)); //Read through the JSON file
             const recipes = jsonData.data;
 
-            //Fix author names and add a 'source' property
+            //Add a 'source' property
             const cleanedRecipes = recipes.map(nextRecipe => {
-                nextRecipe.author = fixAuthorName(nextRecipe.author);
                 nextRecipe.source = current.source;
                 return nextRecipe;
             });
@@ -73,16 +72,3 @@
     }
 })();
 
-//Convert an author name from all caps to normal
-function fixAuthorName(name) {
-    let fixedName = name.toString().toLowerCase(); //Make lowercase
-    fixedName = fixedName.charAt(0).toUpperCase() + fixedName.slice(1); //Capitalize first letter
-
-    //Capitalize the rest
-    for (let i = 0; i < fixedName.length; i++) {
-        if (fixedName.charAt(i) === ' ') {
-            fixedName = fixedName.slice(0, i+1) + fixedName.charAt(i+1).toUpperCase() + fixedName.slice(i+2);
-        }
-    }
-    return fixedName;
-}
