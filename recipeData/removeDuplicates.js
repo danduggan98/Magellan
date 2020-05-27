@@ -85,7 +85,7 @@
             console.log(' done');
             
             //Put data into a named array and convert to formatted JSON
-            const dataToWrite = JSON.stringify({ data: recipes }, null, 2);
+            const dataToWrite = JSON.stringify({ data: recipes }, null, 1);
 
             //Add data to a new file in the same folder as the original
             const newFileName = nextFile.slice(0,-8) + 'Clean.json';
