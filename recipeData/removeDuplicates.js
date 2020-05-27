@@ -21,17 +21,18 @@
             
             const jsonData = JSON.parse(fs.readFileSync(nextFile));
             const recipes = jsonData.data;
+            let numRecipes = recipes.length;
 
             console.log(`\n- Processing "${nextFile}"`);
             process.stdout.write(`  > Cleaning data now ...`);
             console.time('  > Completed successfully in');
 
             //Go through the file and find the indexes of any duplicates
-            for (let j = 0; j < recipes.length; j++) {
+            for (let j = 0; j < numRecipes; j++) {
                 let current = recipes[j];
                 let duplicates = [];
 
-                for (let k = j + 1; k < recipes.length; k++) {
+                for (let k = j + 1; k < numRecipes; k++) {
                     let next = recipes[k];
 
                     //Same author and recipe name = duplicate found - add index to list of duplicates
@@ -66,16 +67,23 @@
                     let itemsToRemove = duplicates.slice(1); //Keep the top scoring result
 
                     for (let m = 0; m < itemsToRemove.length; m++) {
-                        recipes.splice(itemsToRemove[m].idx, 1);
-                        itemsToRemove = itemsToRemove.map(element => --element.idx); //Decrement each index since the array has shrunk
+                        let nxtIdx = itemsToRemove[m].idx;
+                        recipes.splice(nxtIdx, 1);
+                        numRecipes--;
+
+                        //Decrement each remaining index that comes later, since the array has shrunk
+                        for (let n = m + 1; n < itemsToRemove.length; n++) {
+                            let curIdx = itemsToRemove[n].idx;
+                            if (curIdx > nxtIdx) curIdx--;
+                        }
                     }
                 }
-                if (j % Math.ceil((recipes.length / 7)) === 0) process.stdout.write('.'); //Visual progress indicator
+                if (j % Math.ceil((numRecipes / 7)) === 0) process.stdout.write('.'); //Visual progress indicator
             }
             console.log(' done');
             
-            //Put data into a named array and convert to JSON
-            const dataToWrite = JSON.stringify({ data: recipes });
+            //Put data into a named array and convert to formatted JSON
+            const dataToWrite = JSON.stringify({ data: recipes }, null, 2);
 
             //Add data to a new file in the same folder as the original
             const newFileName = nextFile.slice(0,-8) + 'Clean.json';
