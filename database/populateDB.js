@@ -10,7 +10,7 @@
 
         const DATA_FILES = [
             {
-                filePath: root + 'FoodNetworkRecipeData.json',
+                filePath: root + 'FoodNetwork/FoodNetworkDataClean.json',
                 source: 'Food Network'
             }
         ];
