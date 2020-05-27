@@ -1,6 +1,5 @@
 //
 //  Removes all duplicate recipes from a recipe data JSON file
-//  CHANGE AUTHOR NAME HERE, RENAME TO CLEANDATA.JS
 //
 //     Notes:
 //       - The name of the file is passed in as a command line argument
@@ -20,19 +19,23 @@
             const nextFile = args[i];
             
             const jsonData = JSON.parse(fs.readFileSync(nextFile));
-            const recipes = jsonData.data;
+            let recipes = jsonData.data;
             let numRecipes = recipes.length;
 
             console.log(`\n- Processing "${nextFile}"`);
             process.stdout.write(`  > Cleaning data now ...`);
             console.time('  > Completed successfully in');
 
+            //Properly format the authors
+            recipes = recipes.map(element => {
+                element.author = fixAuthorName(element.author);
+                return element;
+            });
+
             //Go through the file and find the indexes of any duplicates
             for (let j = 0; j < numRecipes; j++) {
                 let current = recipes[j];
                 let duplicates = [];
-
-                recipes[j].author = fixAuthorName(recipes[j].author); //Properly format the author
 
                 for (let k = j + 1; k < numRecipes; k++) {
                     let next = recipes[k];
