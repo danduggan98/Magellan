@@ -69,17 +69,17 @@
                     });
 
                     //Remove all duplicates
-                    let itemsToRemove = duplicates.slice(1); //Keep the top scoring result
+                    duplicates.shift(); //Remove the top scoring (first) result
 
-                    for (let m = 0; m < itemsToRemove.length; m++) {
-                        let nxtIdx = itemsToRemove[m].idx;
-                        recipes.splice(nxtIdx, 1);
+                    for (let m = 0; m < duplicates.length; m++) {
+                        let curIdx = duplicates[m].idx;
+                        recipes.splice(curIdx, 1);
                         numRecipes--;
 
-                        //Decrement each remaining index that comes later, since the array has shrunk
-                        for (let n = m + 1; n < itemsToRemove.length; n++) {
-                            let curIdx = itemsToRemove[n].idx;
-                            if (curIdx > nxtIdx) curIdx--;
+                        //After shrinking the array, decrement the index of each recipe which would have shifted down
+                        for (let n = m + 1; n < duplicates.length; n++) {
+                            let nxt = duplicates[n];
+                            if (nxt.idx > curIdx) nxt.idx--;
                         }
                     }
                 }
