@@ -20,7 +20,7 @@
             
             const jsonData = JSON.parse(fs.readFileSync(nextFile));
             let recipes = jsonData.data;
-            let numRecipes = recipes.length;
+            let numRemoved = 0;
 
             console.log(`\n- Processing "${nextFile}"`);
             process.stdout.write(`  > Cleaning data now ...`);
@@ -33,22 +33,21 @@
             });
 
             //Go through the file and find the indexes of any duplicates
-            for (let j = 0; j < numRecipes; j++) {
+            for (let j = 0; j < recipes.length; j++) {
                 let current = recipes[j];
                 let duplicates = [];
 
-                for (let k = j + 1; k < numRecipes; k++) {
+                for (let k = 0; k < recipes.length; k++) {
                     let next = recipes[k];
 
                     //Same author and recipe name = duplicate found - add index to list of duplicates
                     if (current.recipeName === next.recipeName && current.author === next.author) {
-                        if (!duplicates.length) duplicates.push({ idx: j, score: 0 });
                         duplicates.push({ idx: k, score: 0 });
                     }
                 }
 
                 //Duplicates found - determine which one to keep
-                if (duplicates.length) {
+                if (duplicates.length > 1) {
 
                     //Count the number of non-null properties other than the imageURL
                     for (let l = 0; l < duplicates.length; l++) {
@@ -73,9 +72,11 @@
 
                     for (let m = 0; m < duplicates.length; m++) {
                         let curIdx = duplicates[m].idx;
-                        recipes.splice(curIdx, 1);
-                        numRecipes--;
 
+                        recipes.splice(curIdx, 1);
+                        numRemoved++;
+                        j--; //Array has shifted - jump back so that the next iteration will find the item that followed the deleted one. Otherwise, some are skipped.
+                        
                         //After shrinking the array, decrement the index of each recipe which would have shifted down
                         for (let n = m + 1; n < duplicates.length; n++) {
                             let nxt = duplicates[n];
@@ -83,7 +84,7 @@
                         }
                     }
                 }
-                if (j % Math.ceil((numRecipes / 7)) === 0) process.stdout.write('.'); //Visual progress indicator
+                if (j % Math.ceil(recipes.length / 7) === 0) process.stdout.write('.'); //Visual progress indicator
             }
             console.log(' done');
             
@@ -97,6 +98,11 @@
             fs.writeFile(newFileName, dataToWrite, (err) => {
                 if (err) throw err;
                 console.log('done');
+
+                numRemoved
+                ? console.log(`  > Deleted ${numRemoved} duplicate recipes`)
+                : console.log('  > Nothing removed - data is already clean');
+
                 console.timeEnd('  > Completed successfully in');
             });
         }
