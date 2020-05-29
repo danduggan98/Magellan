@@ -4,15 +4,18 @@
 
 //TO-DO
 // Finish search bar + search algorithm
-    // Make tertiary sort something other than id (similarity/length? popularity?)
-    // Make plurals and singulars give same results (i.e. sandwich vs. sandwiches, leaf vs. leaves, salad vs salads, etc.)
+    // Make tertiary sort something other than id (similarity/length? popularity?), make sort function standalone and dynamic
+    // Prioritize items where the search terms are grouped in order (e.g. search for 'potato salad' => 'German Potato Salad' > 'Sweet Potato Pecan Salad')
+    // Make plurals and singulars give same results (e.g. sandwich vs. sandwiches, leaf vs. leaves, salad vs salads, etc.)
     // SANITIZE INPUTS DEAR GOD
     // 'See all/more' option allows you to slide through sets of the data
     // Search card - cut off long titles with ellipses, lower max height
 
+// PORT TO TYPESCRIPT!!!
+
 // Mini search bar above recipe page
-// Clean + finalize data in Mongo (REMOVE DUPLICATES, ETC.)
 // SCRAPE + ADD TASTE OF HOME, BON APPETIT, AND OTHERS
+// Name fixer should properly capitalize names with prefixes, e.g. 'McCargo', etc. (store prefix list in resources?)
 // Figure out how to rebuild database while keeping customer recipes
 
 // HOST ON AMAZON!!!!!!!!!!!!!!
