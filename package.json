@@ -5,6 +5,7 @@
     "license": "MIT",
     "version": "2.1.0",
     "private": true,
+    "type": "module",
     "scripts": {
         "start": "npm run prod",
         "server": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.js",
@@ -23,15 +24,15 @@
         "concurrently": "^5.1.0",
         "dotenv": "^8.2.0",
         "express": "^4.17.1",
+        "mongodb": "^3.5.8",
+        "node": "^14.3.0",
         "nodemon": "^2.0.4",
         "react": "^16.13.1",
         "react-dom": "16.13.1",
         "react-helmet": "^6.0.0",
         "react-router-dom": "^5.1.2",
         "react-scripts": "^3.4.1",
-        "react-spinners": "^0.8.1",
-        "ts-node": "^8.10.2",
-        "typescript": "^3.9.3"
+        "react-spinners": "^0.8.1"
     },
     "eslintConfig": {
         "extends": "react-app"
@@ -48,5 +49,18 @@
             "last 1 safari version"
         ]
     },
-    "proxy": "http://localhost:5000"
+    "proxy": "http://localhost:5000",
+    "devDependencies": {
+        "@types/app-root-path": "^1.2.4",
+        "@types/concurrently": "^5.2.0",
+        "@types/express": "^4.17.6",
+        "@types/mongodb": "^3.5.20",
+        "@types/node": "^14.0.6",
+        "@types/nodemon": "^1.19.0",
+        "@types/react": "^16.9.35",
+        "@types/react-dom": "^16.9.8",
+        "@types/react-router-dom": "^5.1.5",
+        "ts-node": "^8.10.2",
+        "typescript": "^3.9.3"
+    }
 }
