@@ -29,7 +29,7 @@ function trimData(data) {
         try {
             console.time('- Indexing completed in');
             //Connect to the database client
-            const connection = require('./connectDB.js').client;
+            const connection = require('./connectDB.js').default.client;
             //Connect to our main database
             const database = yield connection.connect();
             const recipeDB = database.db('recipeData');

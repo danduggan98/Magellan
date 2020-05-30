@@ -16,7 +16,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const fs = require('fs');
-            const root = require('./app-root-path') + 'src/recipeData/';
+            //import app-root-path from ('app-root-path');
+            const root = require('../../app-root-path') + 'src/recipeData/';
             const DATA_FILES = [
                 {
                     filePath: root + 'FoodNetwork/FoodNetworkDataClean.json',

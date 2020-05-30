@@ -20,6 +20,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 // 'See all/more' option allows you to slide through sets of the data
 // Search card - cut off long titles with ellipses, lower max height
 // PORT TO TYPESCRIPT!!!
+// - ES6 imports
+// - Adhere to Crockford style conventions
 // Mini search bar above recipe page
 // Change vs code format/line space settings
 // SCRAPE + ADD TASTE OF HOME, BON APPETIT, AND OTHERS
@@ -40,12 +42,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 const express = require('express');
 const mongo = require('mongodb');
 const resources = require('./resources.js');
-const dbConnect = require('./database/connectDB.js');
+const dbConnect = require('./database/connectDB.js').default;
 //Constants
 const ObjectId = mongo.ObjectID;
 let recipeCollection, indexCollection; //Persistent connections for each collection
 const validMongoID = /^[0-9a-fA-F]{24}$/;
-const port = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5000;
 //Automatically connect to database, store the connection for reuse
 (function connectToMongo() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -228,7 +230,7 @@ app.use((err, req, res, next) => {
 });
 ////////// LISTENER \\\\\\\\\\
 //Server listens on native port, or on 5000 if in a local environment
-const server = app.listen(port, () => {
-    console.log('- Magellan server listening on port', port);
+const server = app.listen(PORT, () => {
+    console.log('- Magellan server listening on port', PORT);
 });
 //# sourceMappingURL=server.js.map
