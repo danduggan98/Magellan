@@ -1,4 +1,4 @@
-interface recipe {
+interface recipeData {
     URL: string,
     imageURL: string,
     author: string,
@@ -11,5 +11,6 @@ interface recipe {
     cookTime?: string,
     yield?: string,
     ingredients: string[],
-    directions: string[]
+    directions: string[],
+    source?: string
 }
