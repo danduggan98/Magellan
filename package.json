@@ -3,32 +3,50 @@
     "description": "The best recipes on the web, all in one place",
     "authors": "Dan Duggan",
     "license": "MIT",
-    "version": "1.1.0",
+    "version": "2.1.0",
     "private": true,
     "scripts": {
         "start": "npm run prod",
-        "server": "nodemon server.js",
-        "magellan": "npm start --prefix magellan",
-        "build": "react-scripts build",
+        "server": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.js",
+        "magellan": "react-scripts start",
+        "build": "tsc && react-scripts build",
         "live": "serve -l 3000 -s build",
         "dev": "concurrently \"npm run server\" \"npm run magellan\"",
         "prod": "concurrently \"npm run server\" \"npm run live\"",
-        "rebuild_database": "node database/populateDB.js && node database/dbIndexing.js"
+        "rebuild_database": "ts-node src/database/populateDB.js && ts-node src/database/indexDB.js"
     },
     "dependencies": {
+        "@testing-library/jest-dom": "^4.2.4",
+        "@testing-library/react": "^9.5.0",
+        "@testing-library/user-event": "^7.2.1",
         "app-root-path": "^3.0.0",
         "concurrently": "^5.1.0",
         "dotenv": "^8.2.0",
-        "express": "4.17.1",
-        "nodemon": "^2.0.3",
+        "express": "^4.17.1",
+        "nodemon": "^2.0.4",
         "react": "^16.13.1",
         "react-dom": "16.13.1",
         "react-helmet": "^6.0.0",
         "react-router-dom": "^5.1.2",
-        "react-spinners": "^0.8.1"
+        "react-scripts": "^3.4.1",
+        "react-spinners": "^0.8.1",
+        "ts-node": "^8.10.2",
+        "typescript": "^3.9.3"
     },
-    "devDependencies": {
-        "react-scripts": "^3.4.1"
+    "eslintConfig": {
+        "extends": "react-app"
+    },
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
     },
     "proxy": "http://localhost:5000"
 }
