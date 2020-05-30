@@ -2,15 +2,16 @@
 // Populates the database with our JSON recipe data
 //
 
+//Grab modules
+import fs from 'fs';
+import envPath from 'app-root-path';
+
 //Main function - calls itself automatically and adds our JSON data to the database
 (async function populateDB() {
     try {
-        const fs = require('fs');
-        const root = require('./app-root-path') + 'src/recipeData/';
-
         const DATA_FILES = [
             {
-                filePath: root + 'FoodNetwork/FoodNetworkDataClean.json',
+                filePath: envPath + 'src/recipeData/FoodNetwork/FoodNetworkDataClean.json',
                 source: 'Food Network'
             }
         ];
@@ -71,4 +72,3 @@
         console.log("Error in 'populateDB':", err);
     }
 })();
-
