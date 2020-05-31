@@ -23,7 +23,7 @@ const DATA_FILES: RecipeDataFile[] = [
     }
 ];
 
-export default {
+export {
     VALID_SEPERATORS,
     IGNORED_WORDS,
     DATA_FILES
