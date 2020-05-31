@@ -11,7 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-const resources = require('../resources.js');
+const resources = require('../resources.js').default;
 //Trim off unnecessary characters from a string
 function trimData(data) {
     let trimmed = data.toString().toLowerCase();

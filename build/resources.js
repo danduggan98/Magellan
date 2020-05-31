@@ -1,4 +1,3 @@
-"use strict";
 //List of symbols which are allowed to seperate search terms
 const VALID_SEPERATORS = [
     ' ', '-', '/', ',', '+', '&'
@@ -13,7 +12,7 @@ const IGNORED_WORDS = [
     'quarts', 'recipe', 'recipes', 'recommended', 'remove', 'ripe', 'room', 'round', 's', 'see', 'self', 'since', 'small', 'soon', 'store', 't', 'table', 'tablespoon', 'tablespoons',
     'teach', 'teaspoon', 'teaspoons', 'temperature', 'the', 'their', 'thick', 'to', 'type', 'under', 'until', 'very', 'we', 'wet', 'with', 'when', 'won', 'you', 'your'
 ];
-module.exports = {
+export default {
     VALID_SEPERATORS,
     IGNORED_WORDS
 };

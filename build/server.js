@@ -22,6 +22,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 // PORT TO TYPESCRIPT!!!
 // - ES6 imports
 // - Adhere to Crockford style conventions
+// - Change package to run everything from the build folder
 // Mini search bar above recipe page
 // Change vs code format/line space settings
 // SCRAPE + ADD TASTE OF HOME, BON APPETIT, AND OTHERS
@@ -41,7 +42,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 //Imports
 const express = require('express');
 const mongo = require('mongodb');
-const resources = require('./resources.js');
+const resources = require('./resources.js').default;
 const dbConnect = require('./database/connectDB.js').default;
 //Constants
 const ObjectId = mongo.ObjectID;

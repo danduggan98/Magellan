@@ -2,21 +2,22 @@
 // Creates and exports a shared Mongo database client
 //
 //Point dotenv to the .env file in the root directory
-import ENV_PATH from 'app-root-path';
+import envPath from 'app-root-path';
 import dotenv from 'dotenv';
-dotenv.config({ path: ENV_PATH + '/.env' });
-//Set up Mongo client
-import { MongoClient } from 'mongodb';
+dotenv.config({ path: envPath + '/.env' });
+//Set up Mongo client if our environment URI is found
+import mongodb from 'mongodb';
+const mongoURI = process.env.MONGO_URI;
 let client;
-const mongoUri = process.env.MONGO_URI;
-if (mongoUri) {
-    client = new MongoClient(mongoUri, {
+if (mongoURI) {
+    client = new mongodb.MongoClient(mongoURI, {
         useNewUrlParser: true,
         useUnifiedTopology: true
     });
+    console.log('- Retrieved Mongo client');
 }
 else {
     throw new Error('Mongo URI not found in environment - unable to connect.');
 }
-export default { client };
+export default client;
 //# sourceMappingURL=connectDB.js.map
