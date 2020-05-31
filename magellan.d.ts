@@ -14,3 +14,8 @@ interface RecipeData {
     directions: string[],
     source?: string
 }
+
+interface RecipeDataFile {
+    filePath: string,
+    source: string
+}
