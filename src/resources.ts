@@ -1,11 +1,11 @@
 
 //List of symbols which are allowed to seperate search terms
-const VALID_SEPERATORS = [
+const VALID_SEPERATORS: string[] = [
     ' ', '-', '/', ',', '+', '&'
 ];
 
 //Alphabetical list of words to skip over when indexing the database or parsing search terms
-const IGNORED_WORDS = [
+const IGNORED_WORDS: string[] = [
     'a', 'about', 'addition', 'additional', 'after', 'all', 'and', 'approximate', 'approximately', 'as', 'at', 'because', 'been', 'before', 'better', 'best', 'big', 'boil','boiling',
     'bold', 'bought', 'but', 'buy', 'by', 'can', 'chop', 'chopped', 'clean', 'cleaned', 'cup', 'cups', 'cut', 'dice', 'diced', 'dirty', 'don', 'dry', 'el', 'even', 'evenly', 'ever',
     'every', 'exact', 'exactly', 'f', 'fine', 'finely', 'follow', 'follows', 'for', 'from', 'gallon', 'gallons', 'huge', 'hard', 'i', 'ideal', 'ideally', 'if', 'in', 'inch', 'inches',
@@ -15,7 +15,16 @@ const IGNORED_WORDS = [
     'teach', 'teaspoon', 'teaspoons', 'temperature', 'the', 'their', 'thick', 'to', 'type', 'under', 'until', 'very', 'we', 'wet', 'with', 'when', 'won', 'you', 'your'
 ];
 
-module.exports = {
+//List of all files
+const DATA_FILES: RecipeDataFile[] = [
+    {
+        filePath: 'data/FoodNetwork/FoodNetworkDataClean.json',
+        source:   'Food Network'
+    }
+];
+
+export default {
     VALID_SEPERATORS,
-    IGNORED_WORDS
+    IGNORED_WORDS,
+    DATA_FILES
 };
