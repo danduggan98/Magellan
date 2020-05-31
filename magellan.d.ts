@@ -1,4 +1,4 @@
-interface recipeData {
+interface RecipeData {
     URL: string,
     imageURL: string,
     author: string,
