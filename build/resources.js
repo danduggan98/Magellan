@@ -12,8 +12,16 @@ const IGNORED_WORDS = [
     'quarts', 'recipe', 'recipes', 'recommended', 'remove', 'ripe', 'room', 'round', 's', 'see', 'self', 'since', 'small', 'soon', 'store', 't', 'table', 'tablespoon', 'tablespoons',
     'teach', 'teaspoon', 'teaspoons', 'temperature', 'the', 'their', 'thick', 'to', 'type', 'under', 'until', 'very', 'we', 'wet', 'with', 'when', 'won', 'you', 'your'
 ];
+//List of all files
+const DATA_FILES = [
+    {
+        filePath: 'data/FoodNetwork/FoodNetworkDataClean.json',
+        source: 'Food Network'
+    }
+];
 export default {
     VALID_SEPERATORS,
-    IGNORED_WORDS
+    IGNORED_WORDS,
+    DATA_FILES
 };
 //# sourceMappingURL=resources.js.map
