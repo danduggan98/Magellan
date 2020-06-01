@@ -2,40 +2,33 @@
 // Populates the database with our JSON recipe data
 //
 
-//Grab modules
 import fs from 'fs';
-import envPath from 'app-root-path';
+import client from './connectDB';
+import { DATA_FILES } from '../resources';
+import { CommandCursorResult, Collection } from 'mongodb';
 
 //Main function - calls itself automatically and adds our JSON data to the database
 (async function populateDB() {
     try {
-        const DATA_FILES = [
-            {
-                filePath: envPath + 'src/recipeData/FoodNetwork/FoodNetworkDataClean.json',
-                source: 'Food Network'
-            }
-        ];
-
         //Connect to Mongo
-        const connection = require('./connectDB.js').client;
-        const database = await connection.connect();
+        const database = await client.connect();
         const recipeDB = database.db("recipeData");
 
         console.log("- Connected to Mongo cluster - populating recipes database");
         console.time('');
 
         //Rebuild the recipes collection from scratch
-        const collName = 'recipes';
-        let coll = await recipeDB.listCollections({name: collName}).next();
+        const collName: string = 'recipes';
+        const collExists: CommandCursorResult = await recipeDB.listCollections({name: collName}).next();
 
         //Collection already exists - delete it
-        if (coll) {
+        if (collExists) {
             process.stdout.write('  > Found recipes collection. Deleting now ... ');
             await recipeDB.dropCollection(collName);
             console.log('done');
         }
         else {
-            console.log('  > Recipes collection not found')
+            console.log('  > Recipes collection not found');
         }
 
         //Add the collection
@@ -43,16 +36,18 @@ import envPath from 'app-root-path';
         await recipeDB.createCollection(collName);
         console.log('done');
 
-        coll = recipeDB.collection(collName); //Jump to our collection
+        let recipesColl: Collection = recipeDB.collection(collName); //Jump to our collection
         console.log('  > Inserting all recipes');
 
         //Add each set of recipes to our collection
         for (let i = 0; i < DATA_FILES.length; i++) {
             const current = DATA_FILES[i];
 
+            //Read through the JSON file
             process.stdout.write(`    * Adding recipes from ${current.source} ... `);
-            const jsonData = JSON.parse(fs.readFileSync(current.filePath)); //Read through the JSON file
-            const recipes = jsonData.data;
+            const fileData: Buffer = fs.readFileSync(current.filePath);
+            const jsonData = JSON.parse(fileData.toString());
+            const recipes: RecipeData[] = jsonData.data;
 
             //Add a 'source' property
             const cleanedRecipes = recipes.map(nextRecipe => {
@@ -60,7 +55,7 @@ import envPath from 'app-root-path';
                 return nextRecipe;
             });
 
-            await coll.insertMany(cleanedRecipes);
+            await recipesColl.insertMany(cleanedRecipes);
             console.log('done');
         }
         database.close();
