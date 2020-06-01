@@ -1,4 +1,5 @@
 interface RecipeData {
+    _id: string,
     URL: string,
     imageURL: string,
     author: string,
@@ -18,4 +19,22 @@ interface RecipeData {
 interface RecipeDataFile {
     filePath: string,
     source: string
+}
+
+interface RecipeDataTrimmed {
+    id: string,
+    data: string,
+    threshold: number
+}
+
+interface Index {
+    key: string,
+    recipes: IndexReference[],
+    frequency: number
+}
+
+interface IndexReference {
+    id: string,
+    inName: number,
+    inIngs: number
 }
