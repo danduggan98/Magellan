@@ -17,4 +17,3 @@ export default function App() {
                 React.createElement(Route, { path: '/' },
                     React.createElement(Redirect, { to: '/home' }))))));
 }
-//# sourceMappingURL=App.js.map

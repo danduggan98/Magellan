@@ -26,4 +26,3 @@ class SearchResults extends Component {
     }
 }
 export default SearchResults;
-//# sourceMappingURL=searchResults.js.map

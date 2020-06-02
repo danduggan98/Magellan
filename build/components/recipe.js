@@ -1,12 +1,3 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
 import '../styles/recipe.css';
@@ -49,34 +40,32 @@ class Recipe extends Component {
         };
     }
     //Gather data from server JSON response
-    componentDidMount() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const res = yield fetch('/recipe/' + this.state.recipeID);
-            const data = yield res.json();
-            //Recipe not found
-            if (data.error) {
-                this.setState({ status: 0 });
-            }
-            //Recipe found
-            else {
-                this.setState({
-                    URL: data.URL,
-                    imageURL: data.imageURL,
-                    author: data.author,
-                    recipeName: data.recipeName,
-                    difficulty: data.difficulty,
-                    totalTime: data.totalTime,
-                    prepTime: data.prepTime,
-                    inactiveTime: data.inactiveTime,
-                    activeTime: data.activeTime,
-                    cookTime: data.cookTime,
-                    yield: data.yield,
-                    ingredients: data.ingredients,
-                    directions: data.directions,
-                    source: data.source
-                });
-            }
-        });
+    async componentDidMount() {
+        const res = await fetch('/recipe/' + this.state.recipeID);
+        const data = await res.json();
+        //Recipe not found
+        if (data.error) {
+            this.setState({ status: 0 });
+        }
+        //Recipe found
+        else {
+            this.setState({
+                URL: data.URL,
+                imageURL: data.imageURL,
+                author: data.author,
+                recipeName: data.recipeName,
+                difficulty: data.difficulty,
+                totalTime: data.totalTime,
+                prepTime: data.prepTime,
+                inactiveTime: data.inactiveTime,
+                activeTime: data.activeTime,
+                cookTime: data.cookTime,
+                yield: data.yield,
+                ingredients: data.ingredients,
+                directions: data.directions,
+                source: data.source
+            });
+        }
     }
     render() {
         //Recipe not found
@@ -152,4 +141,3 @@ class Recipe extends Component {
     }
 }
 export default Recipe;
-//# sourceMappingURL=recipe.js.map

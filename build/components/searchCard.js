@@ -21,4 +21,3 @@ class SearchCard extends Component {
     }
 }
 export default SearchCard;
-//# sourceMappingURL=searchCard.js.map

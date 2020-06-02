@@ -11,4 +11,3 @@ class Home extends Component {
     }
 }
 export default Home;
-//# sourceMappingURL=home.js.map

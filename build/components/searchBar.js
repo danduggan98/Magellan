@@ -1,12 +1,3 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 import React, { Component } from 'react';
 import { css } from '@emotion/core';
 import BarLoader from 'react-spinners/BarLoader';
@@ -16,7 +7,7 @@ class SearchBar extends Component {
     constructor(props) {
         super(props);
         //Launch a search in the server and store the results
-        this.getResults = () => __awaiter(this, void 0, void 0, function* () {
+        this.getResults = async () => {
             //Ensure they have entered something
             if (this.state.input) {
                 //If so, querty the db
@@ -27,8 +18,8 @@ class SearchBar extends Component {
                     loading: true,
                     emptyInput: false
                 });
-                const res = yield fetch(fetchURL); //Execute the search
-                const data = yield res.json();
+                const res = await fetch(fetchURL); //Execute the search
+                const data = await res.json();
                 //No search results
                 if (data.error) {
                     this.setState({ resultsFound: false, loading: false });
@@ -55,7 +46,7 @@ class SearchBar extends Component {
                     results: []
                 });
             }
-        });
+        };
         //Save the user's current input in state
         this.updateInput = (val) => {
             this.setState({ input: val.target.value });
@@ -117,4 +108,3 @@ class SearchBar extends Component {
     }
 }
 export default SearchBar;
-//# sourceMappingURL=searchBar.js.map
