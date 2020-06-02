@@ -20,4 +20,3 @@ else {
     throw new Error('Mongo URI not found in environment - unable to connect.');
 }
 export default client;
-//# sourceMappingURL=connectDB.js.map

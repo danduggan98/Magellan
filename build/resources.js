@@ -20,4 +20,3 @@ const DATA_FILES = [
     }
 ];
 export { VALID_SEPERATORS, IGNORED_WORDS, DATA_FILES };
-//# sourceMappingURL=resources.js.map
