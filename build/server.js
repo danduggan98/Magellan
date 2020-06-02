@@ -2,6 +2,15 @@
 //
 // Web Server
 //
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 //TO-DO
 // Finish search bar + search algorithm
 // Make tertiary sort something other than id (similarity/length? popularity?), make sort function standalone and dynamic
@@ -41,19 +50,21 @@ let recipeCollection, indexCollection; //Persistent connections for each collect
 const validMongoID = /^[0-9a-fA-F]{24}$/;
 const PORT = process.env.PORT || 5000;
 //Automatically connect to database, store the connection for reuse
-(async function connectToMongo() {
-    const database = await dbConnect.client.connect();
-    console.log('- Connected to Mongo cluster');
-    //Save connections to the collections we will use later
-    recipeCollection = database.db('recipeData').collection('recipes');
-    indexCollection = database.db('recipeData').collection('index');
+(function connectToMongo() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const database = yield dbConnect.client.connect();
+        console.log('- Connected to Mongo cluster');
+        //Save connections to the collections we will use later
+        recipeCollection = database.db('recipeData').collection('recipes');
+        indexCollection = database.db('recipeData').collection('index');
+    });
 })();
 //Set up Express app
 const app = express();
 app.use(express.static(__dirname + '/'));
 ////////// PAGES \\\\\\\\\\
 //Load a recipe
-app.get('/recipe/:recipeid', async (req, res) => {
+app.get('/recipe/:recipeid', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.recipeid;
     //Check for valid recipe id string
     if (!(validMongoID.test(id))) {
@@ -61,7 +72,7 @@ app.get('/recipe/:recipeid', async (req, res) => {
     }
     else {
         //Valid id - grab recipe from database
-        const result = await recipeCollection.findOne(ObjectId(id));
+        const result = yield recipeCollection.findOne(ObjectId(id));
         if (!result) {
             res.json({ error: 'Recipe not found' });
         }
@@ -85,12 +96,12 @@ app.get('/recipe/:recipeid', async (req, res) => {
             });
         }
     }
-});
+}));
 //Search for recipes
 // Type 'name' searches by recipe name,
 // Type 'ing' searches by ingredient
 // qty determines the number of results we want
-app.get('/search/:type/:terms/:qty', async (req, res) => {
+app.get('/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.time('  > Search execution time');
     const type = req.params.type;
     const terms = req.params.terms.toLowerCase();
@@ -129,7 +140,7 @@ app.get('/search/:type/:terms/:qty', async (req, res) => {
         }
         const query = { $or: exprList }; //Combine all expressions into a single 'or' query
         //Search!
-        const results = await indexCollection.find(query).toArray();
+        const results = yield indexCollection.find(query).toArray();
         const numResults = results.length;
         //No results
         if (!numResults) {
@@ -180,7 +191,7 @@ app.get('/search/:type/:terms/:qty', async (req, res) => {
         //Retrieve all info about each result from the database
         const topResults = topResultsRaw.map(element => ObjectId(element));
         const finalQuery = { _id: { $in: topResults } };
-        const dbResults = await recipeCollection.find(finalQuery).toArray();
+        const dbResults = yield recipeCollection.find(finalQuery).toArray();
         //Store the database results in the same order as the raw data
         const dbResultsRaw = dbResults.map(element => element._id + ''); //Pull out the ids as strings
         let finalResults = [];
@@ -201,13 +212,13 @@ app.get('/search/:type/:terms/:qty', async (req, res) => {
         res.json({ searchResults: finalResults });
         console.timeEnd('  > Search execution time');
     }
-});
+}));
 ////////// FORM HANDLERS \\\\\\\\\\
 //Login requests
-app.post('/login', async (req, res) => {
+app.post('/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const username = req.body.username;
     const password = req.body.password;
-});
+}));
 ////////// ERROR PAGES \\\\\\\\\\
 //Handle 404 errors
 app.use((req, res) => {

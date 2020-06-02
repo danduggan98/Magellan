@@ -1,7 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.DATA_FILES = exports.IGNORED_WORDS = exports.VALID_SEPERATORS = void 0;
 //List of symbols which are allowed to seperate search terms
 const VALID_SEPERATORS = [
     ' ', '-', '/', ',', '+', '&'
 ];
+exports.VALID_SEPERATORS = VALID_SEPERATORS;
 //Alphabetical list of words to skip over when indexing the database or parsing search terms
 const IGNORED_WORDS = [
     'a', 'about', 'addition', 'additional', 'after', 'all', 'and', 'approximate', 'approximately', 'as', 'at', 'because', 'been', 'before', 'better', 'best', 'big', 'boil', 'boiling',
@@ -12,6 +16,7 @@ const IGNORED_WORDS = [
     'quarts', 'recipe', 'recipes', 'recommended', 'remove', 'ripe', 'room', 'round', 's', 'see', 'self', 'since', 'small', 'soon', 'store', 't', 'table', 'tablespoon', 'tablespoons',
     'teach', 'teaspoon', 'teaspoons', 'temperature', 'the', 'their', 'thick', 'to', 'type', 'under', 'until', 'very', 'we', 'wet', 'with', 'when', 'won', 'you', 'your'
 ];
+exports.IGNORED_WORDS = IGNORED_WORDS;
 //List of all files
 const DATA_FILES = [
     {
@@ -19,4 +24,4 @@ const DATA_FILES = [
         source: 'Food Network'
     }
 ];
-export { VALID_SEPERATORS, IGNORED_WORDS, DATA_FILES };
+exports.DATA_FILES = DATA_FILES;

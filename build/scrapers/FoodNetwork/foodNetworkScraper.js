@@ -1,4 +1,20 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __asyncValues = (this && this.__asyncValues) || function (o) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+    var m = o[Symbol.asyncIterator], i;
+    return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
+    function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
+    function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
+};
 const puppeteer = require('./puppeteer');
 const fs = require('fs');
 const rl = require('readline');
@@ -9,49 +25,53 @@ const rl = require('readline');
 //REWRITE GETDIRECTIONS TO HANDLE YIELD SUBTITLES, THEN RERUN FROM START
 //
 //Main function - calls itself automatically and handles entire process
-(async function scrapeSite() {
-    try {
-        const browser = await puppeteer.launch();
-        const page = await browser.newPage();
-        page.setDefaultNavigationTimeout(0); //Let navigation take as long as it needs
-        console.log('Initialized browser and page');
-        const recipeFileName = 'FoodNetworkRecipes.txt'; //Name of file which stores our recipe ULRs
-        const JSONFileName = 'FoodNetworkRecipeData.json'; //Name of file which stores our JSON data
-        //Gather all recipes from all chefs
-        //await findAllRecipes(page, recipeFileName);
-        //Convert the recipes file to a JSON
-        await writeRecipesToJSON(page, recipeFileName, JSONFileName);
-        console.log("Scraping completed successfully");
-        await browser.close();
-    }
-    catch (err) {
-        console.log("Error in 'scrapeSite':", err);
-    }
+(function scrapeSite() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const browser = yield puppeteer.launch();
+            const page = yield browser.newPage();
+            page.setDefaultNavigationTimeout(0); //Let navigation take as long as it needs
+            console.log('Initialized browser and page');
+            const recipeFileName = 'FoodNetworkRecipes.txt'; //Name of file which stores our recipe ULRs
+            const JSONFileName = 'FoodNetworkRecipeData.json'; //Name of file which stores our JSON data
+            //Gather all recipes from all chefs
+            //await findAllRecipes(page, recipeFileName);
+            //Convert the recipes file to a JSON
+            yield writeRecipesToJSON(page, recipeFileName, JSONFileName);
+            console.log("Scraping completed successfully");
+            yield browser.close();
+        }
+        catch (err) {
+            console.log("Error in 'scrapeSite':", err);
+        }
+    });
 })();
 //Gather all recipes from all chefs
-async function findAllRecipes(page, fileName) {
-    try {
-        console.log("Gathering all recipes");
-        const stream = fs.createWriteStream(fileName); //Write stream for txt file
-        const chefs = await getChefs(page); //List of all chef pages
-        //Store links to every recipe from every chef
-        for (let i = 0; i < chefs.length; i++) {
-            await getRecipes(chefs[i], page, stream); //Grab all the chef's recipes
+function findAllRecipes(page, fileName) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            console.log("Gathering all recipes");
+            const stream = fs.createWriteStream(fileName); //Write stream for txt file
+            const chefs = yield getChefs(page); //List of all chef pages
+            //Store links to every recipe from every chef
+            for (let i = 0; i < chefs.length; i++) {
+                yield getRecipes(chefs[i], page, stream); //Grab all the chef's recipes
+            }
+            console.log("Successfully gathered all recipes");
+            stream.end();
         }
-        console.log("Successfully gathered all recipes");
-        stream.end();
-    }
-    catch (err) {
-        console.log("Error in 'findAllRecipes':", err);
-    }
+        catch (err) {
+            console.log("Error in 'findAllRecipes':", err);
+        }
+    });
 }
 //Get a list of links to every chef
-const getChefs = async (page) => {
+const getChefs = (page) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log("Gathering chef list...");
-        await page.goto('https://www.foodnetwork.com/profiles/talent'); //Page where all chefs are listed
+        yield page.goto('https://www.foodnetwork.com/profiles/talent'); //Page where all chefs are listed
         //Store the link from each list item in an array
-        const chefList = await page.evaluate(() => {
+        const chefList = yield page.evaluate(() => {
             const links = document.querySelectorAll('.m-PromoList__a-ListItem > a');
             return Array.from(links).map(link => link.href);
         });
@@ -61,23 +81,23 @@ const getChefs = async (page) => {
     catch (err) {
         console.log("Error in 'getChefs':", err);
     }
-};
+});
 //Find all recipes from a given chef
-const getRecipes = async (chefURL, page, filestream) => {
+const getRecipes = (chefURL, page, filestream) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log("Collecting all recipes for chef", chefURL.slice(44));
-        await page.goto(chefURL + '/recipes'); //Page with all the chef's recipes
+        yield page.goto(chefURL + '/recipes'); //Page with all the chef's recipes
         //Get the number of pages to evaluate
         let pageCount = 1;
         const pgNumSelector = 'li.o-Pagination__a-ListItem:nth-child(6) > a:nth-child(1)';
-        if (await page.$(pgNumSelector) != null) { //If a button to the last page exists, get the number inside it
-            pageCount = parseInt(await page.$eval(pgNumSelector, btn => btn.innerText));
+        if ((yield page.$(pgNumSelector)) != null) { //If a button to the last page exists, get the number inside it
+            pageCount = parseInt(yield page.$eval(pgNumSelector, btn => btn.innerText));
         }
         //Go through each page
         for (let i = 1; i <= pageCount; i++) {
-            await page.goto(chefURL + '/recipes/trending-/p/' + i); //Move to the next page
+            yield page.goto(chefURL + '/recipes/trending-/p/' + i); //Move to the next page
             //Store the link to each page's recipes in an array
-            const recipes = await page.evaluate(() => {
+            const recipes = yield page.evaluate(() => {
                 const path = '.o-ListRecipe > .l-List > .m-MediaBlock.o-Capsule__m-MediaBlock > .m-MediaBlock__m-TextWrap > .m-MediaBlock__a-Headline > a';
                 const links = document.querySelectorAll(path);
                 return Array.from(links).map(link => link.href);
@@ -89,7 +109,7 @@ const getRecipes = async (chefURL, page, filestream) => {
     catch (err) {
         console.log("Error in 'getRecipes':", err);
     }
-};
+});
 //Append the contents of an array to a file with a given name
 function writeArrayToFile(array, filestream) {
     try {
@@ -103,44 +123,57 @@ function writeArrayToFile(array, filestream) {
     }
 }
 //Put the data for each recipe into a JSON file
-async function writeRecipesToJSON(page, inFile, outFile) {
-    try {
-        console.log("Beginning construction of JSON file");
-        //Prepare the files to be read/written
-        const readStream = fs.createReadStream(inFile);
-        const writeStream = fs.createWriteStream(outFile);
-        const lineReader = rl.createInterface({
-            input: readStream
-        });
-        //Get the length of the recipe file (I am deeply ashamed of this)
-        let len = 0;
-        fs.readFileSync(inFile).toString().split("\n").forEach((line, i, arr) => {
-            len = arr.length;
-            return;
-        });
-        //Get the data from each url and convert it to JSON
-        let i = 0;
-        writeStream.write('{\n\t"data" : [\n');
-        console.time('Data gathering took'); //Track how long it takes to gather data from all recipes
-        for await (const line of lineReader) {
-            const data = await getData(line, page);
-            const comma = (i < len - 1) ? ',' : ''; //Add a comma if we are not at the end yet
-            writeStream.write('\t\t' + data + comma + '\n'); //Write JSON'd data to the file
-            i++;
+function writeRecipesToJSON(page, inFile, outFile) {
+    var e_1, _a;
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            console.log("Beginning construction of JSON file");
+            //Prepare the files to be read/written
+            const readStream = fs.createReadStream(inFile);
+            const writeStream = fs.createWriteStream(outFile);
+            const lineReader = rl.createInterface({
+                input: readStream
+            });
+            //Get the length of the recipe file (I am deeply ashamed of this)
+            let len = 0;
+            fs.readFileSync(inFile).toString().split("\n").forEach((line, i, arr) => {
+                len = arr.length;
+                return;
+            });
+            //Get the data from each url and convert it to JSON
+            let i = 0;
+            writeStream.write('{\n\t"data" : [\n');
+            console.time('Data gathering took'); //Track how long it takes to gather data from all recipes
+            try {
+                for (var lineReader_1 = __asyncValues(lineReader), lineReader_1_1; lineReader_1_1 = yield lineReader_1.next(), !lineReader_1_1.done;) {
+                    const line = lineReader_1_1.value;
+                    const data = yield getData(line, page);
+                    const comma = (i < len - 1) ? ',' : ''; //Add a comma if we are not at the end yet
+                    writeStream.write('\t\t' + data + comma + '\n'); //Write JSON'd data to the file
+                    i++;
+                }
+            }
+            catch (e_1_1) { e_1 = { error: e_1_1 }; }
+            finally {
+                try {
+                    if (lineReader_1_1 && !lineReader_1_1.done && (_a = lineReader_1.return)) yield _a.call(lineReader_1);
+                }
+                finally { if (e_1) throw e_1.error; }
+            }
+            writeStream.write('\t]\n}');
+            console.log("JSON file completed");
+            console.timeEnd('Data gathering took');
         }
-        writeStream.write('\t]\n}');
-        console.log("JSON file completed");
-        console.timeEnd('Data gathering took');
-    }
-    catch (err) {
-        console.log("Error in 'readRecipesToJSON':", err);
-    }
+        catch (err) {
+            console.log("Error in 'readRecipesToJSON':", err);
+        }
+    });
 }
 //Gather and store all relevant information from a recipe in JSON format
-const getData = async (recipeURL, page) => {
+const getData = (recipeURL, page) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log("Gathering data from url ...", recipeURL.slice(35));
-        await page.goto(recipeURL);
+        yield page.goto(recipeURL);
         //Selectors for each piece of data
         const selectors = {
             url: recipeURL,
@@ -156,7 +189,7 @@ const getData = async (recipeURL, page) => {
             stepClass: 'li.o-Method__m-Step'
         };
         //Get all relevant data
-        const data = await page.evaluate((selectors) => {
+        const data = yield page.evaluate((selectors) => {
             //Function which returns the inner text of an element if it exists and an empty string if it doesn't
             function getInnerText(selector) {
                 return (document.querySelector(selector) || { innerText: '' }).innerText;
@@ -245,4 +278,4 @@ const getData = async (recipeURL, page) => {
     catch (err) {
         console.log("Error in 'getData':", err);
     }
-};
+});

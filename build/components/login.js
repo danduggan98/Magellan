@@ -1,6 +1,27 @@
-import React, { Component } from 'react';
-import '../styles/login.css';
-class Login extends Component {
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const react_1 = __importStar(require("react"));
+require("../styles/login.css");
+class Login extends react_1.Component {
     constructor(props) {
         super(props);
         //Store the most recent inputs in state
@@ -22,19 +43,19 @@ class Login extends Component {
         };
     }
     render() {
-        return (React.createElement("div", { id: 'loginWrapper' },
-            React.createElement("div", { id: 'loginHeader' }, "Log In"),
-            React.createElement("form", { name: 'loginForm', target: 'hiddenFrame', onSubmit: this.submitPage },
-                React.createElement("div", { id: 'inputWrapper' },
-                    React.createElement("div", { id: 'usernameInputWrapper' },
-                        React.createElement("label", { id: 'usernameLabel', htmlFor: 'usernameInput' }, "Username:"),
-                        React.createElement("input", { name: 'UN', id: 'usernameInput', type: 'text', autoComplete: 'off', placeholder: 'Username', value: this.state.username, onChange: this.updateInput })),
-                    React.createElement("div", { id: 'passwordInputWrapper' },
-                        React.createElement("label", { id: 'passwordLabel', htmlFor: 'passwordInput' }, "Password:"),
-                        React.createElement("input", { name: 'PW', id: 'passwordInput', type: 'password', autoComplete: 'off', placeholder: 'Password', value: this.state.password, onChange: this.updateInput }))),
-                React.createElement("div", { id: 'submitButtonWrapper' },
-                    React.createElement("button", { type: 'submit', id: 'submitButton' }, "Submit"))),
-            React.createElement("iframe", { name: 'hiddenFrame', id: 'iframe', title: 'hidden' })));
+        return (react_1.default.createElement("div", { id: 'loginWrapper' },
+            react_1.default.createElement("div", { id: 'loginHeader' }, "Log In"),
+            react_1.default.createElement("form", { name: 'loginForm', target: 'hiddenFrame', onSubmit: this.submitPage },
+                react_1.default.createElement("div", { id: 'inputWrapper' },
+                    react_1.default.createElement("div", { id: 'usernameInputWrapper' },
+                        react_1.default.createElement("label", { id: 'usernameLabel', htmlFor: 'usernameInput' }, "Username:"),
+                        react_1.default.createElement("input", { name: 'UN', id: 'usernameInput', type: 'text', autoComplete: 'off', placeholder: 'Username', value: this.state.username, onChange: this.updateInput })),
+                    react_1.default.createElement("div", { id: 'passwordInputWrapper' },
+                        react_1.default.createElement("label", { id: 'passwordLabel', htmlFor: 'passwordInput' }, "Password:"),
+                        react_1.default.createElement("input", { name: 'PW', id: 'passwordInput', type: 'password', autoComplete: 'off', placeholder: 'Password', value: this.state.password, onChange: this.updateInput }))),
+                react_1.default.createElement("div", { id: 'submitButtonWrapper' },
+                    react_1.default.createElement("button", { type: 'submit', id: 'submitButton' }, "Submit"))),
+            react_1.default.createElement("iframe", { name: 'hiddenFrame', id: 'iframe', title: 'hidden' })));
     }
 }
-export default Login;
+exports.default = Login;

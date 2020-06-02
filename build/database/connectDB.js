@@ -1,16 +1,21 @@
+"use strict";
 //
 // Creates and exports a shared Mongo database client
 //
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
 //Point dotenv to the .env file in the root directory
-import envPath from 'app-root-path';
-import dotenv from 'dotenv';
-dotenv.config({ path: envPath + '/.env' });
+const app_root_path_1 = __importDefault(require("app-root-path"));
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config({ path: app_root_path_1.default + '/.env' });
 //Set up Mongo client if our environment URI is found
-import mongodb from 'mongodb';
+const mongodb_1 = __importDefault(require("mongodb"));
 const mongoURI = process.env.MONGO_URI;
 let client;
 if (mongoURI) {
-    client = new mongodb.MongoClient(mongoURI, {
+    client = new mongodb_1.default.MongoClient(mongoURI, {
         useNewUrlParser: true,
         useUnifiedTopology: true
     });
@@ -19,4 +24,4 @@ if (mongoURI) {
 else {
     throw new Error('Mongo URI not found in environment - unable to connect.');
 }
-export default client;
+exports.default = client;
