@@ -3,7 +3,7 @@
 //
 
 import fs from 'fs';
-import rootPath from 'app-root-path'
+import rootPath from 'app-root-path';
 import { CommandCursorResult, Collection } from 'mongodb';
 import client from './connectDB';
 import { DATA_FILES } from '../resources';
