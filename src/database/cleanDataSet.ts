@@ -1,26 +1,30 @@
 //
-//  Removes all duplicate recipes from a recipe data JSON file
+//  Removes all duplicates and properly formats author names in a recipe data JSON file
 //
 //     Notes:
 //       - The name of the file is passed in as a command line argument
 //       - An arbitrary number of files can be passed and processed
 //       - A duplicate is a recipe with the exact same name and author as another recipe
-//       - Keeps the duplicates with the most non-null properties, as well as images where possible
+//       - Keeps the duplicates with the most non-null properties, and favors those with images
 //
+
+import fs from 'fs';
+import rootPath from 'app-root-path';
+import { RecipeData, DuplicateRecipe } from 'magellan';
 
 // Main function - runs automatically
 (async function removeDuplicates() {
     try {
-        const fs = require('fs');
         const args = process.argv.slice(2); //Grab command line args
     
         //Apply to each file in args
         for (let i = 0; i < args.length; i++) {
-            const nextFile = args[i];
-            
-            const jsonData = JSON.parse(fs.readFileSync(nextFile));
-            let recipes = jsonData.data;
+            const nextFile = `${rootPath}/${args[i]}`;
             let numRemoved = 0;
+
+            const fileData: Buffer = fs.readFileSync(nextFile);
+            const jsonData = JSON.parse(fileData.toString());
+            let recipes: RecipeData[] = jsonData.data;
 
             console.log(`\n- Processing "${nextFile}"`);
             process.stdout.write(`  > Cleaning data now ...`);
@@ -35,14 +39,15 @@
             //Go through the file and find the indexes of any duplicates
             for (let j = 0; j < recipes.length; j++) {
                 let current = recipes[j];
-                let duplicates = [];
+                let duplicates: DuplicateRecipe[] = [];
 
                 for (let k = 0; k < recipes.length; k++) {
                     let next = recipes[k];
 
                     //Same author and recipe name = duplicate found - add index to list of duplicates
                     if (current.recipeName === next.recipeName && current.author === next.author) {
-                        duplicates.push({ idx: k, score: 0 });
+                        let dupe: DuplicateRecipe = { idx: k, score: 0 };
+                        duplicates.push(dupe);
                     }
                 }
 
@@ -62,7 +67,7 @@
                     //Sort by score, then by whether an image is present
                     duplicates.sort((a, b) => {
                         if (a.score === b.score) {
-                            return !!recipes[b.idx].imageURL - !!recipes[a.idx].imageURL;
+                            return Number(!!recipes[b.idx].imageURL) - Number(!!recipes[a.idx].imageURL);
                         }
                         return b.score - a.score;
                     });
@@ -113,7 +118,7 @@
 })();
 
 //Convert an author name from all caps to normal
-function fixAuthorName(name) {
+function fixAuthorName(name: string) {
     let fixedName = name.toString().toLowerCase(); //Make lowercase
     fixedName = fixedName.charAt(0).toUpperCase() + fixedName.slice(1); //Capitalize first letter
 
