@@ -11,6 +11,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
 //TO-DO
 // Finish search bar + search algorithm
 // Make tertiary sort something other than id (similarity/length? popularity?), make sort function standalone and dynamic
@@ -21,10 +25,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 // Search card - cut off long titles with ellipses, lower max height
 // PORT TO TYPESCRIPT!!!
 // - ES6 imports
-// - Adhere to Crockford style conventions
-// - Change package to run everything from the build folder
+// - Adhere (loosely) to Crockford style conventions
+// - Change package to run everything from the build folder and/or use ts-node
+// - Try to change back to esnext if possible
+// - Try to make types globally available, or part of a single namespace if possible
 // Mini search bar above recipe page
-// Change vs code format/line space settings
+// USE FIGMA TO MAKE PAGES CLEANER
+// Change vs code format/line space settings so everything but JSON and YAML have 4 spaces
 // SCRAPE + ADD TASTE OF HOME, BON APPETIT, AND OTHERS
 // Name fixer should properly capitalize names with prefixes, e.g. 'McCargo', etc. (store prefix list in resources?)
 // Figure out how to rebuild database while keeping customer recipes
@@ -39,20 +46,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 // Exclude ingredients
 // Vegan, gluten-free, etc. notices
 ////////// SETUP \\\\\\\\\\
-//Imports
-const express = require('express');
-const mongo = require('mongodb');
-const resources = require('./resources.js').default;
-const dbConnect = require('./database/connectDB.js').default;
+const express_1 = __importDefault(require("express"));
+const mongodb_1 = require("mongodb");
+const resources_1 = require("./resources");
+const connectDB_1 = __importDefault(require("./database/connectDB"));
 //Constants
-const ObjectId = mongo.ObjectID;
-let recipeCollection, indexCollection; //Persistent connections for each collection
 const validMongoID = /^[0-9a-fA-F]{24}$/;
-const PORT = process.env.PORT || 5000;
-//Automatically connect to database, store the connection for reuse
+const PORT = Number(process.env.PORT) || 5000;
+//Store persistent connections to our database collections
+let recipeCollection;
+let indexCollection;
+//Automatically connect to database
 (function connectToMongo() {
     return __awaiter(this, void 0, void 0, function* () {
-        const database = yield dbConnect.client.connect();
+        const database = yield connectDB_1.default.connect();
         console.log('- Connected to Mongo cluster');
         //Save connections to the collections we will use later
         recipeCollection = database.db('recipeData').collection('recipes');
@@ -60,25 +67,25 @@ const PORT = process.env.PORT || 5000;
     });
 })();
 //Set up Express app
-const app = express();
-app.use(express.static(__dirname + '/'));
+const app = express_1.default();
+app.use(express_1.default.static(__dirname + '/'));
 ////////// PAGES \\\\\\\\\\
 //Load a recipe
 app.get('/recipe/:recipeid', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.recipeid;
     //Check for valid recipe id string
-    if (!(validMongoID.test(id))) {
+    if (!validMongoID.test(id)) {
         res.json({ error: 'Recipe not found' });
     }
     else {
         //Valid id - grab recipe from database
-        const result = yield recipeCollection.findOne(ObjectId(id));
+        const result = yield recipeCollection.findOne(new mongodb_1.ObjectID(id));
         if (!result) {
             res.json({ error: 'Recipe not found' });
         }
         //Recipe found - pass each data point
         else {
-            res.json({
+            const data = {
                 URL: result.URL,
                 imageURL: result.imageURL,
                 author: result.author,
@@ -93,7 +100,8 @@ app.get('/recipe/:recipeid', (req, res) => __awaiter(void 0, void 0, void 0, fun
                 ingredients: result.ingredients,
                 directions: result.directions,
                 source: result.source
-            });
+            };
+            res.json(data);
         }
     }
 }));
@@ -111,15 +119,13 @@ app.get('/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0, voi
     let parsedTerms = [];
     let lastWordIndex = 0;
     for (let i = 0; i <= terms.length; i++) {
-        const seperators = resources.VALID_SEPERATORS; //Valid chars used to seperate search terms
-        const ignoredTerms = resources.IGNORED_WORDS; //Useless words to ignore
         //Isolate properly seperated words
-        if (seperators.includes(terms.charAt(i)) || i === terms.length) {
+        if (resources_1.VALID_SEPERATORS.includes(terms.charAt(i)) || i === terms.length) {
             let nextWord = terms.slice(lastWordIndex, i);
             //Remove whitespace, symbols, quotes, and numbers
-            nextWordClean = nextWord.trim().replace(/[!@#$%^*(){}.'"1234567890]+/g, '');
+            let nextWordClean = nextWord.trim().replace(/[!@#$%^*(){}.'"1234567890]+/g, '');
             lastWordIndex = ++i;
-            if (!ignoredTerms.includes(nextWordClean) && nextWordClean.length > 2) {
+            if (!resources_1.IGNORED_WORDS.includes(nextWordClean) && nextWordClean.length > 2) {
                 parsedTerms.push(nextWordClean);
             }
         }
@@ -150,19 +156,19 @@ app.get('/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0, voi
         //Matches found
         else {
             //Combine the results into one array
-            results.map(element => { masterList = masterList.concat(element.recipes); });
-            let numRecipes = masterList.length;
+            results.map(element => {
+                masterList = masterList.concat(element.recipes);
+            });
             //Merge items with the same recipe id
-            for (let k = 0; k < numRecipes; k++) {
+            for (let k = 0; k < masterList.length; k++) {
                 let current = masterList[k];
-                for (let l = k + 1; l < numRecipes; l++) {
+                for (let l = k + 1; l < masterList.length; l++) {
                     let next = masterList[l];
                     //Duplicate id found - add the counts from the second one to the first
                     if (current.id === next.id) {
                         current.inName += next.inName;
                         current.inIngs += next.inIngs;
                         masterList.splice(l, 1); //Remove this item
-                        numRecipes--;
                     }
                 }
             }
@@ -170,30 +176,30 @@ app.get('/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0, voi
             if (type === 'name') {
                 //Name, then ingredients
                 masterList.sort((a, b) => {
-                    if (parseFloat(a.inName) === parseFloat(b.inName)) {
-                        return parseFloat(b.inIngs) - parseFloat(a.inIngs);
+                    if (a.inName === b.inName) {
+                        return b.inIngs - a.inIngs;
                     }
-                    return parseFloat(b.inName) - parseFloat(a.inName);
+                    return b.inName - a.inName;
                 });
             }
             else {
                 //Ingredients, then name
                 masterList.sort((a, b) => {
-                    if (parseFloat(a.inIngs) === parseFloat(b.inIngs)) {
-                        return parseFloat(b.nameCount) - parseFloat(a.nameCount);
+                    if (a.inIngs === b.inIngs) {
+                        return b.inName - a.inName;
                     }
-                    return parseFloat(b.inIngs) - parseFloat(a.inIngs);
+                    return b.inIngs - a.inIngs;
                 });
             }
         }
         //Pull just the ids out of each result as strings
-        const topResultsRaw = masterList.slice(0, limit).map(element => element.id + '');
+        const topResultsRaw = masterList.slice(0, limit).map(element => element.id);
         //Retrieve all info about each result from the database
-        const topResults = topResultsRaw.map(element => ObjectId(element));
+        const topResults = topResultsRaw.map(element => new mongodb_1.ObjectID(element));
         const finalQuery = { _id: { $in: topResults } };
         const dbResults = yield recipeCollection.find(finalQuery).toArray();
         //Store the database results in the same order as the raw data
-        const dbResultsRaw = dbResults.map(element => element._id + ''); //Pull out the ids as strings
+        const dbResultsRaw = dbResults.map(element => element._id); //Pull out the ids as strings
         let finalResults = [];
         for (let m = 0; m < topResultsRaw.length; m++) {
             const next = topResultsRaw[m];
@@ -215,7 +221,7 @@ app.get('/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0, voi
 }));
 ////////// FORM HANDLERS \\\\\\\\\\
 //Login requests
-app.post('/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.post('/login', (req) => __awaiter(void 0, void 0, void 0, function* () {
     const username = req.body.username;
     const password = req.body.password;
 }));
@@ -225,7 +231,7 @@ app.use((req, res) => {
     res.status(404).send('Error 404 - Page Not Found');
 });
 //Handle 500 errors
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
     console.error(err.stack); //Log error details
     res.status(500).send('Error 500 - Internal Server Error');
 });
