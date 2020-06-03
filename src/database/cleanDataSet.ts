@@ -21,7 +21,7 @@ import { RecipeData, DuplicateRecipe } from 'magellan';
         for (let i = 0; i < args.length; i++) {
             const nextFile = args[i];
             const folderName = nextFile.slice(0, nextFile.indexOf('DataRaw.json'));
-            const nextFilePath = `${rootPath}/data/${folderName}/${args[i]}`;
+            const nextFilePath = `${rootPath}/data/${folderName}/${nextFile}`;
             let numRemoved = 0;
 
             const fileData: Buffer = fs.readFileSync(nextFilePath);
