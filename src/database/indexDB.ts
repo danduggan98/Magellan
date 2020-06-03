@@ -4,7 +4,7 @@
 
 import client from './connectDB';
 import { IGNORED_WORDS } from '../resources'
-import { RecipeData, RecipeDataTrimmed, Index, IndexReference } from 'magellan';
+import { RecipeDataResult, RecipeDataTrimmed, Index, IndexReference } from 'magellan';
 
 //Trim off unnecessary characters from a string
 function trimData(data: string): string {
@@ -31,7 +31,7 @@ function trimData(data: string): string {
         //////////  STEP 1. Store all the unique words in the database  \\\\\\\\\\
 
         process.stdout.write('  > Retrieving recipes from database ... ');
-        const results: RecipeData[] = await recipeDB.collection('recipes').find({}).toArray();
+        const results: RecipeDataResult[] = await recipeDB.collection('recipes').find({}).toArray();
         console.log('done');
 
         //Cut the results down to just the recipe name and ingredients
