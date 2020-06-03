@@ -1,3 +1,8 @@
+//
+// Useful constants and file names for use around the app
+//
+
+import { RecipeDataFile } from 'magellan';
 
 //List of symbols which are allowed to seperate search terms
 const VALID_SEPERATORS: string[] = [
