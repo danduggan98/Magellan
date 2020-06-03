@@ -16,6 +16,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = __importDefault(require("fs"));
+const app_root_path_1 = __importDefault(require("app-root-path"));
 const connectDB_1 = __importDefault(require("./connectDB"));
 const resources_1 = require("../resources");
 //Main function - calls itself automatically and adds our JSON data to the database
@@ -48,9 +49,10 @@ const resources_1 = require("../resources");
             //Add each set of recipes to our collection
             for (let i = 0; i < resources_1.DATA_FILES.length; i++) {
                 const current = resources_1.DATA_FILES[i];
+                const path = `${app_root_path_1.default}/${current.filePath}`;
                 //Read through the JSON file
                 process.stdout.write(`    * Adding recipes from ${current.source} ... `);
-                const fileData = fs_1.default.readFileSync(current.filePath);
+                const fileData = fs_1.default.readFileSync(path);
                 const jsonData = JSON.parse(fileData.toString());
                 const recipes = jsonData.data;
                 //Add a 'source' property

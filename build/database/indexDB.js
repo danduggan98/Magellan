@@ -42,7 +42,7 @@ function trimData(data) {
             console.log('done');
             //Cut the results down to just the recipe name and ingredients
             // Remove unnecessary characters, concatenate the two, and store the index that seperates them
-            process.stdout.write('  > Cleaning up recipe info ... ');
+            process.stdout.write('  > Trimming recipe info ... ');
             const trimmedResults = results.map(element => {
                 let data = '';
                 let threshold = 0; //Index that seperates the name and ingredients
