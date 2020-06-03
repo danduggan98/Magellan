@@ -3,9 +3,11 @@
 //
 
 import fs from 'fs';
+import rootPath from 'app-root-path'
+import { CommandCursorResult, Collection } from 'mongodb';
 import client from './connectDB';
 import { DATA_FILES } from '../resources';
-import { CommandCursorResult, Collection } from 'mongodb';
+import { RecipeData } from 'magellan';
 
 //Main function - calls itself automatically and adds our JSON data to the database
 (async function populateDB() {
@@ -42,10 +44,11 @@ import { CommandCursorResult, Collection } from 'mongodb';
         //Add each set of recipes to our collection
         for (let i = 0; i < DATA_FILES.length; i++) {
             const current = DATA_FILES[i];
+            const path = `${rootPath}/${current.filePath}`;
 
             //Read through the JSON file
             process.stdout.write(`    * Adding recipes from ${current.source} ... `);
-            const fileData: Buffer = fs.readFileSync(current.filePath);
+            const fileData: Buffer = fs.readFileSync(path);
             const jsonData = JSON.parse(fileData.toString());
             const recipes: RecipeData[] = jsonData.data;
 
