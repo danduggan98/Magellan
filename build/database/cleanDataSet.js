@@ -1,12 +1,12 @@
 "use strict";
 //
-//  Removes all duplicate recipes from a recipe data JSON file
+//  Removes all duplicates and properly formats author names in a recipe data JSON file
 //
 //     Notes:
 //       - The name of the file is passed in as a command line argument
 //       - An arbitrary number of files can be passed and processed
 //       - A duplicate is a recipe with the exact same name and author as another recipe
-//       - Keeps the duplicates with the most non-null properties, as well as images where possible
+//       - Keeps the duplicates with the most non-null properties, and favors those with images
 //
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -17,18 +17,26 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const fs_1 = __importDefault(require("fs"));
+const app_root_path_1 = __importDefault(require("app-root-path"));
 // Main function - runs automatically
 (function removeDuplicates() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const fs = require('fs');
             const args = process.argv.slice(2); //Grab command line args
             //Apply to each file in args
             for (let i = 0; i < args.length; i++) {
                 const nextFile = args[i];
-                const jsonData = JSON.parse(fs.readFileSync(nextFile));
-                let recipes = jsonData.data;
+                const folderName = nextFile.slice(0, nextFile.indexOf('DataRaw.json'));
+                const nextFilePath = `${app_root_path_1.default}/data/${folderName}/${args[i]}`;
                 let numRemoved = 0;
+                const fileData = fs_1.default.readFileSync(nextFilePath);
+                const jsonData = JSON.parse(fileData.toString());
+                let recipes = jsonData.data;
                 console.log(`\n- Processing "${nextFile}"`);
                 process.stdout.write(`  > Cleaning data now ...`);
                 console.time('  > Completed successfully in');
@@ -45,7 +53,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
                         let next = recipes[k];
                         //Same author and recipe name = duplicate found - add index to list of duplicates
                         if (current.recipeName === next.recipeName && current.author === next.author) {
-                            duplicates.push({ idx: k, score: 0 });
+                            let dupe = { idx: k, score: 0 };
+                            duplicates.push(dupe);
                         }
                     }
                     //Duplicates found - determine which one to keep
@@ -62,7 +71,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
                         //Sort by score, then by whether an image is present
                         duplicates.sort((a, b) => {
                             if (a.score === b.score) {
-                                return !!recipes[b.idx].imageURL - !!recipes[a.idx].imageURL;
+                                return Number(!!recipes[b.idx].imageURL) - Number(!!recipes[a.idx].imageURL);
                             }
                             return b.score - a.score;
                         });
@@ -89,8 +98,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
                 const dataToWrite = JSON.stringify({ data: recipes }, null, 1);
                 //Add data to a new file in the same folder as the original
                 const newFileName = nextFile.slice(0, -8) + 'Clean.json';
-                process.stdout.write(`  > Adding all recipes to file "${newFileName}" ... `);
-                fs.writeFile(newFileName, dataToWrite, (err) => {
+                const newFilePath = `${app_root_path_1.default}/data/${folderName}/${newFileName}`;
+                process.stdout.write(`  > Adding all recipes to file "${newFilePath}" ... `);
+                fs_1.default.writeFile(newFilePath, dataToWrite, (err) => {
                     if (err)
                         throw err;
                     console.log('done');

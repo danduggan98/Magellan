@@ -19,10 +19,12 @@ import { RecipeData, DuplicateRecipe } from 'magellan';
     
         //Apply to each file in args
         for (let i = 0; i < args.length; i++) {
-            const nextFile = `${rootPath}/${args[i]}`;
+            const nextFile = args[i];
+            const folderName = nextFile.slice(0, nextFile.indexOf('DataRaw.json'));
+            const nextFilePath = `${rootPath}/data/${folderName}/${args[i]}`;
             let numRemoved = 0;
 
-            const fileData: Buffer = fs.readFileSync(nextFile);
+            const fileData: Buffer = fs.readFileSync(nextFilePath);
             const jsonData = JSON.parse(fileData.toString());
             let recipes: RecipeData[] = jsonData.data;
 
@@ -98,9 +100,10 @@ import { RecipeData, DuplicateRecipe } from 'magellan';
 
             //Add data to a new file in the same folder as the original
             const newFileName = nextFile.slice(0,-8) + 'Clean.json';
-            process.stdout.write(`  > Adding all recipes to file "${newFileName}" ... `);
+            const newFilePath = `${rootPath}/data/${folderName}/${newFileName}`;
+            process.stdout.write(`  > Adding all recipes to file "${newFilePath}" ... `);
 
-            fs.writeFile(newFileName, dataToWrite, (err) => {
+            fs.writeFile(newFilePath, dataToWrite, (err) => {
                 if (err) throw err;
                 console.log('done');
 
