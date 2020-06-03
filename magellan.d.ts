@@ -3,7 +3,7 @@
 //
 
 //Holds each recipe in the format held by the database
-interface RecipeData {
+export interface RecipeData {
     _id: string,
     URL: string,
     imageURL: string,
@@ -22,27 +22,27 @@ interface RecipeData {
 }
 
 //Information about each JSON file to add recipes from
-interface RecipeDataFile {
+export interface RecipeDataFile {
     filePath: string,
     source: string
 }
 
 //Compressed version of a recipe used by the indexing script
-interface RecipeDataTrimmed {
+export interface RecipeDataTrimmed {
     id: string,
     data: string,
     threshold: number
 }
 
 //Format for indexes held by database
-interface Index {
+export interface Index {
     key: string,
     recipes: IndexReference[],
     frequency: number
 }
 
 //Info about each recipe stored by an index in its 'recipes' array
-interface IndexReference {
+export interface IndexReference {
     id: string,
     inName: number,
     inIngs: number
