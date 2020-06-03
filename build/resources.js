@@ -1,4 +1,7 @@
 "use strict";
+//
+// Useful constants and file names for use around the app
+//
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DATA_FILES = exports.IGNORED_WORDS = exports.VALID_SEPERATORS = void 0;
 //List of symbols which are allowed to seperate search terms
