@@ -4,6 +4,7 @@
 
 import client from './connectDB';
 import { IGNORED_WORDS } from '../resources'
+import { RecipeData, RecipeDataTrimmed, Index, IndexReference } from 'magellan';
 
 //Trim off unnecessary characters from a string
 function trimData(data: string): string {
@@ -35,7 +36,7 @@ function trimData(data: string): string {
 
         //Cut the results down to just the recipe name and ingredients
         // Remove unnecessary characters, concatenate the two, and store the index that seperates them
-        process.stdout.write('  > Cleaning up recipe info ... ');
+        process.stdout.write('  > Trimming recipe info ... ');
         const trimmedResults: RecipeDataTrimmed[] = results.map(element => {
             let data: string = '';
             let threshold: number = 0; //Index that seperates the name and ingredients
@@ -128,7 +129,7 @@ function trimData(data: string): string {
                     }
                 }
 
-                //If this word is anywhere in the ingredients, note it and searching
+                //If this word is anywhere in the ingredients, note it and stop searching
                 lastWordIndex = nextThreshold;
                 for (let l = nextThreshold; l < nextItemLen; l++) {
                     if (nextItem.charAt(l) === ' ' || l === nextItemLen) {
