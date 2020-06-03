@@ -12,9 +12,15 @@
     // Search card - cut off long titles with ellipses, lower max height
 
 // PORT TO TYPESCRIPT!!!
+// - ES6 imports
+// - Adhere (loosely) to Crockford style conventions
+// - Change package to run everything from the build folder and/or use ts-node
+// - Try to change back to esnext if possible
+// - Try to make types globally available, or part of a single namespace if possible
 
 // Mini search bar above recipe page
-// Change vs code format/line space settings
+// USE FIGMA TO MAKE PAGES CLEANER
+// Change vs code format/line space settings so everything but JSON and YAML have 4 spaces
 // SCRAPE + ADD TASTE OF HOME, BON APPETIT, AND OTHERS
 // Name fixer should properly capitalize names with prefixes, e.g. 'McCargo', etc. (store prefix list in resources?)
 // Figure out how to rebuild database while keeping customer recipes
@@ -33,21 +39,22 @@
 
 ////////// SETUP \\\\\\\\\\
 
-//Imports
-const express   = require('express');
-const mongo     = require('mongodb');
-const resources = require('./resources.js');
-const dbConnect = require('./database/connectDB.js');
+import express, { Request, Response } from 'express';
+import { ObjectID, Collection } from 'mongodb'
+import { VALID_SEPERATORS, IGNORED_WORDS } from './resources';
+import client from './database/connectDB';
 
 //Constants
-const ObjectId = mongo.ObjectID;
-let recipeCollection, indexCollection; //Persistent connections for each collection
 const validMongoID = /^[0-9a-fA-F]{24}$/;
-const port = process.env.PORT || 5000;
+const PORT = Number(process.env.PORT) || 5000;
 
-//Automatically connect to database, store the connection for reuse
+//Store persistent connections to our database collections
+let recipeCollection: Collection;
+let indexCollection: Collection;
+
+//Automatically connect to database
 (async function connectToMongo() {
-    const database = await dbConnect.client.connect();
+    const database = await client.connect();
     console.log('- Connected to Mongo cluster');
 
     //Save connections to the collections we will use later
@@ -71,7 +78,7 @@ app.get('/recipe/:recipeid', async (req, res) => {
     }
     else {
         //Valid id - grab recipe from database
-        const result = await recipeCollection.findOne(ObjectId(id));
+        const result = await recipeCollection.findOne(new ObjectID(id));
 
         if (!result) {
             res.json({ error: 'Recipe not found' });
@@ -115,18 +122,15 @@ app.get('/search/:type/:terms/:qty', async (req, res) => {
     let lastWordIndex = 0;
 
     for (let i = 0; i <= terms.length; i++) {
-        const seperators = resources.VALID_SEPERATORS; //Valid chars used to seperate search terms
-        const ignoredTerms = resources.IGNORED_WORDS; //Useless words to ignore
-
         //Isolate properly seperated words
-        if (seperators.includes(terms.charAt(i)) || i === terms.length) {
+        if (VALID_SEPERATORS.includes(terms.charAt(i)) || i === terms.length) {
             let nextWord = terms.slice(lastWordIndex, i);
 
             //Remove whitespace, symbols, quotes, and numbers
             nextWordClean = nextWord.trim().replace(/[!@#$%^*(){}.'"1234567890]+/g, '');
             lastWordIndex = ++i;
 
-            if (!ignoredTerms.includes(nextWordClean) && nextWordClean.length > 2) {
+            if (!IGNORED_WORDS.includes(nextWordClean) && nextWordClean.length > 2) {
                 parsedTerms.push(nextWordClean);
             }
         }
@@ -263,6 +267,6 @@ app.use((err, req, res, next) => {
 ////////// LISTENER \\\\\\\\\\
 
 //Server listens on native port, or on 5000 if in a local environment
-const server = app.listen(port, () => {
-    console.log('- Magellan server listening on port', port);
+const server = app.listen(PORT, () => {
+    console.log('- Magellan server listening on port', PORT);
 });
