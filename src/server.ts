@@ -43,6 +43,7 @@ import express, { Request, Response } from 'express';
 import { ObjectID, Collection } from 'mongodb'
 import { VALID_SEPERATORS, IGNORED_WORDS } from './resources';
 import client from './database/connectDB';
+import { RecipeData, RecipeDataResult, Index, IndexReference } from 'magellan';
 
 //Constants
 const validMongoID = /^[0-9a-fA-F]{24}$/;
@@ -69,23 +70,23 @@ app.use(express.static(__dirname + '/'));
 ////////// PAGES \\\\\\\\\\
 
 //Load a recipe
-app.get('/recipe/:recipeid', async (req, res) => {
+app.get('/recipe/:recipeid', async (req: Request, res: Response) => {
     const id = req.params.recipeid;
 
     //Check for valid recipe id string
-    if (!(validMongoID.test(id))) {
+    if (!validMongoID.test(id)) {
         res.json({ error: 'Recipe not found' });
     }
     else {
         //Valid id - grab recipe from database
-        const result = await recipeCollection.findOne(new ObjectID(id));
+        const result: RecipeDataResult | null = await recipeCollection.findOne(new ObjectID(id));
 
         if (!result) {
             res.json({ error: 'Recipe not found' });
         }
         //Recipe found - pass each data point
         else {
-            res.json({
+            const data: RecipeData = {
                 URL:          result.URL,
                 imageURL:     result.imageURL,
                 author:       result.author,
@@ -100,7 +101,8 @@ app.get('/recipe/:recipeid', async (req, res) => {
                 ingredients:  result.ingredients,
                 directions:   result.directions,
                 source:       result.source
-            });
+            };
+            res.json(data);
         }
     }
 });
@@ -110,7 +112,7 @@ app.get('/recipe/:recipeid', async (req, res) => {
 // Type 'ing' searches by ingredient
 // qty determines the number of results we want
 
-app.get('/search/:type/:terms/:qty', async (req, res) => {
+app.get('/search/:type/:terms/:qty', async (req: Request, res: Response) => {
     console.time('  > Search execution time');
     const type = req.params.type;
     const terms = req.params.terms.toLowerCase();
@@ -118,16 +120,17 @@ app.get('/search/:type/:terms/:qty', async (req, res) => {
     
     //Search algorithm!
     //Parse individual search terms into a list
-    let parsedTerms = [];
+    let parsedTerms: string[] = [];
     let lastWordIndex = 0;
 
     for (let i = 0; i <= terms.length; i++) {
+
         //Isolate properly seperated words
         if (VALID_SEPERATORS.includes(terms.charAt(i)) || i === terms.length) {
             let nextWord = terms.slice(lastWordIndex, i);
 
             //Remove whitespace, symbols, quotes, and numbers
-            nextWordClean = nextWord.trim().replace(/[!@#$%^*(){}.'"1234567890]+/g, '');
+            let nextWordClean = nextWord.trim().replace(/[!@#$%^*(){}.'"1234567890]+/g, '');
             lastWordIndex = ++i;
 
             if (!IGNORED_WORDS.includes(nextWordClean) && nextWordClean.length > 2) {
@@ -145,7 +148,7 @@ app.get('/search/:type/:terms/:qty', async (req, res) => {
         console.timeEnd('  > Search execution time');
     }
     else {
-        let masterList = []; //Will hold our final sorted results
+        let masterList: IndexReference[] = []; //Will hold our final sorted results
 
         //Place each term in a mongo expression
         let exprList = [];
@@ -155,7 +158,7 @@ app.get('/search/:type/:terms/:qty', async (req, res) => {
         const query = { $or: exprList }; //Combine all expressions into a single 'or' query
 
         //Search!
-        const results = await indexCollection.find(query).toArray();
+        const results: Index[] = await indexCollection.find(query).toArray();
         const numResults = results.length;
 
         //No results
@@ -166,23 +169,22 @@ app.get('/search/:type/:terms/:qty', async (req, res) => {
         //Matches found
         else {
             //Combine the results into one array
-            results.map(element => { masterList = masterList.concat(element.recipes) });
-            let numRecipes = masterList.length;
+            results.map(element => {
+                masterList = masterList.concat(element.recipes)
+            });
 
             //Merge items with the same recipe id
-            for (let k = 0; k < numRecipes; k++) {
+            for (let k = 0; k < masterList.length; k++) {
                 let current = masterList[k];
                 
-                for (let l = k + 1; l < numRecipes; l++) {
+                for (let l = k + 1; l < masterList.length; l++) {
                     let next = masterList[l];
 
                     //Duplicate id found - add the counts from the second one to the first
                     if (current.id === next.id) {
                         current.inName += next.inName;
                         current.inIngs += next.inIngs;
-
                         masterList.splice(l, 1); //Remove this item
-                        numRecipes--;
                     }
                 }
             }
@@ -191,34 +193,34 @@ app.get('/search/:type/:terms/:qty', async (req, res) => {
             if (type === 'name') {
                 //Name, then ingredients
                 masterList.sort((a, b) => {
-                    if (parseFloat(a.inName) === parseFloat(b.inName)) {
-                        return parseFloat(b.inIngs) - parseFloat(a.inIngs);
+                    if (a.inName === b.inName) {
+                        return b.inIngs - a.inIngs;
                     }
-                    return parseFloat(b.inName) - parseFloat(a.inName);
+                    return b.inName - a.inName;
                 });
             }
             else {
                 //Ingredients, then name
                 masterList.sort((a, b) => {
-                    if (parseFloat(a.inIngs) === parseFloat(b.inIngs)) {
-                        return parseFloat(b.nameCount) - parseFloat(a.nameCount);
+                    if (a.inIngs === b.inIngs) {
+                        return b.inName - a.inName;
                     }
-                    return parseFloat(b.inIngs) - parseFloat(a.inIngs);
+                    return b.inIngs - a.inIngs;
                 });
             }
         }
 
         //Pull just the ids out of each result as strings
-        const topResultsRaw = masterList.slice(0, limit).map(element => element.id + '');
+        const topResultsRaw = masterList.slice(0, limit).map(element => element.id);
 
         //Retrieve all info about each result from the database
-        const topResults = topResultsRaw.map(element => ObjectId(element));
+        const topResults = topResultsRaw.map(element => new ObjectID(element));
         const finalQuery = { _id: { $in: topResults } };
-        const dbResults = await recipeCollection.find(finalQuery).toArray();
+        const dbResults: RecipeDataResult[] = await recipeCollection.find(finalQuery).toArray();
 
         //Store the database results in the same order as the raw data
-        const dbResultsRaw = dbResults.map(element => element._id + ''); //Pull out the ids as strings
-        let finalResults = [];
+        const dbResultsRaw = dbResults.map(element => element._id); //Pull out the ids as strings
+        let finalResults: RecipeDataResult[] = [];
 
         for (let m = 0; m < topResultsRaw.length; m++) {
             const next = topResultsRaw[m];
@@ -246,7 +248,7 @@ app.get('/search/:type/:terms/:qty', async (req, res) => {
 ////////// FORM HANDLERS \\\\\\\\\\
 
 //Login requests
-app.post('/login', async (req, res) => {
+app.post('/login', async (req: Request) => {
     const username = req.body.username;
     const password = req.body.password;
 });
@@ -259,7 +261,7 @@ app.use((req, res) => {
 });
 
 //Handle 500 errors
-app.use((err, req, res, next) => {
+app.use((err: Error, req: Request, res: Response) => {
     console.error(err.stack); //Log error details
     res.status(500).send('Error 500 - Internal Server Error');
 });
