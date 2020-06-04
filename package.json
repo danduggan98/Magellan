@@ -8,13 +8,14 @@
     "types": "magellan.d.ts",
     "scripts": {
         "start": "npm run prod",
-        "server": "nodemon build/server.js",
+        "server": "ts-node src/server.ts",
+        "dev-server": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.ts",
         "magellan": "react-scripts start",
         "build": "tsc && react-scripts build",
         "live": "serve -l 3000 -s build",
         "dev": "concurrently \"npm run server\" \"npm run magellan\"",
         "prod": "concurrently \"npm run server\" \"npm run live\"",
-        "rebuild_database": "node build/database/populateDB.js && node build/database/indexDB.js"
+        "rebuild_database": "ts-node src/database/populateDB.ts && ts-node src/database/indexDB.ts"
     },
     "dependencies": {
         "@testing-library/jest-dom": "^4.2.4",
