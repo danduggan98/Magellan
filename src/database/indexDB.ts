@@ -54,7 +54,7 @@ function trimData(data: string): string {
             }
 
             let nextIndex: RecipeDataTrimmed = {
-                id: element._id,
+                id: element._id.toString(),
                 data: trimData(data),
                 threshold: threshold
             }
