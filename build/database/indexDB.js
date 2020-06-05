@@ -58,7 +58,7 @@ function trimData(data) {
                         threshold = data.length;
                 }
                 let nextIndex = {
-                    id: element._id,
+                    id: element._id.toString(),
                     data: trimData(data),
                     threshold: threshold
                 };
