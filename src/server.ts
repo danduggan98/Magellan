@@ -165,7 +165,7 @@ app.get('/search/:type/:terms/:qty', async (req: Request, res: Response) => {
         }
         //Matches found
         else {
-            //Combine the results into one array, and ensure the ids are strings
+            //Combine the results into one array
             results.map(element => {
                 masterList = masterList.concat(element.recipes);
             });
