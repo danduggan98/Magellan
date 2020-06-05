@@ -1,7 +1,7 @@
 import React from 'react';
-import Recipe from './components/recipe.js';
-import Home from './components/home.js';
-import Login from './components/login.js';
+import Recipe from './components/recipe';
+import Home from './components/home';
+import Login from './components/login';
 import {
   BrowserRouter as Router,
   Switch,
