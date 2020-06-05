@@ -26,7 +26,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // PORT TO TYPESCRIPT!!!
 // - ES6 imports
 // - Adhere (loosely) to Crockford style conventions
-// - Change package to run everything from the build folder and/or use ts-node
 // - Try to change back to esnext if possible
 // - Try to make types globally available, or part of a single namespace if possible
 // Mini search bar above recipe page
@@ -48,8 +47,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 ////////// SETUP \\\\\\\\\\
 const express_1 = __importDefault(require("express"));
 const mongodb_1 = require("mongodb");
-const resources_1 = require("./resources");
 const connectDB_1 = __importDefault(require("./database/connectDB"));
+const resources_1 = require("./resources");
 //Constants
 const validMongoID = /^[0-9a-fA-F]{24}$/;
 const PORT = Number(process.env.PORT) || 5000;
@@ -138,7 +137,6 @@ app.get('/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0, voi
         console.timeEnd('  > Search execution time');
     }
     else {
-        let masterList = []; //Will hold our final sorted results
         //Place each term in a mongo expression
         let exprList = [];
         for (let i = 0; i < numTerms; i++) {
@@ -147,15 +145,15 @@ app.get('/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0, voi
         const query = { $or: exprList }; //Combine all expressions into a single 'or' query
         //Search!
         const results = yield indexCollection.find(query).toArray();
-        const numResults = results.length;
+        let masterList = []; //Will hold our final sorted results
         //No results
-        if (!numResults) {
+        if (!results.length) {
             res.json({ error: 'No search results' });
             console.timeEnd('  > Search execution time');
         }
         //Matches found
         else {
-            //Combine the results into one array
+            //Combine the results into one array, and ensure the ids are strings
             results.map(element => {
                 masterList = masterList.concat(element.recipes);
             });
@@ -193,27 +191,32 @@ app.get('/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0, voi
             }
         }
         //Pull just the ids out of each result as strings
-        const topResultsRaw = masterList.slice(0, limit).map(element => element.id);
+        const topResultsRaw = masterList.slice(0, limit);
+        const topResults = topResultsRaw.map(element => new mongodb_1.ObjectID(element.id));
         //Retrieve all info about each result from the database
-        const topResults = topResultsRaw.map(element => new mongodb_1.ObjectID(element));
         const finalQuery = { _id: { $in: topResults } };
         const dbResults = yield recipeCollection.find(finalQuery).toArray();
+        //Ensure the ids from the database are strings, not ObjectIDs
+        const dbResultsRaw = dbResults.map(element => {
+            element._id = element._id.toString();
+            return element;
+        });
         //Store the database results in the same order as the raw data
-        const dbResultsRaw = dbResults.map(element => element._id); //Pull out the ids as strings
         let finalResults = [];
         for (let m = 0; m < topResultsRaw.length; m++) {
-            const next = topResultsRaw[m];
+            const current = topResultsRaw[m].id;
             for (let n = 0; n < dbResultsRaw.length; n++) {
-                const current = dbResultsRaw[n];
+                const next = dbResultsRaw[n];
                 //Match found - add the full item to a final results array
-                if (current === next) {
-                    finalResults.push(dbResults[n]);
+                if (current === next._id) {
+                    finalResults.push(next);
                     break;
                 }
             }
         }
-        console.log("DB DATA AFTER SORTING:");
-        finalResults.slice(0, 9).map(element => { console.log(element._id, ' : ', element.recipeName); });
+        //JUST FOR TESTING
+        console.log('\nRESULTS:');
+        finalResults.slice(0, 9).map(element => { console.log(element._id, ':', element.recipeName); });
         //Send back the top results as JSON
         res.json({ searchResults: finalResults });
         console.timeEnd('  > Search execution time');
