@@ -50,6 +50,12 @@ export interface Index {
     frequency:     number
 }
 
+//Strictly for indexes returned from the database - includes an id and all other props
+export interface IndexResult extends Index {
+    [key: string]: string | IndexReference[] | number,
+    _id: string,
+}
+
 //Info about each recipe stored by an index in its 'recipes' array
 export interface IndexReference {
     [key: string]: string | number,
