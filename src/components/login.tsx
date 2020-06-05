@@ -6,15 +6,15 @@ interface State {
     passwordInput: string
 };
 
-class Login extends Component<State> {
+class Login extends Component {
     state: State = {
         usernameInput: '',
         passwordInput: ''
     };
 
     //Store the most recent inputs in state
-    updateInput = (val: React.ChangeEvent<HTMLInputElement>) => {
-        let { id, value } = val.currentTarget;
+    updateInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+        let { id, value } = event.currentTarget;
         this.setState({ [id]: value });
     }
 
