@@ -1,22 +1,24 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import '../styles/login.css';
 
-class Login extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            usernameInput: '',
-            passwordInput: ''
-        };
-    }
+interface State {
+    usernameInput: string,
+    passwordInput: string
+};
+
+class Login extends Component<State> {
+    state: State = {
+        usernameInput: '',
+        passwordInput: ''
+    };
 
     //Store the most recent inputs in state
-    updateInput = (val) => {
-        let { id, value } = val.target;
+    updateInput = (val: React.ChangeEvent<HTMLInputElement>) => {
+        let { id, value } = val.currentTarget;
         this.setState({ [id]: value });
     }
 
-    submitPage = (val) => {
+    submitPage = () => {
         if (!this.state.usernameInput) {
             console.log('PLEASE ENTER USERNAME');
         }
@@ -29,6 +31,7 @@ class Login extends Component {
         return (
             <div id='loginWrapper'>
                 <div id='loginHeader'>Log In</div>
+
                 <form
                     name='loginForm'
                     target='hiddenFrame'
@@ -43,7 +46,7 @@ class Login extends Component {
                                 type='text'
                                 autoComplete='off'
                                 placeholder='Username'
-                                value={this.state.username}
+                                value={this.state.usernameInput}
                                 onChange={this.updateInput}>
                             </input>
                         </div>
@@ -56,7 +59,7 @@ class Login extends Component {
                                 type='password'
                                 autoComplete='off'
                                 placeholder='Password'
-                                value={this.state.password}
+                                value={this.state.passwordInput}
                                 onChange={this.updateInput}>
                             </input>
                         </div>
