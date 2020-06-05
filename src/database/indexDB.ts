@@ -38,8 +38,8 @@ function trimData(data: string): string {
         // Remove unnecessary characters, concatenate the two, and store the index that seperates them
         process.stdout.write('  > Trimming recipe info ... ');
         const trimmedResults: RecipeDataTrimmed[] = results.map(element => {
-            let data: string = '';
-            let threshold: number = 0; //Index that seperates the name and ingredients
+            let data = '';
+            let threshold = 0; //Index that seperates the name and ingredients
 
             const name = element.recipeName;
             const ings = element.ingredients;
@@ -65,7 +65,7 @@ function trimData(data: string): string {
         //Find and store all the unique words in our result
         process.stdout.write('  > Finding all unique words ... ');
         const numResults = trimmedResults.length;
-        let lastWordIndex: number = 0;
+        let lastWordIndex = 0;
         let indexKeys: string[] = []; //Stores the unique words
 
         for (let i = 0; i < numResults; i++) {
@@ -91,7 +91,7 @@ function trimData(data: string): string {
         //////////  STEP 2. Create indexes for each key  \\\\\\\\\\
 
         process.stdout.write('  > Counting occurrences of unique words ...');
-        const numKeys: number = indexKeys.length;
+        const numKeys = indexKeys.length;
         let indexes: Index[] = []; //Stores our final list
 
         for (let i = 0; i < numKeys; i++) {
@@ -110,8 +110,8 @@ function trimData(data: string): string {
 
                 const nextID = trimmedResults[j].id;
                 const nextThreshold = trimmedResults[j].threshold;
-                let lastWordIndex: number = 0;
-                let nextWord: string = '';
+                let lastWordIndex = 0;
+                let nextWord = '';
 
                 let name: boolean = false;
                 let ings: boolean = false;
