@@ -13,7 +13,7 @@
         "magellan": "react-scripts start",
         "build": "tsc && react-scripts build",
         "live": "serve -l 3000 -s build",
-        "dev": "concurrently \"npm run server\" \"npm run magellan\"",
+        "dev": "concurrently \"npm run dev-server\" \"npm run magellan\"",
         "prod": "concurrently \"npm run server\" \"npm run live\"",
         "rebuild_database": "ts-node src/database/populateDB.ts && ts-node src/database/indexDB.ts"
     },
