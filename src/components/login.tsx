@@ -6,7 +6,7 @@ interface State {
     passwordInput: string
 };
 
-class Login extends Component {
+export default class Login extends Component {
     state: State = {
         usernameInput: '',
         passwordInput: ''
@@ -80,5 +80,3 @@ class Login extends Component {
         );
     }
 }
-
-export default Login;
