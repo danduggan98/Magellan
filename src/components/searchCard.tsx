@@ -1,11 +1,20 @@
 import React, {Component} from 'react';
+import { RecipeDataResult } from 'magellan';
 import '../styles/searchCard.css';
 
-class SearchCard extends Component {
-    constructor(props) {
+interface Props {
+    info: RecipeDataResult
+}
+
+interface State {
+    recipe: RecipeDataResult
+}
+
+export default class SearchCard extends Component<Props, State> {
+    constructor(props: Props) {
         super(props);
         this.state = {
-            recipe: this.props.info
+            recipe: props.info
         };
     }
 
@@ -30,5 +39,3 @@ class SearchCard extends Component {
         );
     }
 }
-
-export default SearchCard;
