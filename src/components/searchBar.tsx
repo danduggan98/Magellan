@@ -1,22 +1,34 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import { css } from '@emotion/core';
 import BarLoader from 'react-spinners/BarLoader';
-import SearchResults from './searchResults.js';
+import SearchResults from './searchResults';
+import { RecipeDataResult } from 'magellan';
 import '../styles/searchBar.css';
 
-class SearchBar extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            searchType: 'name',
-            input: '',
-            emptyInput: false,
-            resultsFound: true,
-            loading: false,
-            results: [],
-            maxResults: 36 //Arbitrary
-        };
-    }
+//Define local types
+
+export type SearchType = 'name' | 'ing';
+
+interface State {
+    searchType:   SearchType,
+    input:        string,
+    emptyInput:   boolean,
+    resultsFound: boolean,
+    loading:      boolean,
+    results:      RecipeDataResult[],
+    maxResults:   number
+}
+
+export default class SearchBar extends Component {
+    state: State = {
+        searchType:   'name',
+        input:        '',
+        emptyInput:   false,
+        resultsFound: true,
+        loading:      false,
+        results:      [],
+        maxResults:   36 //Arbitrary
+    };
 
     //Launch a search in the server and store the results
     getResults = async () => {
@@ -24,7 +36,7 @@ class SearchBar extends Component {
         //Ensure they have entered something
         if (this.state.input) {
 
-            //If so, querty the db
+            //If so, query the db
             const fetchURL = `/search/${this.state.searchType}/${this.state.input}/${this.state.maxResults}`;
             this.setState({
                 results: [],
@@ -43,12 +55,11 @@ class SearchBar extends Component {
 
             //Create a list of items
             else {
-                let items = [];
+                let items: RecipeDataResult[] = [];
                 const vals = data.searchResults;
-                const numItems = vals.length;
 
-                for (let i = 0; i < numItems; i++) {
-                    items.push(vals[i]);
+                for (let i = 0; i < vals.length; i++) {
+                    items.push(vals[i] as RecipeDataResult);
                 }
 
                 this.setState({
@@ -68,13 +79,13 @@ class SearchBar extends Component {
     }
 
     //Save the user's current input in state
-    updateInput = (val) => {
-        this.setState({ input: val.target.value });
+    updateInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({ input: event.currentTarget.value });
     }
 
-    //Change the search type
-    updateSearchType = (val) => {
-        this.setState({ searchType: val.currentTarget.value });
+    //Change the search type when the radio buttons are clicked
+    updateSearchType = (event: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({ searchType: event.currentTarget.value });
     }
 
     // Search bar - form accepts the search and queries the db
@@ -126,7 +137,7 @@ class SearchBar extends Component {
                                 name='searchType'
                                 value='name'
                                 onChange={this.updateSearchType}
-                                checked={this.state.searchType === 'name' ? true : false}>
+                                checked={this.state.searchType === 'name'}>
                             </input>
 
                             <label htmlFor='searchTypeNameButton'>Recipe Name</label>
@@ -139,7 +150,7 @@ class SearchBar extends Component {
                                 name='searchType'
                                 value='ing'
                                 onChange={this.updateSearchType}
-                                checked={this.state.searchType === 'ing' ? true : false}>
+                                checked={this.state.searchType === 'ing'}>
                             </input>
                             
                             <label htmlFor='searchTypeIngButton'>Ingredient</label>
@@ -147,31 +158,31 @@ class SearchBar extends Component {
                     </div>
 
                     <div id='inputReminder'>
-                        { this.state.emptyInput ?
-                            <h4>Please enter something to search</h4>
-                            : <p></p>
+                        { this.state.emptyInput
+                          ? <h4>Please enter something to search</h4>
+                          : <p></p>
                         }
                     </div>
 
                     <div id='loadingBar'>
-                        { this.state.loading ? 
-                            <div>
+                        { this.state.loading
+                          ? <div>
                                 Searching...
                                 <BarLoader height={6} css={override}/>
                             </div>
-                            : <p></p>
+                          : <p></p>
                         }
                     </div>
                 </form>
                 
                 <div id='results'>
-                    { !this.state.resultsFound ?
-                        <div id='failNotice'>No results found. Try again</div>
-                        : <p></p>
+                    { !this.state.resultsFound
+                      ? <div id='failNotice'>No results found. Try again</div>
+                      : <p></p>
                     }
-                    { this.state.results.length ?
-                        <SearchResults data={this.state.results}/>
-                        : <p></p>
+                    { this.state.results.length
+                      ? <SearchResults data={this.state.results}/>
+                      : <p></p>
                     }
                 </div>
 
@@ -181,5 +192,3 @@ class SearchBar extends Component {
         );
     }
 }
-
-export default SearchBar;
