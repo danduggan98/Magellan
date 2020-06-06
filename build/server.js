@@ -153,7 +153,7 @@ app.get('/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0, voi
         }
         //Matches found
         else {
-            //Combine the results into one array, and ensure the ids are strings
+            //Combine the results into one array
             results.map(element => {
                 masterList = masterList.concat(element.recipes);
             });

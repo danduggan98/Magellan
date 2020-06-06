@@ -34,16 +34,25 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const react_1 = __importStar(require("react"));
 const core_1 = require("@emotion/core");
 const BarLoader_1 = __importDefault(require("react-spinners/BarLoader"));
-const searchResults_js_1 = __importDefault(require("./searchResults.js"));
+const searchResults_1 = __importDefault(require("./searchResults"));
 require("../styles/searchBar.css");
 class SearchBar extends react_1.Component {
-    constructor(props) {
-        super(props);
+    constructor() {
+        super(...arguments);
+        this.state = {
+            searchType: 'name',
+            input: '',
+            emptyInput: false,
+            resultsFound: true,
+            loading: false,
+            results: [],
+            maxResults: 36 //Arbitrary
+        };
         //Launch a search in the server and store the results
         this.getResults = () => __awaiter(this, void 0, void 0, function* () {
             //Ensure they have entered something
             if (this.state.input) {
-                //If so, querty the db
+                //If so, query the db
                 const fetchURL = `/search/${this.state.searchType}/${this.state.input}/${this.state.maxResults}`;
                 this.setState({
                     results: [],
@@ -55,20 +64,17 @@ class SearchBar extends react_1.Component {
                 const data = yield res.json();
                 //No search results
                 if (data.error) {
-                    this.setState({ resultsFound: false, loading: false });
+                    this.setState({
+                        resultsFound: false,
+                        loading: false
+                    });
                 }
-                //Create a list of items
+                //Store the results in state
                 else {
-                    let items = [];
-                    const vals = data.searchResults;
-                    const numItems = vals.length;
-                    for (let i = 0; i < numItems; i++) {
-                        items.push(vals[i]);
-                    }
                     this.setState({
                         resultsFound: true,
                         loading: false,
-                        results: items
+                        results: data.searchResults
                     });
                 }
             }
@@ -81,21 +87,12 @@ class SearchBar extends react_1.Component {
             }
         });
         //Save the user's current input in state
-        this.updateInput = (val) => {
-            this.setState({ input: val.target.value });
+        this.updateInput = (event) => {
+            this.setState({ input: event.currentTarget.value });
         };
-        //Change the search type
-        this.updateSearchType = (val) => {
-            this.setState({ searchType: val.currentTarget.value });
-        };
-        this.state = {
-            searchType: 'name',
-            input: '',
-            emptyInput: false,
-            resultsFound: true,
-            loading: false,
-            results: [],
-            maxResults: 36 //Arbitrary
+        //Change the search type when the radio buttons are clicked
+        this.updateSearchType = (event) => {
+            this.setState({ searchType: event.currentTarget.value });
         };
     }
     // Search bar - form accepts the search and queries the db
@@ -117,25 +114,25 @@ class SearchBar extends react_1.Component {
                 react_1.default.createElement("div", { id: 'searchType' },
                     "Search by:",
                     react_1.default.createElement("div", { id: 'searchTypeNameWrapper' },
-                        react_1.default.createElement("input", { type: 'radio', id: 'searchTypeNameButton', name: 'searchType', value: 'name', onChange: this.updateSearchType, checked: this.state.searchType === 'name' ? true : false }),
+                        react_1.default.createElement("input", { type: 'radio', id: 'searchTypeNameButton', name: 'searchType', value: 'name', onChange: this.updateSearchType, checked: this.state.searchType === 'name' }),
                         react_1.default.createElement("label", { htmlFor: 'searchTypeNameButton' }, "Recipe Name")),
                     react_1.default.createElement("div", { id: 'searchTypeIngWrapper' },
-                        react_1.default.createElement("input", { type: 'radio', id: 'searchTypeIngButton', name: 'searchType', value: 'ing', onChange: this.updateSearchType, checked: this.state.searchType === 'ing' ? true : false }),
+                        react_1.default.createElement("input", { type: 'radio', id: 'searchTypeIngButton', name: 'searchType', value: 'ing', onChange: this.updateSearchType, checked: this.state.searchType === 'ing' }),
                         react_1.default.createElement("label", { htmlFor: 'searchTypeIngButton' }, "Ingredient"))),
-                react_1.default.createElement("div", { id: 'inputReminder' }, this.state.emptyInput ?
-                    react_1.default.createElement("h4", null, "Please enter something to search")
+                react_1.default.createElement("div", { id: 'inputReminder' }, this.state.emptyInput
+                    ? react_1.default.createElement("h4", null, "Please enter something to search")
                     : react_1.default.createElement("p", null)),
-                react_1.default.createElement("div", { id: 'loadingBar' }, this.state.loading ?
-                    react_1.default.createElement("div", null,
+                react_1.default.createElement("div", { id: 'loadingBar' }, this.state.loading
+                    ? react_1.default.createElement("div", null,
                         "Searching...",
                         react_1.default.createElement(BarLoader_1.default, { height: 6, css: override }))
                     : react_1.default.createElement("p", null))),
             react_1.default.createElement("div", { id: 'results' },
-                !this.state.resultsFound ?
-                    react_1.default.createElement("div", { id: 'failNotice' }, "No results found. Try again")
+                !this.state.resultsFound
+                    ? react_1.default.createElement("div", { id: 'failNotice' }, "No results found. Try again")
                     : react_1.default.createElement("p", null),
-                this.state.results.length ?
-                    react_1.default.createElement(searchResults_js_1.default, { data: this.state.results })
+                this.state.results.length
+                    ? react_1.default.createElement(searchResults_1.default, { data: this.state.results })
                     : react_1.default.createElement("p", null)),
             react_1.default.createElement("iframe", { name: 'hiddenFrame', id: 'iframe', title: 'hidden' })));
     }

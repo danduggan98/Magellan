@@ -25,7 +25,7 @@ class SearchCard extends react_1.Component {
     constructor(props) {
         super(props);
         this.state = {
-            recipe: this.props.info
+            recipe: props.info
         };
     }
     render() {

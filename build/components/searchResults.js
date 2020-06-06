@@ -23,13 +23,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const react_1 = __importStar(require("react"));
-const searchCard_js_1 = __importDefault(require("./searchCard.js"));
+const searchCard_1 = __importDefault(require("./searchCard"));
 require("../styles/searchResults.css");
 class SearchResults extends react_1.Component {
     constructor(props) {
         super(props);
         this.state = {
-            results: this.props.data,
+            results: props.data,
             maxResultsPerPage: 9 //Arbitrary
         };
     }
@@ -40,12 +40,12 @@ class SearchResults extends react_1.Component {
         const res = Array.from(this.state.results);
         const visible = res.slice(0, this.state.maxResultsPerPage);
         //Turn them into search cards
-        const list = visible.map(recipe => (react_1.default.createElement(searchCard_js_1.default, { info: recipe })));
+        const list = visible.map(recipe => (react_1.default.createElement(searchCard_1.default, { info: recipe })));
         return (react_1.default.createElement("div", { id: 'resultsContainer' },
             react_1.default.createElement("h2", null, "Top Results:"),
             react_1.default.createElement("div", { id: 'resultsList' }, list),
-            overflow ?
-                react_1.default.createElement("div", null, "See more results")
+            overflow
+                ? react_1.default.createElement("div", null, "See more results")
                 : react_1.default.createElement("p", null)));
     }
 }

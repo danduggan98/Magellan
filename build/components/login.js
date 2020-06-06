@@ -21,25 +21,26 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const react_1 = __importStar(require("react"));
 require("../styles/login.css");
+;
 class Login extends react_1.Component {
-    constructor(props) {
-        super(props);
+    constructor() {
+        super(...arguments);
+        this.state = {
+            usernameInput: '',
+            passwordInput: ''
+        };
         //Store the most recent inputs in state
-        this.updateInput = (val) => {
-            let { id, value } = val.target;
+        this.updateInput = (event) => {
+            let { id, value } = event.currentTarget;
             this.setState({ [id]: value });
         };
-        this.submitPage = (val) => {
+        this.submitPage = () => {
             if (!this.state.usernameInput) {
                 console.log('PLEASE ENTER USERNAME');
             }
             if (!this.state.passwordInput) {
                 console.log('PLEASE ENTER PASSWORD');
             }
-        };
-        this.state = {
-            usernameInput: '',
-            passwordInput: ''
         };
     }
     render() {
@@ -49,10 +50,10 @@ class Login extends react_1.Component {
                 react_1.default.createElement("div", { id: 'inputWrapper' },
                     react_1.default.createElement("div", { id: 'usernameInputWrapper' },
                         react_1.default.createElement("label", { id: 'usernameLabel', htmlFor: 'usernameInput' }, "Username:"),
-                        react_1.default.createElement("input", { name: 'UN', id: 'usernameInput', type: 'text', autoComplete: 'off', placeholder: 'Username', value: this.state.username, onChange: this.updateInput })),
+                        react_1.default.createElement("input", { name: 'UN', id: 'usernameInput', type: 'text', autoComplete: 'off', placeholder: 'Username', value: this.state.usernameInput, onChange: this.updateInput })),
                     react_1.default.createElement("div", { id: 'passwordInputWrapper' },
                         react_1.default.createElement("label", { id: 'passwordLabel', htmlFor: 'passwordInput' }, "Password:"),
-                        react_1.default.createElement("input", { name: 'PW', id: 'passwordInput', type: 'password', autoComplete: 'off', placeholder: 'Password', value: this.state.password, onChange: this.updateInput }))),
+                        react_1.default.createElement("input", { name: 'PW', id: 'passwordInput', type: 'password', autoComplete: 'off', placeholder: 'Password', value: this.state.passwordInput, onChange: this.updateInput }))),
                 react_1.default.createElement("div", { id: 'submitButtonWrapper' },
                     react_1.default.createElement("button", { type: 'submit', id: 'submitButton' }, "Submit"))),
             react_1.default.createElement("iframe", { name: 'hiddenFrame', id: 'iframe', title: 'hidden' })));

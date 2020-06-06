@@ -32,41 +32,50 @@ const react_1 = __importStar(require("react"));
 const react_helmet_1 = require("react-helmet");
 require("../styles/recipe.css");
 //Parse an array of ingredients or directions into a JSX list
-function ArrayToList(props) {
+const ArrayToList = (props) => {
     let items = [];
     //Iterate through each section
-    const numSections = props.list.length;
-    const ordered = props.ordered;
-    for (let i = 0; i < numSections; i++) {
+    for (let i = 0; i < props.list.length; i++) {
         let section = [];
         let itemList = props.list[i];
         //Store each item in the inner array as an HTML list item
-        let numItems = itemList.length;
-        let header = itemList[0];
-        for (let j = 1; j < numItems; j++) {
-            section.push(react_1.default.createElement("li", { key: itemList[j].toString() }, itemList[j]));
+        for (let j = 1; j < itemList.length; j++) { //Start at j = 1 to skip the header
+            let next = itemList[j];
+            section.push(react_1.default.createElement("li", { key: next }, next));
         }
         //Print the section header if noteworthy
+        const header = itemList[0];
         if (header !== 'main') {
-            items.push(react_1.default.createElement("div", { className: 'sectionHeader', key: header.toString() }, header));
+            items.push(react_1.default.createElement("div", { className: 'sectionHeader', key: header }, header));
         }
         //Print the list of items
-        items.push(react_1.default.createElement("div", { className: 'sectionData' }, ordered ?
-            react_1.default.createElement("ol", { key: section.toString() }, section)
-            :
-                react_1.default.createElement("ul", { key: section.toString() }, section)));
+        items.push(react_1.default.createElement("div", { className: 'sectionData' }, props.ordered
+            ? react_1.default.createElement("ol", { key: section.toString() }, section)
+            : react_1.default.createElement("ul", { key: section.toString() }, section)));
     }
     return (react_1.default.createElement("div", null, items));
-}
+};
 //Display full recipe data
 class Recipe extends react_1.Component {
     constructor(props) {
         super(props);
         this.state = {
-            status: 1,
-            recipeID: props.match.params.recipeid,
-            ingredients: '',
-            directions: ''
+            recipeFound: true,
+            recipeID: props.match.params.id,
+            URL: '',
+            imageURL: '',
+            author: '',
+            recipeName: '',
+            difficulty: '',
+            totalTime: '',
+            prepTime: '',
+            inactiveTime: '',
+            activeTime: '',
+            cookTime: '',
+            yield: '',
+            ingredients: [],
+            directions: [],
+            source: ''
         };
     }
     //Gather data from server JSON response
@@ -76,7 +85,7 @@ class Recipe extends react_1.Component {
             const data = yield res.json();
             //Recipe not found
             if (data.error) {
-                this.setState({ status: 0 });
+                this.setState({ recipeFound: false });
             }
             //Recipe found
             else {
@@ -101,20 +110,17 @@ class Recipe extends react_1.Component {
     }
     render() {
         //Recipe not found
-        if (!this.state.status) {
-            return (react_1.default.createElement("div", null,
-                react_1.default.createElement("h1", null, "Recipe not found!"),
-                react_1.default.createElement("h3", null, "Please try again")));
+        if (!this.state.recipeFound) {
+            return (react_1.default.createElement("div", { id: 'notFoundNotice' }, "Recipe not found! Please try again"));
         }
         //Recipe found
         else {
             return (react_1.default.createElement("div", null,
-                this.state.recipeName ?
-                    react_1.default.createElement(react_helmet_1.Helmet, null,
+                this.state.recipeName
+                    ? react_1.default.createElement(react_helmet_1.Helmet, null,
                         react_1.default.createElement("title", null, "Magellan - " + this.state.recipeName))
-                    :
-                        react_1.default.createElement(react_helmet_1.Helmet, null,
-                            react_1.default.createElement("title", null, "Magellan")),
+                    : react_1.default.createElement(react_helmet_1.Helmet, null,
+                        react_1.default.createElement("title", null, "Magellan")),
                 react_1.default.createElement("div", { id: 'header' },
                     react_1.default.createElement("div", { id: 'recipeName' }, this.state.recipeName),
                     react_1.default.createElement("div", { id: 'author' },
@@ -124,8 +130,8 @@ class Recipe extends react_1.Component {
                         "Courtesy of",
                         react_1.default.createElement("span", { id: 'sourceText' }, this.state.source))),
                 react_1.default.createElement("div", { id: 'image' },
-                    this.state.imageURL ?
-                        react_1.default.createElement("img", { src: this.state.imageURL, alt: '', width: '600' })
+                    this.state.imageURL
+                        ? react_1.default.createElement("img", { src: this.state.imageURL, alt: '', width: '600' })
                         : react_1.default.createElement("p", { className: 'invisibleElement' }),
                     react_1.default.createElement("div", { id: 'sourceLink' },
                         react_1.default.createElement("a", { target: '_blank', rel: 'noopener noreferrer', href: this.state.URL }, "Original Recipe"))),
@@ -143,23 +149,23 @@ class Recipe extends react_1.Component {
                             react_1.default.createElement("span", { id: 'totalTimeText' }, this.state.totalTime)),
                         react_1.default.createElement("div", { id: 'timesList' },
                             react_1.default.createElement("ul", null,
-                                react_1.default.createElement("div", { id: 'prepTime' }, this.state.prepTime ?
-                                    react_1.default.createElement("li", null,
+                                react_1.default.createElement("div", { id: 'prepTime' }, this.state.prepTime
+                                    ? react_1.default.createElement("li", null,
                                         react_1.default.createElement("span", { id: 'prepTimeText' }, this.state.prepTime),
                                         "prep time")
                                     : react_1.default.createElement("p", { className: 'invisibleElement' })),
-                                react_1.default.createElement("div", { id: 'cookTime' }, this.state.cookTime ?
-                                    react_1.default.createElement("li", null,
+                                react_1.default.createElement("div", { id: 'cookTime' }, this.state.cookTime
+                                    ? react_1.default.createElement("li", null,
                                         react_1.default.createElement("span", { id: 'cookTimeText' }, this.state.cookTime),
                                         "cook time")
                                     : react_1.default.createElement("p", { className: 'invisibleElement' })),
-                                react_1.default.createElement("div", { id: 'activeTime' }, this.state.activeTime ?
-                                    react_1.default.createElement("li", null,
+                                react_1.default.createElement("div", { id: 'activeTime' }, this.state.activeTime
+                                    ? react_1.default.createElement("li", null,
                                         react_1.default.createElement("span", { id: 'activeTimeText' }, this.state.activeTime),
                                         "active time")
                                     : react_1.default.createElement("p", { className: 'invisibleElement' })),
-                                react_1.default.createElement("div", { id: 'inactiveTime' }, this.state.inactiveTime ?
-                                    react_1.default.createElement("li", null,
+                                react_1.default.createElement("div", { id: 'inactiveTime' }, this.state.inactiveTime
+                                    ? react_1.default.createElement("li", null,
                                         react_1.default.createElement("span", { id: 'inactiveTimeText' }, this.state.inactiveTime),
                                         "inactive time")
                                     : react_1.default.createElement("p", { className: 'invisibleElement' })))))),
