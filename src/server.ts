@@ -54,12 +54,17 @@ let indexCollection: Collection;
 
 //Automatically connect to database
 (async function connectToMongo() {
-    const database = await client.connect();
-    console.log('- Connected to Mongo cluster');
+    try {
+        const database = await client.connect();
+        console.log('- Connected to Mongo cluster');
 
-    //Save connections to the collections we will use later
-    recipeCollection = database.db('recipeData').collection('recipes');
-    indexCollection = database.db('recipeData').collection('index');
+        //Save connections to the collections we will use later
+        recipeCollection = database.db('recipeData').collection('recipes');
+        indexCollection = database.db('recipeData').collection('index');
+    }
+    catch (err) {
+        console.log('Error in connectToMongo:', err)
+    }
 })();
 
 //Set up Express app
@@ -267,7 +272,7 @@ app.post('/login', async (req: Request) => {
         const password = req.body.password;
     }
     catch (err) {
-        console.log('Error in search function:', err)
+        console.log('Error in login route:', err)
     }
 });
 
