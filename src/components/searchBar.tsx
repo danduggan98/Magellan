@@ -50,22 +50,18 @@ export default class SearchBar extends Component {
 
             //No search results
             if (data.error) {
-                this.setState({ resultsFound: false, loading: false });
+                this.setState({
+                    resultsFound: false,
+                    loading: false
+                });
             }
 
-            //Create a list of items
+            //Store the results in state
             else {
-                let items: RecipeDataResult[] = [];
-                const vals = data.searchResults;
-
-                for (let i = 0; i < vals.length; i++) {
-                    items.push(vals[i] as RecipeDataResult);
-                }
-
                 this.setState({
                     resultsFound: true,
                     loading: false,
-                    results: items
+                    results: data.searchResults
                 });
             }
         }
