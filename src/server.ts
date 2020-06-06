@@ -12,10 +12,9 @@
     // Search card - cut off long titles with ellipses, lower max height
 
 // PORT TO TYPESCRIPT!!!
-// - ES6 imports
-// - Adhere (loosely) to Crockford style conventions
 // - Try to change back to esnext if possible
-// - Try to make types globally available, or part of a single namespace if possible
+// - FIGURE OUT HOW TO RUN THE NEW TSX PAGES (GET WEBPACK UP AND RUNNING)
+// - MERGE ONLY WHEN IT CAN BE RUN IN FULL FROM NPM SCRIPTS ALONE
 
 // Mini search bar above recipe page
 // USE FIGMA TO MAKE PAGES CLEANER
