@@ -1,12 +1,22 @@
 import React, {Component} from 'react';
-import SearchCard from './searchCard.js';
+import SearchCard from './searchCard';
+import { RecipeDataResult } from 'magellan'
 import '../styles/searchResults.css';
 
-class SearchResults extends Component {
-    constructor(props) {
+interface Props {
+    data: RecipeDataResult[]
+}
+
+interface State {
+    results: RecipeDataResult[],
+    maxResultsPerPage: number
+}
+
+export default class SearchResults extends Component<Props, State> {
+    constructor(props: Props) {
         super(props);
         this.state = {
-            results: this.props.data,
+            results: props.data,
             maxResultsPerPage: 9 //Arbitrary
         };
     }
@@ -27,15 +37,15 @@ class SearchResults extends Component {
         return (
             <div id='resultsContainer'>
                 <h2>Top Results:</h2>
-                <div id='resultsList'>{list}</div>
+                <div id='resultsList'>
+                    {list}
+                </div>
 
-                { overflow ?
-                    <div>See more results</div>
-                    : <p></p>
+                { overflow
+                  ? <div>See more results</div>
+                  : <p></p>
                 }
             </div>
         );
     }
 }
-
-export default SearchResults;
