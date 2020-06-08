@@ -1,5 +1,14 @@
+var nodeExternals = require('webpack-node-externals');
+var root = require('app-root-path');
+
 module.exports = {
-    mode: "production",
+    //entry: './build/App.js',
+    mode: "development",
+
+    output: {
+        path: root + '/build',
+        filename: "bundle.js"
+    },
 
     resolve: {
         extensions: [".ts", ".tsx"]
@@ -14,13 +23,10 @@ module.exports = {
             },
             { //Load css files with css-loader
                 test: /\.css$/i,
-                use: ['style-loader', 'css-loader'],
-            },
+                use: ['style-loader', 'css-loader']
+            }
         ]
     },
 
-    externals: {
-        "react": "React",
-        "react-dom": "ReactDOM"
-    }
+    externals: nodeExternals()
 };
