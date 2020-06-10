@@ -11,7 +11,7 @@ import fs from 'fs';
         console.log('- Started Puppeteer');
 
         //Go to the main page with all recipes
-        console.log('- Gathering recipe URLs from Taste of Home')
+        process.stdout.write('- Gathering recipe URLs from Taste of Home ...');
         const recipePage: string = 'https://www.tasteofhome.com/recipes/';
         await page.goto(recipePage);
 
@@ -31,10 +31,17 @@ import fs from 'fs';
 
             //Get all recipe links on this page
             //FILTER OUT THE ADS, GET ONLY THE HREFS
-            const linkPath: string = 'html > body.archive.post-type-archive.post-type-archive-recipe.header-full-width.full-width-content.full-width-toh.archive-page.js.load-white-out > div.site-container > div.site-inner > div.recipes.tax-grid > ul > li.single-recipe > a';
-            const urls = await page.$$(linkPath);
-            let links: string[] = urls.map(link => link.href);
-            console.log(links);
+            const linkPath: string = 'html > body.archive.post-type-archive.post-type-archive-recipe.header-full-width.full-width-content.full-width-toh.archive-page.js.load-white-out > div.site-container > div.site-inner > div.recipes.tax-grid > ul > li.single-recipe a';
+            const urls = await page.$$eval(linkPath, links => links.map(
+                link => link.getAttribute('href')
+            ));
+            console.log(urls);
+
+            //Store the next batch of links in our txt file
+            //....
+
+            //Visual progress indicator
+            if (i % Math.ceil(numPages / 7) === 0) process.stdout.write('.');
         }
 
         browser.close();
