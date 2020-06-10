@@ -21,7 +21,7 @@ import fs from 'fs';
         const numPages = parseInt(pageCount.replace(/,/g, '')); //Remove the comma and convert to a number
 
         //Go through each page of recipe links
-        for (let i = 1; i <= 1/*numPages*/; i++) {
+        for (let i = 1; i <= 2/*numPages*/; i++) {
 
             //Determine the url of the next page
             // The url for page 1 does not include a number, so exclude it for that one only
@@ -30,8 +30,7 @@ import fs from 'fs';
             await page.goto(nextPage);
 
             //Get all recipe links on this page
-            //FILTER OUT THE ADS, GET ONLY THE HREFS
-            const linkPath: string = 'html > body.archive.post-type-archive.post-type-archive-recipe.header-full-width.full-width-content.full-width-toh.archive-page.js.load-white-out > div.site-container > div.site-inner > div.recipes.tax-grid > ul > li.single-recipe a';
+            const linkPath: string = 'html > body.archive.post-type-archive.post-type-archive-recipe.header-full-width.full-width-content.full-width-toh.archive-page.js.load-white-out > div.site-container > div.site-inner > div.recipes.tax-grid > ul > li[class=single-recipe] a';
             const urls = await page.$$eval(linkPath, links => links.map(
                 link => link.getAttribute('href')
             ));
