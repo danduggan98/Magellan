@@ -53,44 +53,39 @@ async function scrapePage(url: string, page: Page): Promise<RecipeData> {
 
     //List of selectors for each item we want
     const selectors = {
-        imageSelector:        'img.-image.initial.loading',
-        authorSelector:       '',
-        recipeNameSelector:   '',
-        difficultySelector:   '',
-        totalTimeSelector:    '',
-        prepTimeSelector:     '',
-        inactiveTimeSelector: '',
-        activeTimeSelector:   '',
-        cookTimeSelector:     '',
-        yieldSelector:        '',
+        imageSelector:      '.-image.initial.loading',
+        authorNoteSelector: '.recipe-tagline__text',
+        recipeNameSelector: '.recipe-title',
+        timeSelector:       '.recipe-time-yield__label-prep',
+        yieldSelector:      '.recipe-time-yield__label-servings'
     }
 
-    //Retrieve all of our elements individually
-    let imageURL = await getElement(page, selectors.imageSelector, 'src');
-    console.log(imageURL);
+    //Parse the time data, which comes as a single string that needs to be seperated
+    let times       = await getElementText(page, selectors.timeSelector);
  
-    let test: RecipeData = {
+    let pageData: RecipeData = {
         URL:          url,
-        imageURL:     imageURL,
-        author:       '',
-        recipeName:   '',
-        difficulty:   '',
-        totalTime:    '',
+        imageURL:     await getElementByAttribute(page, selectors.imageSelector, 'src'),
+        author:       parseName(await getElementText(page, selectors.authorNoteSelector)),
+        recipeName:   await getElementText(page, selectors.recipeNameSelector),
+        difficulty:   '', //Never mentioned
+        totalTime:    times,
         prepTime:     '',
         inactiveTime: '',
         activeTime:   '',
         cookTime:     '',
-        yield:        '',
+        yield:        await getElementText(page, selectors.yieldSelector),
         ingredients:  [],
         directions:   [],
         source:       'Taste of Home'
     };
-    return test;
+    console.log(pageData)
+    return pageData;
 }
 
 //Retrieve the content of a single element based on its class name and the attribute to pull out
-async function getElement(page: Page, selector: string, attribute: string): Promise<string> {
-    let result;
+async function getElementByAttribute(page: Page, selector: string, attribute: string): Promise<string> {
+    let result: string;
 
     //Grab the element if it exists
     //If not, or if it has an empty attribute (i.e. no image src), return an empty string
@@ -103,4 +98,49 @@ async function getElement(page: Page, selector: string, attribute: string): Prom
         result = '';
     }
     return result;
+}
+
+//Retrieves the inner text of an element based on its class name
+async function getElementText(page: Page, selector: string): Promise<string> {
+    let txt: string;
+
+    //Grab the element's text if it exists, or an empty string if it does not
+    try {
+        txt = await page.$eval(selector,
+            element => element.innerHTML.trim() ?? ''
+        );
+    }
+    catch (err) {
+        txt = '';
+    }
+    return txt;
+}
+
+//Pulls the author name out of the descriptive paragraph
+// The name is found toward the end, between an emdash (either literal or encoded) and a comma
+function parseName(paragraph: string): string {
+    const dash:   string = '—';
+    const emdash: string = '&amp;mdash;';
+
+    const dashPos   = paragraph.lastIndexOf(dash);
+    const emdashPos = paragraph.lastIndexOf(emdash);
+    let namePos: number;
+
+    //Find the one that exists in the paragraph, or return nothing if there isn't one
+    if (dashPos > 0) {
+        namePos = dashPos + dash.length;
+    }
+    else if (emdashPos > 0) {
+        namePos = emdashPos + emdash.length;
+    }
+    else {
+        return '';
+    }
+
+    //Grab the name, which is the wedged between the last dash and the next comma
+    const credits = paragraph.slice(namePos);
+    const authorEndPos = credits.indexOf(',');
+    const authorEnd = (authorEndPos > 0) ? authorEndPos : credits.length;
+
+    return credits.slice(0, authorEnd);
 }
