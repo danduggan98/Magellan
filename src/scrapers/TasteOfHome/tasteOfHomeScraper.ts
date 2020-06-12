@@ -53,33 +53,41 @@ async function scrapePage(url: string, page: Page): Promise<RecipeData> {
 
     //List of selectors for each item we want
     const selectors = {
-        imageSelector:      '.-image.initial.loading',
-        authorNoteSelector: '.recipe-tagline__text',
-        recipeNameSelector: '.recipe-title',
-        timeSelector:       '.recipe-time-yield__label-prep',
-        yieldSelector:      '.recipe-time-yield__label-servings'
+        imageSelector:          '.-image.initial.loading',
+        authorNoteSelector:     '.recipe-tagline__text',
+        recipeNameSelector:     '.recipe-title',
+        timeSelector:           '.recipe-time-yield__label-prep',
+        yieldSelector:          '.recipe-time-yield__label-servings',
+        ingredientSelector:     '.recipe-ingredients__list li',
+        directionsListSelector: '.recipe-directions__list li'
     }
 
     //Parse the time data, which comes as a single string that needs to be seperated
-    let times       = await getElementText(page, selectors.timeSelector);
+    let times = await getElementText(page, selectors.timeSelector);
+    //.......
+
+    //Store the ingredients by section
+    let ingredientList: string[] = await page.$$eval(selectors.ingredientSelector,
+        list => list.map(el => el.innerHTML)
+    );
  
     let pageData: RecipeData = {
         URL:          url,
         imageURL:     await getElementByAttribute(page, selectors.imageSelector, 'src'),
         author:       parseName(await getElementText(page, selectors.authorNoteSelector)),
         recipeName:   await getElementText(page, selectors.recipeNameSelector),
-        difficulty:   '', //Never mentioned
+        difficulty:   '', //Never included
         totalTime:    times,
         prepTime:     '',
         inactiveTime: '',
         activeTime:   '',
         cookTime:     '',
         yield:        await getElementText(page, selectors.yieldSelector),
-        ingredients:  [],
+        ingredients:  seperateIngredientsBySection(ingredientList),
         directions:   [],
         source:       'Taste of Home'
     };
-    console.log(pageData)
+    //console.log(pageData)
     return pageData;
 }
 
@@ -126,7 +134,7 @@ function parseName(paragraph: string): string {
     const emdashPos = paragraph.lastIndexOf(emdash);
     let namePos: number;
 
-    //Find the one that exists in the paragraph, or return nothing if there isn't one
+    //Find the type of dash that exists in the paragraph, or return nothing if there isn't one
     if (dashPos > 0) {
         namePos = dashPos + dash.length;
     }
@@ -137,10 +145,49 @@ function parseName(paragraph: string): string {
         return '';
     }
 
-    //Grab the name, which is the wedged between the last dash and the next comma
+    //Grab the name, which is between the last dash and either a comma or the end
     const credits = paragraph.slice(namePos);
     const authorEndPos = credits.indexOf(',');
     const authorEnd = (authorEndPos > 0) ? authorEndPos : credits.length;
 
     return credits.slice(0, authorEnd);
+}
+
+//Break down the list of ingredients into sections with headers
+function seperateIngredientsBySection(ingList: string[]): string[][] {
+
+    let finalList: string[][] = [];
+    const numIngredients = ingList.length;
+    let sectionStartIdx = 0;
+
+    //Parse the ingredient list, and bundle everything after a header
+    // into an array with that header as the first element
+    for (let i = 0; i < numIngredients; i++) {
+        const nextItem = ingList[i];
+
+        //Headers are always bold, so their inner html has '<b>' tags, which aren't used elsewhere
+        // Therefore, we can assume that any item whose html starts with '<' is a header
+        if (nextItem.charAt(0) === '<' || i === numIngredients - 1) {
+            let newSection: string[] = [];
+
+            //Always give the first section the header 'main'
+            if (finalList.length === 0) {
+                newSection.push('main');
+            }
+            //For every other section, pull the header out of the html
+            else {
+                let header = nextItem.slice(nextItem.indexOf('>'), nextItem.lastIndexOf('<') + 1);
+                newSection.push(header);
+            }
+
+            let sectionIngs = ingList.slice(sectionStartIdx, i);
+            sectionIngs.map(ing => newSection.push(ing.trim()));
+            sectionStartIdx = i + 1;
+
+            finalList.push(newSection); //Add the section to our master list
+        }
+    }
+    console.log(finalList);
+
+    return finalList;
 }
