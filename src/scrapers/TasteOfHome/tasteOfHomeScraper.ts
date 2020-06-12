@@ -154,11 +154,13 @@ function parseName(paragraph: string): string {
 }
 
 //Break down the list of ingredients into sections with headers
+//ADS! AHHHHHH
 function seperateIngredientsBySection(ingList: string[]): string[][] {
 
     let finalList: string[][] = [];
     const numIngredients = ingList.length;
     let sectionStartIdx = 0;
+    let nextHeader: string = '';
 
     //Parse the ingredient list, and bundle everything after a header
     // into an array with that header as the first element
@@ -176,13 +178,14 @@ function seperateIngredientsBySection(ingList: string[]): string[][] {
             }
             //For every other section, pull the header out of the html
             else {
-                let header = nextItem.slice(nextItem.indexOf('>'), nextItem.lastIndexOf('<') + 1);
+                let header = nextHeader.slice(nextHeader.indexOf('>') + 1, nextHeader.lastIndexOf('<'));
                 newSection.push(header);
             }
+            nextHeader = ingList[i];
 
             let sectionIngs = ingList.slice(sectionStartIdx, i);
             sectionIngs.map(ing => newSection.push(ing.trim()));
-            sectionStartIdx = i + 1;
+            sectionStartIdx = ++i;
 
             finalList.push(newSection); //Add the section to our master list
         }
