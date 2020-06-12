@@ -87,7 +87,7 @@ async function scrapePage(url: string, page: Page): Promise<RecipeData> {
         directions:   [],
         source:       'Taste of Home'
     };
-    //console.log(pageData)
+    console.log(pageData)
     return pageData;
 }
 
@@ -154,13 +154,24 @@ function parseName(paragraph: string): string {
 }
 
 //Break down the list of ingredients into sections with headers
-//ADS! AHHHHHH
 function seperateIngredientsBySection(ingList: string[]): string[][] {
+
+    //Format the list to remove ads and extra whitespace
+    // Ads are always included as <div> elements tacked onto actual ingredients
+    ingList = ingList.map(
+        ing => {
+            let potentialAdIdx = ing.indexOf('<div');
+            return (potentialAdIdx > 0)
+                ? ing.slice(0, potentialAdIdx)
+                : ing.trim()
+            ;
+        }
+    );
 
     let finalList: string[][] = [];
     const numIngredients = ingList.length;
     let sectionStartIdx = 0;
-    let nextHeader: string = '';
+    let nextHeader: string = 'main';
 
     //Parse the ingredient list, and bundle everything after a header
     // into an array with that header as the first element
@@ -168,29 +179,23 @@ function seperateIngredientsBySection(ingList: string[]): string[][] {
         const nextItem = ingList[i];
 
         //Headers are always bold, so their inner html has '<b>' tags, which aren't used elsewhere
-        // Therefore, we can assume that any item whose html starts with '<' is a header
-        if (nextItem.charAt(0) === '<' || i === numIngredients - 1) {
+        // Therefore, we can assume that any item whose html starts with '<b' is a header
+        if (nextItem.slice(0, 2) === '<b' || i === numIngredients - 1) {
             let newSection: string[] = [];
 
-            //Always give the first section the header 'main'
-            if (finalList.length === 0) {
-                newSection.push('main');
-            }
-            //For every other section, pull the header out of the html
-            else {
-                let header = nextHeader.slice(nextHeader.indexOf('>') + 1, nextHeader.lastIndexOf('<'));
-                newSection.push(header);
-            }
-            nextHeader = ingList[i];
+            //Save this header for use with our next section
+            newSection.push(nextHeader);
+            nextHeader = nextItem.slice(nextItem.indexOf('>') + 1, nextItem.lastIndexOf('<'));
 
+            //Pull out the current section and add it to our master list
             let sectionIngs = ingList.slice(sectionStartIdx, i);
-            sectionIngs.map(ing => newSection.push(ing.trim()));
             sectionStartIdx = ++i;
 
-            finalList.push(newSection); //Add the section to our master list
+            sectionIngs.map(
+                ing => newSection.push(ing)
+            );
+            finalList.push(newSection);
         }
     }
-    console.log(finalList);
-
     return finalList;
 }
