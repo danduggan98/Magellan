@@ -58,7 +58,7 @@ async function scrapePage(url: string, page: Page): Promise<RecipeData> {
         recipeNameSelector:     '.recipe-title',
         timeSelector:           '.recipe-time-yield__label-prep',
         yieldSelector:          '.recipe-time-yield__label-servings',
-        ingredientSelector:     '.recipe-ingredients__list li',
+        ingredientListSelector: '.recipe-ingredients__list li',
         directionsListSelector: '.recipe-directions__list li'
     }
 
@@ -66,11 +66,6 @@ async function scrapePage(url: string, page: Page): Promise<RecipeData> {
     let times = await getElementText(page, selectors.timeSelector);
     //.......
 
-    //Store the ingredients by section
-    let ingredientList: string[] = await page.$$eval(selectors.ingredientSelector,
-        list => list.map(el => el.innerHTML)
-    );
- 
     let pageData: RecipeData = {
         URL:          url,
         imageURL:     await getElementByAttribute(page, selectors.imageSelector, 'src'),
@@ -83,8 +78,8 @@ async function scrapePage(url: string, page: Page): Promise<RecipeData> {
         activeTime:   '',
         cookTime:     '',
         yield:        await getElementText(page, selectors.yieldSelector),
-        ingredients:  seperateIngredientsBySection(ingredientList),
-        directions:   [],
+        ingredients:  seperateIngredientsBySection(await getAllElements(page, selectors.ingredientListSelector)),
+        directions:   seperateDirectionsBySection(await getAllElements(page, selectors.directionsListSelector)),
         source:       'Taste of Home'
     };
     console.log(pageData)
@@ -122,6 +117,24 @@ async function getElementText(page: Page, selector: string): Promise<string> {
         txt = '';
     }
     return txt;
+}
+
+//Retrieves the innner html of all elements with a particular class name
+async function getAllElements(page: Page, selector: string): Promise<string[]> {
+    let elements: string[];
+
+    //Grab all elements, or return an empty array if they don't exist
+    try {
+        elements = await page.$$eval(selector,
+            list => list.map(
+                el => el.innerHTML ?? ''
+            )
+        );
+    }
+    catch (err) {
+        elements = [];
+    }
+    return elements;
 }
 
 //Pulls the author name out of the descriptive paragraph
@@ -197,5 +210,24 @@ function seperateIngredientsBySection(ingList: string[]): string[][] {
             finalList.push(newSection);
         }
     }
+    return finalList;
+}
+
+//Place all directions into a 'main' section
+function seperateDirectionsBySection(dirList: string[]): string[][] {
+    let finalList: string[][] = [];
+    let header: string[] = ['main'];
+
+    let formattedDirections = dirList.map(
+        dir => dir.slice(
+            dir.indexOf('>') + 1,
+            dir.lastIndexOf('<')
+        ).trim()
+    );
+
+    finalList.push(
+        header.concat(formattedDirections)
+    );
+
     return finalList;
 }
