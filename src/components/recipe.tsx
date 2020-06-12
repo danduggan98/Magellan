@@ -7,7 +7,7 @@ import { RecipeData } from 'magellan';
 //Define local types
 
 interface ArrayToListProps {
-    list:    string[],
+    list:    string[][],
     ordered: boolean
 }
 
@@ -29,8 +29,8 @@ interface State {
     activeTime:   string | undefined,
     cookTime:     string | undefined,
     yield:        string | undefined,
-    ingredients:  string[],
-    directions:   string[],
+    ingredients:  string[][],
+    directions:   string[][],
     source:       string | undefined
 }
 
