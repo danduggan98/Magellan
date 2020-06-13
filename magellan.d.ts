@@ -64,8 +64,19 @@ export interface IndexReference {
     inIngs:        number
 }
 
+//Used to combine duplicate search results
 export interface DuplicateRecipe {
     [key: string]: number,
     idx:           number,
     score:         number
+}
+
+//Stores time data parsed from a single string
+export interface TimeData {
+    [key: string]: string,
+    totalTime:    string,
+    prepTime:     string,
+    inactiveTime: string,
+    activeTime:   string,
+    cookTime:     string
 }
