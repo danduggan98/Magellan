@@ -6,7 +6,7 @@ import puppeteer from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import fs from 'fs';
 import readline from 'readline';
-import { RecipeData } from 'magellan';
+import { RecipeData, TimeData } from 'magellan';
 import { Page } from 'puppeteer';
 
 //Main function - runs automatically
@@ -39,7 +39,10 @@ import { Page } from 'puppeteer';
             recipes.push(await scrapePage(line, page));
         }
 
+        //Store the data in a JSON file
         //const data = JSON.stringify({ data: recipes }, null, 1);
+        //............
+
         console.log('done');
     }
     catch (err) {
@@ -63,26 +66,27 @@ async function scrapePage(url: string, page: Page): Promise<RecipeData> {
     }
 
     //Parse the time data, which comes as a single string that needs to be seperated
-    let times = await getElementText(page, selectors.timeSelector);
-    //.......
+    let rawTimes = await getElementText(page, selectors.timeSelector);
+    let times = parseTimes(rawTimes);
 
+    //Find and return everything as a single object
     let pageData: RecipeData = {
         URL:          url,
         imageURL:     await getElementByAttribute(page, selectors.imageSelector, 'src'),
         author:       parseName(await getElementText(page, selectors.authorNoteSelector)),
         recipeName:   await getElementText(page, selectors.recipeNameSelector),
         difficulty:   '', //Never included
-        totalTime:    times,
-        prepTime:     '',
-        inactiveTime: '',
-        activeTime:   '',
-        cookTime:     '',
+        totalTime:    times.totalTime,
+        prepTime:     times.prepTime,
+        inactiveTime: times.inactiveTime,
+        activeTime:   times.activeTime,
+        cookTime:     times.cookTime,
         yield:        await getElementText(page, selectors.yieldSelector),
         ingredients:  seperateIngredientsBySection(await getAllElements(page, selectors.ingredientListSelector)),
         directions:   seperateDirectionsBySection(await getAllElements(page, selectors.directionsListSelector)),
         source:       'Taste of Home'
     };
-    console.log(pageData)
+    //console.log(pageData)
     return pageData;
 }
 
@@ -166,6 +170,64 @@ function parseName(paragraph: string): string {
     return credits.slice(0, authorEnd);
 }
 
+//Pull each time out of the single time string
+function parseTimes(times: string): TimeData {
+    let parsedTimes: TimeData = {
+        totalTime:    '',
+        prepTime:     '',
+        inactiveTime: '',
+        activeTime:   '',
+        cookTime:     ''
+    };
+
+    //Modify certain words that we don't want to be counted as keywords
+    let data = times
+        .replace(/Time/g, '')
+        .replace(/Total/g, 'total')
+        .replace(/-Cook/g, '-cook')
+        .replace(/-Fry/g, '-fry')
+        .replace(/-Bake/g, '-bake')
+        .replace(/-Grill/g, '-grill')
+    console.log(data);
+
+    //Isolate each item into a seperate string
+    // Each valid item starts with a capital letter, so look for those
+    let keywords: string[] = [];
+    let lastKeywordIndex = 0;
+    const len = data.length;
+
+    for (let i = 1; i <= len; i++) {
+        //Letter is capitalized - grab everything between it and the previous capital letter
+        const char = data[i] ?? '';
+        if ((char === char.toUpperCase() && char !== char.toLowerCase()) || i === len) {
+            let next = data.slice(lastKeywordIndex, i);
+            lastKeywordIndex = i;
+            keywords.push(next.trim());
+        }
+    }
+
+    //Extract and add the prep time, giving the same value to total time if it's present
+    const prep = keywords[0];
+    const prepDetails = prep.slice(prep.indexOf(':') + 2);
+
+    parsedTimes.prepTime = prepDetails;
+    if (prep.includes('total')) {
+        parsedTimes.totalTime = prepDetails;
+    }
+
+    //Extract and add the remaining properties, combining them all into the cook time
+    let cookDetails = '';
+    for (let j = 1; j < keywords.length; j++) {
+        let nextDetails = keywords[j];
+        if (j > 1) cookDetails += ' | ';
+        cookDetails += nextDetails;
+    }
+    parsedTimes.cookTime = cookDetails;
+
+    console.log(parsedTimes);
+    return parsedTimes;
+}
+
 //Break down the list of ingredients into sections with headers
 function seperateIngredientsBySection(ingList: string[]): string[][] {
 
@@ -214,10 +276,15 @@ function seperateIngredientsBySection(ingList: string[]): string[][] {
 }
 
 //Place all directions into a 'main' section
+//TO-DO: REMOVE ADS
 function seperateDirectionsBySection(dirList: string[]): string[][] {
     let finalList: string[][] = [];
     let header: string[] = ['main'];
 
+    //Remove all ads and whitespace
+    //.... .trim()
+
+    //Pull each step out of its span
     let formattedDirections = dirList.map(
         dir => dir.slice(
             dir.indexOf('>') + 1,
