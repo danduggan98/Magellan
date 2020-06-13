@@ -25,6 +25,10 @@ const DATA_FILES: RecipeDataFile[] = [
     {
         filePath: 'data/FoodNetwork/FoodNetworkDataClean.json',
         source:   'Food Network'
+    },
+    {
+        filePath: 'data/TasteOfHome/TasteOfHomeDataClean.json',
+        source:   'Taste of Home'
     }
 ];
 
