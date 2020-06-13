@@ -6,6 +6,7 @@ import puppeteer from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import fs from 'fs';
 import readline from 'readline';
+import rootPath from 'app-root-path';
 import { RecipeData, TimeData } from 'magellan';
 import { Page } from 'puppeteer';
 
@@ -29,6 +30,7 @@ import { Page } from 'puppeteer';
 
         //Read the data line by line with the readline module
         process.stdout.write('- Reading data from file now ... ');
+        console.time('  > Completed successfully in');
         const lineReader = readline.createInterface({
             input: readStream
         });
@@ -40,10 +42,14 @@ import { Page } from 'puppeteer';
         }
 
         //Store the data in a JSON file
-        //const data = JSON.stringify({ data: recipes }, null, 1);
-        //............
+        const newFilePath = rootPath + 'data/TasteOfHome/TasteOfHomeDataRaw.json';
+        const data = JSON.stringify({ data: recipes }, null, 1);
 
-        console.log('done');
+        fs.writeFile(newFilePath, data, (err) => {
+            if (err) throw err;
+            console.log('done');
+            console.timeEnd('  > Completed successfully in');
+        });
     }
     catch (err) {
         console.log('Error in scrapeSite:', err);
@@ -86,7 +92,7 @@ async function scrapePage(url: string, page: Page): Promise<RecipeData> {
         directions:   seperateDirectionsBySection(await getAllElements(page, selectors.directionsListSelector)),
         source:       'Taste of Home'
     };
-    //console.log(pageData)
+    console.log(pageData)
     return pageData;
 }
 
@@ -188,7 +194,7 @@ function parseTimes(times: string): TimeData {
         .replace(/-Fry/g, '-fry')
         .replace(/-Bake/g, '-bake')
         .replace(/-Grill/g, '-grill')
-    console.log(data);
+    ;
 
     //Isolate each item into a seperate string
     // Each valid item starts with a capital letter, so look for those
@@ -224,7 +230,6 @@ function parseTimes(times: string): TimeData {
     }
     parsedTimes.cookTime = cookDetails;
 
-    console.log(parsedTimes);
     return parsedTimes;
 }
 
@@ -276,7 +281,7 @@ function seperateIngredientsBySection(ingList: string[]): string[][] {
 }
 
 //Place all directions into a 'main' section
-//TO-DO: REMOVE ADS
+//TO-DO: REMOVE ADS, BOLD TEXT, etc. (all html)
 function seperateDirectionsBySection(dirList: string[]): string[][] {
     let finalList: string[][] = [];
     let header: string[] = ['main'];
