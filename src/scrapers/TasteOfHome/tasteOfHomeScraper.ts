@@ -3,12 +3,13 @@
 //
 
 import puppeteer from 'puppeteer-extra';
+import { Page } from 'puppeteer';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import fs from 'fs';
 import readline from 'readline';
 import rootPath from 'app-root-path';
 import { RecipeData, TimeData } from 'magellan';
-import { Page } from 'puppeteer';
+import { RemoveHtmlTags } from './../../resources';
 
 //Main function - runs automatically
 (async function scrapeSite() {
@@ -237,7 +238,7 @@ function parseTimes(times: string): TimeData {
 function seperateIngredientsBySection(ingList: string[]): string[][] {
 
     //Format the list to remove ads and extra whitespace
-    // Ads are always included as <div> elements tacked onto actual ingredients
+    // Ads are usually included as <div> elements tacked onto actual ingredients
     ingList = ingList.map(
         ing => {
             let potentialAdIdx = ing.indexOf('<div');
@@ -267,8 +268,11 @@ function seperateIngredientsBySection(ingList: string[]): string[][] {
             newSection.push(nextHeader);
             nextHeader = nextItem.slice(nextItem.indexOf('>') + 1, nextItem.lastIndexOf('<'));
 
-            //Pull out the current section and add it to our master list
-            let sectionIngs = ingList.slice(sectionStartIdx, i);
+            //Pull out the current section, remove all HTML tags, and add it to our master list
+            let sectionIngs = ingList
+                .slice(sectionStartIdx, i)
+                .map(ing => RemoveHtmlTags(ing))
+            ;
             sectionStartIdx = ++i;
 
             sectionIngs.map(
@@ -283,20 +287,10 @@ function seperateIngredientsBySection(ingList: string[]): string[][] {
 //Place all directions into a 'main' section
 function seperateDirectionsBySection(dirList: string[]): string[][] {
     let finalList: string[][] = [];
-    const htmlTags = //RegEx to catch <div>, <a>, <b>, <p>, and <span> tags
-        /<div.*?>|<\/div>|<a.*?>|<\/a>|<b.*?>|<\/b>|<p.*?>|<\/p>|<span>|<\/span>/;
 
-    //Remove all HTML nonsense (especially ads) and whitespace
+    //Remove all HTML nonsense (especially ads)
     let formattedDirections = dirList.map(
-        dir => {
-            //Keep removing as long as they exist
-            while(htmlTags.test(dir)) {
-                dir = dir.replace(
-                    htmlTags, ''
-                )
-            }
-            return dir.trim();
-        }
+        dir => RemoveHtmlTags(dir)
     );
 
     //Add the directions to a section with our header
