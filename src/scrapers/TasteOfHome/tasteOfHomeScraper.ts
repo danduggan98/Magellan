@@ -281,25 +281,27 @@ function seperateIngredientsBySection(ingList: string[]): string[][] {
 }
 
 //Place all directions into a 'main' section
-//TO-DO: REMOVE ADS, BOLD TEXT, etc. (all html)
 function seperateDirectionsBySection(dirList: string[]): string[][] {
     let finalList: string[][] = [];
-    let header: string[] = ['main'];
+    const htmlTags = //RegEx to catch <div>, <a>, <b>, <p>, and <span> tags
+        /<div.*?>|<\/div>|<a.*?>|<\/a>|<b.*?>|<\/b>|<p.*?>|<\/p>|<span>|<\/span>/;
 
-    //Remove all ads and whitespace
-    //.... .trim()
-
-    //Pull each step out of its span
+    //Remove all HTML nonsense (especially ads) and whitespace
     let formattedDirections = dirList.map(
-        dir => dir.slice(
-            dir.indexOf('>') + 1,
-            dir.lastIndexOf('<')
-        ).trim()
+        dir => {
+            //Keep removing as long as they exist
+            while(htmlTags.test(dir)) {
+                dir = dir.replace(
+                    htmlTags, ''
+                )
+            }
+            return dir.trim();
+        }
     );
 
+    //Add the directions to a section with our header
     finalList.push(
-        header.concat(formattedDirections)
+        ['main'].concat(formattedDirections)
     );
-
     return finalList;
 }
