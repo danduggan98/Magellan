@@ -32,8 +32,17 @@ const DATA_FILES: RecipeDataFile[] = [
     }
 ];
 
+//Used to find any HTML which might appear in a string
+const HTML_TAG_REGEX = /<div.*?>|<\/div>|<a.*?>|<\/a>|<img.*?>|<\/img>|<b.*?>|<\/b>|<p.*?>|<\/p>|<i.*?>|<\/i>|<span.*?>|<\/span>/g;
+
+//Method to remove HTML content and whitespace from a string
+const RemoveHtmlTags = (str: string): string => {
+    return str.replace(HTML_TAG_REGEX, '').trim();
+}
+
 export {
     VALID_SEPERATORS,
     IGNORED_WORDS,
-    DATA_FILES
+    DATA_FILES,
+    RemoveHtmlTags
 };
