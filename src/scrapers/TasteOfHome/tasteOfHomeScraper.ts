@@ -98,6 +98,7 @@ async function scrapePage(url: string, page: Page): Promise<RecipeData> {
         directions:   seperateDirectionsBySection(await getAllElements(page, selectors.directionsListSelector)),
         source:       'Taste of Home'
     };
+    console.log(pageData)
     return pageData;
 }
 
@@ -218,7 +219,7 @@ function parseTimes(times: string): TimeData {
     }
 
     //Extract and add the prep time, giving the same value to total time if it's present
-    const prep = keywords[0];
+    const prep = keywords[0] ?? '';
     const colonIdx = prep.indexOf(':');
     if (colonIdx < 0) return parsedTimes; //No colon - nothing to find. Just return the empty strings
 
