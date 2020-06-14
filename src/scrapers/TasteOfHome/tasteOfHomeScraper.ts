@@ -30,7 +30,7 @@ import { RemoveHtmlTags } from './../../resources';
         readStream.setEncoding('utf8');
 
         //Read the data line by line with the readline module
-        process.stdout.write('- Reading data from file now ... ');
+        console.log('- Reading data from file now');
         console.time('  > Completed successfully in');
         const lineReader = readline.createInterface({
             input: readStream
@@ -38,8 +38,13 @@ import { RemoveHtmlTags } from './../../resources';
 
         //Scrape every page and store the data in an array
         let recipes: RecipeData[] = [];
+        let counter = 0;
         for await (const line of lineReader) {
             recipes.push(await scrapePage(line, page));
+
+            //Display our progress
+            process.stdout.write('\r\x1b[K'); //Hacky way to clear the current line
+            process.stdout.write('  > Recipes added so far: ' + (++counter).toString() + ' ');
         }
 
         //Store the data in a JSON file
