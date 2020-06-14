@@ -163,10 +163,10 @@ function parseName(paragraph: string): string {
     let namePos: number;
 
     //Find the type of dash that exists in the paragraph, or return nothing if there isn't one
-    if (dashPos > 0) {
+    if (dashPos >= 0) {
         namePos = dashPos + dash.length;
     }
-    else if (emdashPos > 0) {
+    else if (emdashPos >= 0) {
         namePos = emdashPos + emdash.length;
     }
     else {
@@ -176,7 +176,7 @@ function parseName(paragraph: string): string {
     //Grab the name, which is between the last dash and either a comma or the end
     const credits = paragraph.slice(namePos);
     const authorEndPos = credits.indexOf(',');
-    const authorEnd = (authorEndPos > 0) ? authorEndPos : credits.length;
+    const authorEnd = (authorEndPos >= 0) ? authorEndPos : credits.length;
 
     return credits.slice(0, authorEnd);
 }
@@ -219,8 +219,10 @@ function parseTimes(times: string): TimeData {
 
     //Extract and add the prep time, giving the same value to total time if it's present
     const prep = keywords[0];
-    const prepDetails = prep.slice(prep.indexOf(':') + 2);
+    const colonIdx = prep.indexOf(':');
+    if (colonIdx < 0) return parsedTimes; //No colon - nothing to find. Just return the empty strings
 
+    let prepDetails = prep.slice(colonIdx + 2);
     parsedTimes.prepTime = prepDetails;
     if (prep.includes('total')) {
         parsedTimes.totalTime = prepDetails;
@@ -246,7 +248,7 @@ function seperateIngredientsBySection(ingList: string[]): string[][] {
     ingList = ingList.map(
         ing => {
             let potentialAdIdx = ing.indexOf('<div');
-            return (potentialAdIdx > 0)
+            return (potentialAdIdx >= 0)
                 ? ing.slice(0, potentialAdIdx)
                 : ing
             ;
