@@ -93,7 +93,6 @@ async function scrapePage(url: string, page: Page): Promise<RecipeData> {
         directions:   seperateDirectionsBySection(await getAllElements(page, selectors.directionsListSelector)),
         source:       'Taste of Home'
     };
-    console.log(pageData)
     return pageData;
 }
 
@@ -244,7 +243,7 @@ function seperateIngredientsBySection(ingList: string[]): string[][] {
             let potentialAdIdx = ing.indexOf('<div');
             return (potentialAdIdx > 0)
                 ? ing.slice(0, potentialAdIdx)
-                : ing.trim()
+                : ing
             ;
         }
     );
