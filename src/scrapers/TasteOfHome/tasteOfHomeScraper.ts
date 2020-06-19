@@ -23,39 +23,42 @@ import { RemoveHtmlTags } from './../../resources';
         const page = await browser.newPage();
         page.setDefaultNavigationTimeout(0); //Let navigation take as long as it needs
         console.log('- Started Puppeteer');
-
-        //Create a readstream to go through our txt file
-        const recipeFileName: string = 'TasteOfHomeRecipes.txt';
-        const readStream = fs.createReadStream(recipeFileName);
-        readStream.setEncoding('utf8');
-
-        //Read the data line by line with the readline module
-        console.log('- Reading data from file now');
         console.time('  > Completed successfully in');
+
+        //Create read/write streams to handle our files
+        const inputFileName: string = 'TasteOfHomeRecipes.txt';
+        const readStream = fs.createReadStream(inputFileName);
+        
+        const outputFileName: string = rootPath + '/data/TasteOfHome/TasteOfHomeDataRaw.json';
+        const writeStream = fs.createWriteStream(outputFileName);
+
+        //Read the data line by line
+        console.log('- Reading data from file now');
         const lineReader = readline.createInterface({
             input: readStream
         });
 
         //Scrape every page and store the data in an array
-        let recipes: RecipeData[] = [];
         let counter = 0;
+
+        writeStream.write('{"data":[\n');
         for await (const line of lineReader) {
-            recipes.push(await scrapePage(line, page));
+            const nextRecipe = await scrapePage(line, page);
+            const data = JSON.stringify(nextRecipe);
+
+            if (counter) writeStream.write(',\n');
+            writeStream.write(data);
 
             //Display our progress
-            process.stdout.write('\r\x1b[K'); //Hacky way to clear the current line
+            process.stdout.write('\r\x1b[K'); //Hacky way to clear the current line in console
             process.stdout.write('  > Recipes added so far: ' + (++counter).toString() + ' ');
         }
+        writeStream.write(']}');
+        console.timeEnd('  > Completed successfully in');
 
-        //Store the data in a JSON file
-        const newFilePath = rootPath + 'data/TasteOfHome/TasteOfHomeDataRaw.json';
-        const data = JSON.stringify({ data: recipes }, null, 1);
-
-        fs.writeFile(newFilePath, data, (err) => {
-            if (err) throw err;
-            console.log('done');
-            console.timeEnd('  > Completed successfully in');
-        });
+        readStream.close();
+        writeStream.close();
+        await browser.close();
     }
     catch (err) {
         console.log('Error in scrapeSite:', err);
@@ -98,7 +101,6 @@ async function scrapePage(url: string, page: Page): Promise<RecipeData> {
         directions:   seperateDirectionsBySection(await getAllElements(page, selectors.directionsListSelector)),
         source:       'Taste of Home'
     };
-    console.log(pageData)
     return pageData;
 }
 
@@ -221,7 +223,7 @@ function parseTimes(times: string): TimeData {
     //Extract and add the prep time, giving the same value to total time if it's present
     const prep = keywords[0] ?? '';
     const colonIdx = prep.indexOf(':');
-    if (colonIdx < 0) return parsedTimes; //No colon - nothing to find. Just return the empty strings
+    if (colonIdx < 0) return parsedTimes; //No colon = nothing to find. Just return the empty strings
 
     let prepDetails = prep.slice(colonIdx + 2);
     parsedTimes.prepTime = prepDetails;
