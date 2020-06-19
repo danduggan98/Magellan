@@ -1,3 +1,4 @@
+"use strict";
 //
 // Indexes the database to improve search performance
 //
@@ -10,14 +11,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import client from './connectDB';
-import { IGNORED_WORDS } from '../resources';
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const connectDB_1 = __importDefault(require("./connectDB"));
+const resources_1 = require("../resources");
 //Trim off unnecessary characters from a string
 function trimData(data) {
     let trimmed = data.toLowerCase();
     trimmed = trimmed.replace(/[!@#$%^&*()-_+{}:;"'<>,.\[\]\/\\\|~`1234567890]+/g, ' '); //Remove numbers and symbols
-    for (let i = 0; i < IGNORED_WORDS.length; i++) {
-        const rgxp = new RegExp(` +${IGNORED_WORDS[i]} +`, 'g');
+    for (let i = 0; i < resources_1.IGNORED_WORDS.length; i++) {
+        const rgxp = new RegExp(` +${resources_1.IGNORED_WORDS[i]} +`, 'g');
         trimmed = trimmed.replace(rgxp, ' ');
     }
     return trimmed.replace(/\s+/g, ' ').trim(); //Remove extra spaces
@@ -28,7 +33,7 @@ function trimData(data) {
         try {
             console.time('- Indexing completed in');
             //Connect to our main database
-            const database = yield client.connect();
+            const database = yield connectDB_1.default.connect();
             const recipeDB = database.db('recipeData');
             console.log('- Connected to Mongo cluster - indexing database now');
             //////////  STEP 1. Store all the unique words in the database  \\\\\\\\\\

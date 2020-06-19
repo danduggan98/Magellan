@@ -1,3 +1,4 @@
+"use strict";
 //
 // Web Server
 //
@@ -10,6 +11,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
 //TO-DO
 // Finish search bar + search algorithm
 // Make tertiary sort something other than id (similarity/length? popularity?), make sort function standalone and dynamic
@@ -39,10 +44,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 // Exclude ingredients
 // Vegan, gluten-free, etc. notices
 ////////// SETUP \\\\\\\\\\
-import express from 'express';
-import { ObjectID } from 'mongodb';
-import client from './database/connectDB';
-import { VALID_SEPERATORS, IGNORED_WORDS } from './resources';
+const express_1 = __importDefault(require("express"));
+const mongodb_1 = require("mongodb");
+const connectDB_1 = __importDefault(require("./database/connectDB"));
+const resources_1 = require("./resources");
 //Constants
 const validMongoID = /^[0-9a-fA-F]{24}$/;
 const PORT = Number(process.env.PORT) || 5000;
@@ -53,7 +58,7 @@ let indexCollection;
 (function connectToMongo() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const database = yield client.connect();
+            const database = yield connectDB_1.default.connect();
             console.log('- Connected to Mongo cluster');
             //Save connections to the collections we will use later
             recipeCollection = database.db('recipeData').collection('recipes');
@@ -65,8 +70,8 @@ let indexCollection;
     });
 })();
 //Set up Express app
-const app = express();
-app.use(express.static(__dirname + '/'));
+const app = express_1.default();
+app.use(express_1.default.static(__dirname + '/'));
 ////////// PAGES \\\\\\\\\\
 //Load a recipe
 app.get('/recipe/:recipeid', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -78,7 +83,7 @@ app.get('/recipe/:recipeid', (req, res) => __awaiter(void 0, void 0, void 0, fun
         }
         else {
             //Valid id - grab recipe from database
-            const result = yield recipeCollection.findOne(new ObjectID(id));
+            const result = yield recipeCollection.findOne(new mongodb_1.ObjectID(id));
             if (!result) {
                 res.json({ error: 'Recipe not found' });
             }
@@ -124,12 +129,12 @@ app.get('/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0, voi
         let lastWordIndex = 0;
         for (let i = 0; i <= terms.length; i++) {
             //Isolate properly seperated words
-            if (VALID_SEPERATORS.includes(terms.charAt(i)) || i === terms.length) {
+            if (resources_1.VALID_SEPERATORS.includes(terms.charAt(i)) || i === terms.length) {
                 let nextWord = terms.slice(lastWordIndex, i);
                 //Remove whitespace, symbols, quotes, and numbers
                 let nextWordClean = nextWord.trim().replace(/[!@#$%^*(){}.'"1234567890]+/g, '');
                 lastWordIndex = ++i;
-                if (!IGNORED_WORDS.includes(nextWordClean) && nextWordClean.length > 2) {
+                if (!resources_1.IGNORED_WORDS.includes(nextWordClean) && nextWordClean.length > 2) {
                     parsedTerms.push(nextWordClean);
                 }
             }
@@ -197,7 +202,7 @@ app.get('/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0, voi
             }
             //Pull just the ids out of each result as strings
             const topResultsRaw = masterList.slice(0, limit);
-            const topResults = topResultsRaw.map(element => new ObjectID(element.id));
+            const topResults = topResultsRaw.map(element => new mongodb_1.ObjectID(element.id));
             //Retrieve all info about each result from the database
             const finalQuery = { _id: { $in: topResults } };
             const dbResults = yield recipeCollection.find(finalQuery).toArray();

@@ -1,3 +1,4 @@
+"use strict";
 //
 // Populates the database with our JSON recipe data
 //
@@ -10,16 +11,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import fs from 'fs';
-import rootPath from 'app-root-path';
-import client from './connectDB';
-import { DATA_FILES } from '../resources';
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const fs_1 = __importDefault(require("fs"));
+const app_root_path_1 = __importDefault(require("app-root-path"));
+const connectDB_1 = __importDefault(require("./connectDB"));
+const resources_1 = require("../resources");
 //Main function - calls itself automatically and adds our JSON data to the database
 (function populateDB() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             //Connect to Mongo
-            const database = yield client.connect();
+            const database = yield connectDB_1.default.connect();
             const recipeDB = database.db("recipeData");
             console.log("- Connected to Mongo cluster - populating recipes database");
             console.time('');
@@ -42,12 +47,12 @@ import { DATA_FILES } from '../resources';
             let recipesColl = recipeDB.collection(collName); //Jump to our collection
             console.log('  > Inserting all recipes');
             //Add each set of recipes to our collection
-            for (let i = 0; i < DATA_FILES.length; i++) {
-                const current = DATA_FILES[i];
-                const path = `${rootPath}/${current.filePath}`;
+            for (let i = 0; i < resources_1.DATA_FILES.length; i++) {
+                const current = resources_1.DATA_FILES[i];
+                const path = `${app_root_path_1.default}/${current.filePath}`;
                 //Read through the JSON file
                 process.stdout.write(`    * Adding recipes from ${current.source} ... `);
-                const fileData = fs.readFileSync(path);
+                const fileData = fs_1.default.readFileSync(path);
                 const jsonData = JSON.parse(fileData.toString());
                 const recipes = jsonData.data;
                 //Add a 'source' property

@@ -1,3 +1,4 @@
+"use strict";
 //
 //  Removes all duplicates and properly formats author names in a recipe data JSON file
 //
@@ -16,8 +17,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import fs from 'fs';
-import rootPath from 'app-root-path';
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const fs_1 = __importDefault(require("fs"));
+const app_root_path_1 = __importDefault(require("app-root-path"));
 // Main function - runs automatically
 (function removeDuplicates() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -27,9 +32,9 @@ import rootPath from 'app-root-path';
             for (let i = 0; i < args.length; i++) {
                 const nextFile = args[i];
                 const folderName = nextFile.slice(0, nextFile.indexOf('DataRaw.json'));
-                const nextFilePath = `${rootPath}/data/${folderName}/${nextFile}`;
+                const nextFilePath = `${app_root_path_1.default}/data/${folderName}/${nextFile}`;
                 let numRemoved = 0;
-                const fileData = fs.readFileSync(nextFilePath);
+                const fileData = fs_1.default.readFileSync(nextFilePath);
                 const jsonData = JSON.parse(fileData.toString());
                 let recipes = jsonData.data;
                 console.log(`\n- Processing "${nextFile}"`);
@@ -93,9 +98,9 @@ import rootPath from 'app-root-path';
                 const dataToWrite = JSON.stringify({ data: recipes }, null, 1);
                 //Add data to a new file in the same folder as the original
                 const newFileName = nextFile.slice(0, -8) + 'Clean.json';
-                const newFilePath = `${rootPath}/data/${folderName}/${newFileName}`;
+                const newFilePath = `${app_root_path_1.default}/data/${folderName}/${newFileName}`;
                 process.stdout.write(`  > Adding all recipes to file "${newFilePath}" ... `);
-                fs.writeFile(newFilePath, dataToWrite, (err) => {
+                fs_1.default.writeFile(newFilePath, dataToWrite, (err) => {
                     if (err)
                         throw err;
                     console.log('done');
