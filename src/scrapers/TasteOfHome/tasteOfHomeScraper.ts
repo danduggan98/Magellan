@@ -101,6 +101,7 @@ async function scrapePage(url: string, page: Page): Promise<RecipeData> {
         directions:   seperateDirectionsBySection(await getAllElements(page, selectors.directionsListSelector)),
         source:       'Taste of Home'
     };
+    console.log(pageData);
     return pageData;
 }
 
