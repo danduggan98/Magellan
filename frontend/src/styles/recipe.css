@@ -1,0 +1,161 @@
+#header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+#recipeName {
+    margin: auto;
+    font-size: 45px;
+    width: 65%;
+}
+
+#author {
+    margin-top: 15px;
+    font-size: 25px;
+}
+
+#source {
+    margin-top: 10px;
+    font-size: 16px;
+}
+
+#sourceText {
+    color: red;
+    margin-left: 5px;
+}
+
+#image {
+    text-align: center;
+}
+
+#sourceLink {
+    text-align: center;
+}
+
+#sourceLink:visited {
+    color: inherit;
+}
+
+#details {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    width: 60%;
+    margin: auto;
+    margin-top: 25px;
+    border: 1px solid black;
+}
+
+#detailsLeft {
+    align-self: center;
+    margin-right: 65px;
+}
+
+#difficulty {
+    font-size: larger;
+    margin-bottom: 10px;
+}
+
+#difficultyText {
+    font-weight: bold;
+    margin-left: 5px;
+}
+
+#yield {
+    font-size: larger;
+    margin-bottom: 5px;
+}
+
+#yieldText {
+    font-weight: bold;
+    margin-left: 5px;
+}
+
+#totalTime {
+    font-size: 22px;
+    margin-bottom: 5px;
+    margin-top: 25px;
+    margin-left: 15px;
+}
+
+#totalTimeText {
+    font-weight: bold;
+    margin-left: 5px;
+    border-bottom: 2px solid black;
+}
+
+#times {
+    text-align: center;
+}
+
+#timesList {
+    display: inline-block;
+    text-align: left;
+}
+
+#prepTime {
+    font-size: larger;
+    margin-bottom: 10px;
+}
+
+#prepTimeText {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+#cookTime {
+    font-size: larger;
+    margin-bottom: 10px;
+}
+
+#cookTimeText {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+#activeTime {
+    font-size: larger;
+    margin-bottom: 10px;
+}
+
+#activeTimeText {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+#inactiveTime {
+    font-size: larger;
+    margin-bottom: 10px;
+}
+
+#inactiveTimeText {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.listHeader {
+    font-size: x-large;
+    font-weight: bold;
+    margin-top: 25px;
+}
+
+.sectionHeader {
+    margin-top: 20px;
+    font-size: large;
+    margin-left: 15px;
+    text-decoration: underline;
+}
+
+.sectionData {
+    margin-bottom: 6px;
+    line-height: 25px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 18px;
+}
+
+.invisibleElement {
+    display: none;
+    height: 0;
+    width: 0;
+    border: 0;
+}
