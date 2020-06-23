@@ -10,8 +10,11 @@
     "lib": ["DOM", "DOM.Iterable", "es6", "es5"],
     "module": "commonjs",
     "moduleResolution": "node",
-    "outDir": "build",
+    "outDir": "build/scripts",
     "strict": true,
     "target": "es6"
-  }
+  },
+  "include": [
+    "backend", "magellan.d.ts"
+  ]
 }
