@@ -14,6 +14,9 @@
 //CHANGE DATABASE POPULATION SCRIPTS TO UPDATE, NOT REWRITE THE DATABASE (upsert, etc)
 
 // PORT TO TYPESCRIPT!!!
+// - SERVE REACT BUNDLE FROM EXPRESS
+// - FIX RECIPE PAGE
+// - USE A SINGLE NODE_MODULES IN ROOT
 // - MERGE ONLY WHEN IT CAN BE RUN IN FULL JUST FROM NPM SCRIPTS IN ROOT
 
 // Mini search bar above recipe page
@@ -38,13 +41,15 @@
 
 import express, { Request, Response } from 'express';
 import { ObjectID, Collection } from 'mongodb'
+import path from 'path';
 import client from './database/connectDB';
 import { VALID_SEPERATORS, IGNORED_WORDS } from './resources';
 import { RecipeData, RecipeDataResult, IndexResult, IndexReference } from 'magellan';
 
 //Constants
-const validMongoID = /^[0-9a-fA-F]{24}$/;
 const PORT = Number(process.env.PORT) || 5000;
+const VALID_MONGO_ID = /^[0-9a-fA-F]{24}$/;
+const REACT_BUNDLE_PATH = path.resolve("./") + "/build/frontend";
 
 //Store persistent connections to our database collections
 let recipeCollection: Collection;
@@ -65,9 +70,9 @@ let indexCollection: Collection;
     }
 })();
 
-//Set up Express app
+//Set up Express app to serve static React pages
 const app = express();
-app.use(express.static(__dirname + '/'));
+app.use(express.static(REACT_BUNDLE_PATH));
 
 ////////// PAGES \\\\\\\\\\
 
@@ -77,7 +82,7 @@ app.get('/recipe/:recipeid', async (req: Request, res: Response) => {
         const id = req.params.recipeid;
 
         //Check for valid recipe id string
-        if (!validMongoID.test(id)) {
+        if (!VALID_MONGO_ID.test(id)) {
             res.json({ error: 'Recipe not found' });
         }
         else {
@@ -115,7 +120,7 @@ app.get('/recipe/:recipeid', async (req: Request, res: Response) => {
 });
 
 //Search for recipes
-// Type 'name' searches by recipe name,
+// Type 'name' searches by recipe name
 // Type 'ing' searches by ingredient
 // qty determines the number of results we want
 
@@ -259,6 +264,11 @@ app.get('/search/:type/:terms/:qty', async (req: Request, res: Response) => {
     catch (err) {
         console.log('Error in search route:', err)
     }
+});
+
+//Default/home page
+app.get('*', (req: Request, res: Response) => {
+    res.sendFile(REACT_BUNDLE_PATH + '/index.html');
 });
 
 ////////// FORM HANDLERS \\\\\\\\\\
