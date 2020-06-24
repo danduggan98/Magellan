@@ -25,6 +25,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // Search card - cut off long titles with ellipses, lower max height
 //CHANGE DATABASE POPULATION SCRIPTS TO UPDATE, NOT REWRITE THE DATABASE (upsert, etc)
 // PORT TO TYPESCRIPT!!!
+// - FIX RECIPE PAGE
+// - USE A SINGLE NODE_MODULES IN ROOT
 // - MERGE ONLY WHEN IT CAN BE RUN IN FULL JUST FROM NPM SCRIPTS IN ROOT
 // Mini search bar above recipe page
 // USE FIGMA TO MAKE PAGES CLEANER
@@ -44,11 +46,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 ////////// SETUP \\\\\\\\\\
 const express_1 = __importDefault(require("express"));
 const mongodb_1 = require("mongodb");
+const path_1 = __importDefault(require("path"));
 const connectDB_1 = __importDefault(require("./database/connectDB"));
 const resources_1 = require("./resources");
 //Constants
-const validMongoID = /^[0-9a-fA-F]{24}$/;
 const PORT = Number(process.env.PORT) || 5000;
+const VALID_MONGO_ID = /^[0-9a-fA-F]{24}$/;
+const REACT_BUNDLE_PATH = path_1.default.resolve("./") + "/build/frontend";
 //Store persistent connections to our database collections
 let recipeCollection;
 let indexCollection;
@@ -67,16 +71,16 @@ let indexCollection;
         }
     });
 })();
-//Set up Express app
+//Set up Express app to serve static React pages
 const app = express_1.default();
-app.use(express_1.default.static(__dirname + '/'));
+app.use(express_1.default.static(REACT_BUNDLE_PATH));
 ////////// PAGES \\\\\\\\\\
 //Load a recipe
 app.get('/recipe/:recipeid', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.params.recipeid;
         //Check for valid recipe id string
-        if (!validMongoID.test(id)) {
+        if (!VALID_MONGO_ID.test(id)) {
             res.json({ error: 'Recipe not found' });
         }
         else {
@@ -112,7 +116,7 @@ app.get('/recipe/:recipeid', (req, res) => __awaiter(void 0, void 0, void 0, fun
     }
 }));
 //Search for recipes
-// Type 'name' searches by recipe name,
+// Type 'name' searches by recipe name
 // Type 'ing' searches by ingredient
 // qty determines the number of results we want
 app.get('/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -234,6 +238,10 @@ app.get('/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0, voi
         console.log('Error in search route:', err);
     }
 }));
+//Default/home page
+app.get('*', (req, res) => {
+    res.sendFile(REACT_BUNDLE_PATH + '/index.html');
+});
 ////////// FORM HANDLERS \\\\\\\\\\
 //Login requests
 app.post('/login', (req) => __awaiter(void 0, void 0, void 0, function* () {
