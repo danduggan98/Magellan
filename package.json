@@ -5,17 +5,14 @@
     "license": "MIT",
     "version": "2.1.0",
     "private": true,
-    "proxy": "http://localhost:5000",
     "types": "magellan.d.ts",
     "scripts": {
-        "start": "npm run prod",
+        "start": "npm run server",
         "server": "node build/scripts/server.js",
         "dev-server": "nodemon build/scripts/server.js",
-        "magellan": "cd frontend && react-scripts start",
+        "dev-frontend": "cd frontend && react-scripts start",
+        "dev": "concurrently \"npm run dev-server\" \"npm run dev-frontend\"",
         "build": "tsc && cd frontend && react-scripts build && rm -rf ../build/frontend && mv ./build ../build/frontend",
-        "live": "serve -l 3000 -s build/frontend",
-        "dev": "concurrently \"npm run dev-server\" \"npm run magellan\"",
-        "prod": "concurrently \"npm run server\" \"npm run live\"",
         "rebuild_database": "cd build/scripts/database && node populateDB.js && node indexDB.js"
     },
     "dependencies": {
