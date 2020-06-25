@@ -23,7 +23,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // SANITIZE INPUTS DEAR GOD
 // 'See all/more' option allows you to slide through sets of the data
 // Search card - cut off long titles with ellipses, lower max height
-//CHANGE DATABASE POPULATION SCRIPTS TO UPDATE, NOT REWRITE THE DATABASE (upsert, etc)
+//CHANGE DATABASE POPULATION SCRIPTS TO UPDATE, NOT REWRITE, THE DATABASE (upsert, etc)
 // PORT TO TYPESCRIPT!!!
 // - FIX RECIPE PAGE
 // - USE A SINGLE NODE_MODULES IN ROOT
@@ -76,7 +76,7 @@ const app = express_1.default();
 app.use(express_1.default.static(REACT_BUNDLE_PATH));
 ////////// PAGES \\\\\\\\\\
 //Load a recipe
-app.get('/recipe/:recipeid', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.get('/api/recipe/:recipeid', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.params.recipeid;
         //Check for valid recipe id string
@@ -119,7 +119,7 @@ app.get('/recipe/:recipeid', (req, res) => __awaiter(void 0, void 0, void 0, fun
 // Type 'name' searches by recipe name
 // Type 'ing' searches by ingredient
 // qty determines the number of results we want
-app.get('/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.get('/api/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.time('  > Search execution time');
         const type = req.params.type;
