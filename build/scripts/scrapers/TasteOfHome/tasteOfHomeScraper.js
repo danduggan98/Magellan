@@ -43,7 +43,7 @@ const resources_1 = require("../../resources");
             console.log('- Started Puppeteer');
             console.time('  > Completed successfully in');
             //Create read/write streams to handle our files
-            const inputFileName = 'TasteOfHomeRecipes.txt';
+            const inputFileName = app_root_path_1.default + '/backend/scrapers/TasteOfHome/TasteOfHomeRecipes.txt';
             const readStream = fs_1.default.createReadStream(inputFileName);
             const outputFileName = app_root_path_1.default + '/data/TasteOfHome/TasteOfHomeDataRaw.json';
             const writeStream = fs_1.default.createWriteStream(outputFileName);

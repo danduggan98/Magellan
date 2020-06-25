@@ -24,10 +24,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // 'See all/more' option allows you to slide through sets of the data
 // Search card - cut off long titles with ellipses, lower max height
 //CHANGE DATABASE POPULATION SCRIPTS TO UPDATE, NOT REWRITE, THE DATABASE (upsert, etc)
-// PORT TO TYPESCRIPT!!!
-// - FIX RECIPE PAGE
-// - USE A SINGLE NODE_MODULES IN ROOT
-// - MERGE ONLY WHEN IT CAN BE RUN IN FULL JUST FROM NPM SCRIPTS IN ROOT
 // USE FIGMA TO MAKE PAGES CLEANER
 // Change vs code format/line space settings so everything but JSON and YAML have 4 spaces
 // SCRAPE + ADD TASTE OF HOME, BON APPETIT, AND OTHERS
