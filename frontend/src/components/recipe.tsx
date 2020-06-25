@@ -11,9 +11,11 @@ interface ArrayToListProps {
     ordered: boolean
 }
 
-interface RecipeProps {
-    id: string
+interface RecipeParams {
+    recipeid: string
 }
+
+interface Props extends RouteComponentProps<RecipeParams> {}
 
 interface State {
     recipeFound:  boolean,
@@ -86,12 +88,12 @@ const ArrayToList: FunctionComponent<ArrayToListProps> = (props) => {
 }
 
 //Display full recipe data
-export default class Recipe extends Component<RouteComponentProps<RecipeProps>, State> {
-    constructor(props: RouteComponentProps<RecipeProps>) {
+export default class Recipe extends Component<Props, State> {
+    constructor(props: Props) {
         super(props);
         this.state = {
             recipeFound:  true,
-            recipeID:     props.match.params.id, //URL parameter
+            recipeID:     this.props.match.params.recipeid, //URL parameter
             URL:          '',
             imageURL:     '',
             author:       '',
@@ -111,7 +113,7 @@ export default class Recipe extends Component<RouteComponentProps<RecipeProps>, 
 
     //Gather data from server JSON response
     async componentDidMount() {
-        const res = await fetch('/api/recipe/' + this.state.recipeID);
+        const res = await fetch(`/api/recipe/${this.state.recipeID}`);
         const data: RecipeData = await res.json();
 
         //Recipe not found
@@ -155,10 +157,10 @@ export default class Recipe extends Component<RouteComponentProps<RecipeProps>, 
                 <div>
                     { this.state.recipeName
                       ? <Helmet>
-                            <title>{"Magellan - " + this.state.recipeName}</title>
+                            <title>{'Magellan - ' + this.state.recipeName}</title>
                         </Helmet>
                       : <Helmet>
-                            <title>{"Magellan"}</title>
+                            <title>{'Magellan'}</title>
                         </Helmet>
                     }
 
