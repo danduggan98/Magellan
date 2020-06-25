@@ -14,9 +14,9 @@ import { RecipeData } from 'magellan';
     try {
         //Connect to Mongo
         const database = await client.connect();
-        const recipeDB = database.db("recipeData");
+        const recipeDB = database.db('recipeData');
 
-        console.log("- Connected to Mongo cluster - populating recipes database");
+        console.log('- Connected to Mongo cluster - populating recipes database');
         console.time('');
 
         //Rebuild the recipes collection from scratch
