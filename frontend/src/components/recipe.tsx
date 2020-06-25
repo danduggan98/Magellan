@@ -111,7 +111,7 @@ export default class Recipe extends Component<RouteComponentProps<RecipeProps>, 
 
     //Gather data from server JSON response
     async componentDidMount() {
-        const res = await fetch('/recipe/' + this.state.recipeID);
+        const res = await fetch('/api/recipe/' + this.state.recipeID);
         const data: RecipeData = await res.json();
 
         //Recipe not found

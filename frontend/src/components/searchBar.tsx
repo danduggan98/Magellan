@@ -37,7 +37,7 @@ export default class SearchBar extends Component {
         if (this.state.input) {
 
             //If so, query the db
-            const fetchURL = `/search/${this.state.searchType}/${this.state.input}/${this.state.maxResults}`;
+            const fetchURL = `/api/search/${this.state.searchType}/${this.state.input}/${this.state.maxResults}`;
             this.setState({
                 results: [],
                 resultsFound: true,
