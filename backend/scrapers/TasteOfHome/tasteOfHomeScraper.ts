@@ -26,7 +26,7 @@ import { RemoveHtmlTags } from '../../resources';
         console.time('  > Completed successfully in');
 
         //Create read/write streams to handle our files
-        const inputFileName: string = 'TasteOfHomeRecipes.txt';
+        const inputFileName: string = rootPath + '/backend/scrapers/TasteOfHome/TasteOfHomeRecipes.txt';
         const readStream = fs.createReadStream(inputFileName);
         
         const outputFileName: string = rootPath + '/data/TasteOfHome/TasteOfHomeDataRaw.json';
