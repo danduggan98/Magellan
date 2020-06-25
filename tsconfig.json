@@ -1,0 +1,20 @@
+// Reference: https://aka.ms/tsconfig.json
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": "./",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "jsx": "react",
+    "lib": ["DOM", "DOM.Iterable", "es6", "es5"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "build/scripts",
+    "strict": true,
+    "target": "es6"
+  },
+  "include": [
+    "backend", "magellan.d.ts"
+  ]
+}

@@ -3,32 +3,72 @@
     "description": "The best recipes on the web, all in one place",
     "authors": "Dan Duggan",
     "license": "MIT",
-    "version": "1.1.0",
+    "version": "2.1.0",
     "private": true,
+    "types": "magellan.d.ts",
     "scripts": {
-        "start": "npm run prod",
-        "server": "nodemon server.js",
-        "magellan": "npm start --prefix magellan",
-        "build": "react-scripts build",
-        "live": "serve -l 3000 -s build",
-        "dev": "concurrently \"npm run server\" \"npm run magellan\"",
-        "prod": "concurrently \"npm run server\" \"npm run live\"",
-        "rebuild_database": "node database/populateDB.js && node database/dbIndexing.js"
+        "start": "npm run server",
+        "server": "node build/scripts/server.js",
+        "dev-server": "nodemon build/scripts/server.js",
+        "dev-frontend": "cd frontend && react-scripts start",
+        "dev": "concurrently \"npm run dev-server\" \"npm run dev-frontend\"",
+        "build": "tsc && cd frontend && react-scripts build && rm -rf ../build/frontend && mv ./build ../build/frontend",
+        "refresh": "npm run build && npm start",
+        "rebuild_database": "cd build/scripts/database && node populateDB.js && node indexDB.js"
     },
     "dependencies": {
         "app-root-path": "^3.0.0",
         "concurrently": "^5.1.0",
         "dotenv": "^8.2.0",
-        "express": "4.17.1",
-        "nodemon": "^2.0.3",
+        "express": "^4.17.1",
+        "mongodb": "^3.5.9",
+        "node": "^14.3.0",
+        "nodemon": "^2.0.4",
+        "puppeteer-extra": "^3.1.9",
+        "puppeteer-extra-plugin-stealth": "^2.4.9",
         "react": "^16.13.1",
-        "react-dom": "16.13.1",
+        "react-dom": "^16.13.1",
         "react-helmet": "^6.0.0",
-        "react-router-dom": "^5.1.2",
-        "react-spinners": "^0.8.1"
+        "react-router-dom": "^5.2.0",
+        "react-scripts": "^3.4.1",
+        "react-spinners": "^0.8.1",
+        "serve": "^11.3.2"
+    },
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
     },
     "devDependencies": {
-        "react-scripts": "^3.4.1"
-    },
-    "proxy": "http://localhost:5000"
+        "@testing-library/jest-dom": "^4.2.4",
+        "@testing-library/react": "^9.5.0",
+        "@testing-library/user-event": "^7.2.1",
+        "@types/app-root-path": "^1.2.4",
+        "@types/concurrently": "^5.2.1",
+        "@types/express": "^4.17.6",
+        "@types/jest": "^26.0.0",
+        "@types/mongodb": "^3.5.22",
+        "@types/node": "^14.0.13",
+        "@types/nodemon": "^1.19.0",
+        "@types/puppeteer": "^3.0.0",
+        "@types/react": "^16.9.38",
+        "@types/react-dom": "^16.9.8",
+        "@types/react-helmet": "^6.0.0",
+        "@types/react-router-dom": "^5.1.5",
+        "css-loader": "^3.6.0",
+        "style-loader": "^1.2.1",
+        "terser": "^3.17.0",
+        "ts-loader": "^7.0.5",
+        "ts-node": "^8.10.2",
+        "typescript": "^3.9.3",
+        "webpack-cli": "^3.3.12",
+        "webpack-node-externals": "^1.7.2"
+    }
 }
