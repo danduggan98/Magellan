@@ -25,8 +25,8 @@ const resources_1 = require("../resources");
         try {
             //Connect to Mongo
             const database = yield connectDB_1.default.connect();
-            const recipeDB = database.db("recipeData");
-            console.log("- Connected to Mongo cluster - populating recipes database");
+            const recipeDB = database.db('recipeData');
+            console.log('- Connected to Mongo cluster - populating recipes database');
             console.time('');
             //Rebuild the recipes collection from scratch
             const collName = 'recipes';

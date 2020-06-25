@@ -28,7 +28,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // - FIX RECIPE PAGE
 // - USE A SINGLE NODE_MODULES IN ROOT
 // - MERGE ONLY WHEN IT CAN BE RUN IN FULL JUST FROM NPM SCRIPTS IN ROOT
-// Mini search bar above recipe page
 // USE FIGMA TO MAKE PAGES CLEANER
 // Change vs code format/line space settings so everything but JSON and YAML have 4 spaces
 // SCRAPE + ADD TASTE OF HOME, BON APPETIT, AND OTHERS
@@ -52,7 +51,7 @@ const resources_1 = require("./resources");
 //Constants
 const PORT = Number(process.env.PORT) || 5000;
 const VALID_MONGO_ID = /^[0-9a-fA-F]{24}$/;
-const REACT_BUNDLE_PATH = path_1.default.resolve("./") + "/build/frontend";
+const REACT_BUNDLE_PATH = path_1.default.resolve('./') + '/build/frontend';
 //Store persistent connections to our database collections
 let recipeCollection;
 let indexCollection;
