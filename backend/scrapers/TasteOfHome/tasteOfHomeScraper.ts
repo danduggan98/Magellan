@@ -44,6 +44,7 @@ import { RemoveHtmlTags } from '../../resources';
         writeStream.write('{"data":[\n');
         for await (const line of lineReader) {
             const nextRecipe = await scrapePage(line, page);
+            if (nextRecipe.recipeName === '') continue; //Page not found or bad data - skip this item
             const data = JSON.stringify(nextRecipe);
 
             if (counter) writeStream.write(',\n');
@@ -51,7 +52,7 @@ import { RemoveHtmlTags } from '../../resources';
 
             //Display our progress
             process.stdout.write('\r\x1b[K'); //Hacky way to clear the current line in console
-            process.stdout.write('  > Recipes added so far: ' + (++counter).toString() + ' ');
+            process.stdout.write('  > Recipes added so far: ' + (++counter).toString() + '\n');
         }
         writeStream.write(']}');
         console.timeEnd('  > Completed successfully in');
@@ -67,7 +68,36 @@ import { RemoveHtmlTags } from '../../resources';
 
 //Find the desired data on a page and return it as a RecipeData object
 async function scrapePage(url: string, page: Page): Promise<RecipeData> {
-    await page.goto(url);
+
+    //Navigate to the page - If this fails, try again up to five times
+    let pageReached: boolean = false;
+    for (let i = 0; i < 5; i++) {
+        try {
+            await page.goto(url);
+        }
+        catch (err) {
+            //If the page doesn't connect, wait a few seconds and pray for divine intervention
+            console.log(`  ! Unable to reach ${url}. Retrying ...`);
+            await new Promise(resolve => setTimeout(resolve, 6000));
+            continue;
+        }
+        pageReached = true;
+        break; //No error - stop trying and proceed
+    }
+
+    //If navigation ultimately fails, return some empty data to let scrapeSite know
+    if (!pageReached) {
+        let failureData: RecipeData = {
+            URL:           '',
+            imageURL:      '',
+            author:        '',
+            recipeName:    '',
+            ingredients:   [],
+            directions:    [],
+        }
+        console.log('  ! Page not found. Skipping this item.');
+        return failureData;
+    }
 
     //List of selectors for each item we want
     const selectors = {
