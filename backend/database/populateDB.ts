@@ -16,29 +16,23 @@ import { RecipeData } from 'magellan';
         const database = await client.connect();
         const recipeDB = database.db('recipeData');
 
-        console.log('- Connected to Mongo cluster - populating recipes database');
+        console.log('- Connected to Mongo cluster - populating recipe database');
         console.time('');
 
-        //Rebuild the recipes collection from scratch
-        const collName: string = 'recipes';
-        const collExists: CommandCursorResult = await recipeDB.listCollections({name: collName}).next();
+        //Create a recipes collection if it does not currently exist
+        const COLL_NAME: string = 'recipes';
+        const collExists: CommandCursorResult = await recipeDB.listCollections({ name: COLL_NAME }).next();
 
-        //Collection already exists - delete it
-        if (collExists) {
-            process.stdout.write('  > Found recipes collection. Deleting now ... ');
-            await recipeDB.dropCollection(collName);
+        if (!collExists) {
+            process.stdout.write('  > Recipes collection not found. Creating now ... ');
+            await recipeDB.createCollection(COLL_NAME);
             console.log('done');
         }
         else {
-            console.log('  > Recipes collection not found');
+            console.log('  > Found the Recipes collection');
         }
 
-        //Add the collection
-        process.stdout.write('  > Creating recipes collection ... ');
-        await recipeDB.createCollection(collName);
-        console.log('done');
-
-        let recipesColl: Collection = recipeDB.collection(collName); //Jump to our collection
+        let recipesColl: Collection = recipeDB.collection(COLL_NAME); //Jump to our collection
         console.log('  > Inserting all recipes');
 
         //Add each set of recipes to our collection
@@ -58,11 +52,28 @@ import { RecipeData } from 'magellan';
                 return nextRecipe;
             });
 
-            await recipesColl.insertMany(cleanedRecipes);
+            //Insert any recipes that don't already exist
+            //OVERFLOWING THE STACK!!!!!!!!! AHHHHHHHHHHHHHHHHHHHHH
+            cleanedRecipes.map(async nextRecipe => {
+                try {
+                    await recipesColl.updateOne(
+                        { $and: [
+                            { recipeName: nextRecipe.recipeName },
+                            { author: nextRecipe.author }
+                        ]},
+                        { $setOnInsert: { ...nextRecipe } },
+                        { upsert: true }
+                    );
+                    console.log('Added', nextRecipe.recipeName)
+                }
+                catch (err) {
+                    console.log('Error adding item to database:', err);
+                }
+            });
             console.log('done');
         }
-        database.close();
 
+        database.close();
         process.stdout.write('- Successfully populated database in');
         console.timeEnd('');
 
