@@ -76,9 +76,9 @@ async function scrapePage(url: string, page: Page): Promise<RecipeData> {
             await page.goto(url);
         }
         catch (err) {
-            //If the page doesn't connect, wait a few seconds and pray for divine intervention
+            //If the page doesn't connect, wait ten seconds and pray for divine intervention
             console.log(`  ! Unable to reach ${url}. Retrying ...`);
-            await new Promise(resolve => setTimeout(resolve, 6000));
+            await new Promise(resolve => setTimeout(resolve, 10000));
             continue;
         }
         pageReached = true;
