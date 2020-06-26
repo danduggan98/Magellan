@@ -118,15 +118,15 @@ async function scrapePage(url: string, page: Page): Promise<RecipeData> {
     let pageData: RecipeData = {
         URL:          url,
         imageURL:     await getElementByAttribute(page, selectors.imageSelector, 'src'),
-        author:       parseName(await getElementText(page, selectors.authorNoteSelector)),
-        recipeName:   await getElementText(page, selectors.recipeNameSelector),
+        author:       parseAuthorName(await getElementText(page, selectors.authorNoteSelector)),
+        recipeName:   RemoveHtmlTags(await getElementText(page, selectors.recipeNameSelector)),
         difficulty:   '', //Never included
         totalTime:    times.totalTime,
         prepTime:     times.prepTime,
         inactiveTime: times.inactiveTime,
         activeTime:   times.activeTime,
         cookTime:     times.cookTime,
-        yield:        await getElementText(page, selectors.yieldSelector),
+        yield:        RemoveHtmlTags(await getElementText(page, selectors.yieldSelector)),
         ingredients:  seperateIngredientsBySection(await getAllElements(page, selectors.ingredientListSelector)),
         directions:   seperateDirectionsBySection(await getAllElements(page, selectors.directionsListSelector)),
         source:       'Taste of Home'
@@ -188,7 +188,7 @@ async function getAllElements(page: Page, selector: string): Promise<string[]> {
 
 //Pulls the author name out of the descriptive paragraph
 // The name is found toward the end, between an emdash (either literal or encoded) and a comma
-function parseName(paragraph: string): string {
+function parseAuthorName(paragraph: string): string {
     const dash:   string = '—';
     const emdash: string = '&amp;mdash;';
 
@@ -212,7 +212,7 @@ function parseName(paragraph: string): string {
     const authorEndPos = credits.indexOf(',');
     const authorEnd = (authorEndPos >= 0) ? authorEndPos : credits.length;
 
-    return credits.slice(0, authorEnd);
+    return RemoveHtmlTags(credits.slice(0, authorEnd));
 }
 
 //Pull each time out of the single time string
@@ -256,7 +256,7 @@ function parseTimes(times: string): TimeData {
     const colonIdx = prep.indexOf(':');
     if (colonIdx < 0) return parsedTimes; //No colon = nothing to find. Just return the empty strings
 
-    let prepDetails = prep.slice(colonIdx + 2);
+    let prepDetails = RemoveHtmlTags(prep.slice(colonIdx + 2));
     parsedTimes.prepTime = prepDetails;
     if (prep.includes('total')) {
         parsedTimes.totalTime = prepDetails;
@@ -269,7 +269,7 @@ function parseTimes(times: string): TimeData {
         if (j > 1) cookDetails += ' | ';
         cookDetails += nextDetails;
     }
-    parsedTimes.cookTime = cookDetails;
+    parsedTimes.cookTime = RemoveHtmlTags(cookDetails);
 
     return parsedTimes;
 }
