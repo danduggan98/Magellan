@@ -41,7 +41,7 @@ import { RecipeData } from 'magellan';
             const path = `${rootPath}/${current.filePath}`;
 
             //Read through the JSON file
-            process.stdout.write(`    * Adding recipes from ${current.source} ... `);
+            process.stdout.write(`    * Adding recipes from ${current.source} ...`);
             const fileData: Buffer = fs.readFileSync(path);
             const jsonData = JSON.parse(fileData.toString());
             const recipes: RecipeData[] = jsonData.data;
@@ -53,23 +53,25 @@ import { RecipeData } from 'magellan';
             });
 
             //Insert any recipes that don't already exist
-            //OVERFLOWING THE STACK!!!!!!!!! AHHHHHHHHHHHHHHHHHHHHH
-            cleanedRecipes.map(async nextRecipe => {
-                try {
-                    await recipesColl.updateOne(
-                        { $and: [
-                            { recipeName: nextRecipe.recipeName },
-                            { author: nextRecipe.author }
-                        ]},
-                        { $setOnInsert: { ...nextRecipe } },
-                        { upsert: true }
-                    );
-                    console.log('Added', nextRecipe.recipeName)
+            let count = 0;
+            await Promise.all(
+                cleanedRecipes.map(async nextRecipe => {
+                    try {
+                        await recipesColl.updateOne(
+                            { $and: [
+                                { recipeName: nextRecipe.recipeName },
+                                { author: nextRecipe.author }
+                            ]},
+                            { $setOnInsert: { ...nextRecipe } },
+                            { upsert: true }
+                        );
+                        if ((++count) % Math.ceil((recipes.length / 7)) === 0) process.stdout.write('.'); //Track progress
+                    }
+                    catch (err) {
+                        console.log('Error adding item to database:', err);
+                    }
                 }
-                catch (err) {
-                    console.log('Error adding item to database:', err);
-                }
-            });
+            ));
             console.log('done');
         }
 
