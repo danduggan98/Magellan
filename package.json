@@ -9,7 +9,7 @@
     "scripts": {
         "start": "npm run server",
         "server": "node build/scripts/server.js",
-        "dev-server": "nodemon build/scripts/server.js",
+        "dev-server": "nodemon --watch 'backend/server.ts' --exec 'ts-node' backend/server.ts",
         "dev-frontend": "cd frontend && react-scripts start",
         "dev": "concurrently \"npm run dev-server\" \"npm run dev-frontend\"",
         "build": "tsc && cd frontend && react-scripts build && rm -rf ../build/frontend && mv ./build ../build/frontend",
