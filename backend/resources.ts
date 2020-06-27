@@ -40,7 +40,7 @@ const RemoveHtmlTags = (str: string): string => {
     return str.replace(HTML_TAG_REGEX, '').trim();
 }
 
-//Sorts an array by any list of properties, in order
+//Sorts an object array by any list of properties, in order
 const SortByProperties = (values: any[], properties: string[]): any[] => {
     for (let i = properties.length - 1; i >= 0; i--) {
         let nextProp = properties[i];
