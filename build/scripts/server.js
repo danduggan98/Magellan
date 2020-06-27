@@ -17,7 +17,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 //TO-DO
 // Finish search bar + search algorithm
-// Make tertiary sort something other than id (similarity/length? popularity?), make sort function standalone and dynamic
+// Make tertiary sort something other than id (similarity/length? popularity?)
 // USE INGREDIENT SEARCH FOR BLT (MAYO, BACON, TOMATO, BREAD) TO DIAGNOSE ACCURACY ISSUES (NOT REMOVING PUNCTUATION?)
 // Prioritize items where the search terms are grouped in order (e.g. search for 'potato salad' => 'German Potato Salad' > 'Sweet Potato Pecan Salad')
 // Make plurals and singulars give same results (e.g. sandwich vs. sandwiches, leaf vs. leaves, salad vs salads, etc.)
@@ -178,27 +178,13 @@ app.get('/api/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0,
                     }
                 }
                 //Sort by whatever the user is looking for
-                if (type === 'name') {
-                    //Name, then ingredients
-                    masterList.sort((a, b) => {
-                        if (a.inName === b.inName) {
-                            return b.inIngs - a.inIngs;
-                        }
-                        return b.inName - a.inName;
-                    });
-                }
-                else {
-                    //Ingredients, then name
-                    masterList.sort((a, b) => {
-                        if (a.inIngs === b.inIngs) {
-                            return b.inName - a.inName;
-                        }
-                        return b.inIngs - a.inIngs;
-                    });
-                }
+                type === 'name'
+                    ? resources_1.SortByProperties(masterList, ['inName', 'inIngs'])
+                    : resources_1.SortByProperties(masterList, ['inIngs', 'inName']);
             }
             //Pull just the ids out of each result as strings
             const topResultsRaw = masterList.slice(0, limit);
+            console.log(topResultsRaw.slice(0, 9));
             const topResults = topResultsRaw.map(element => new mongodb_1.ObjectID(element.id));
             //Retrieve all info about each result from the database
             const finalQuery = { _id: { $in: topResults } };

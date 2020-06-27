@@ -3,7 +3,7 @@
 // Useful constants and file names for use around the app
 //
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RemoveHtmlTags = exports.DATA_FILES = exports.IGNORED_WORDS = exports.VALID_SEPERATORS = void 0;
+exports.SortByProperties = exports.RemoveHtmlTags = exports.DATA_FILES = exports.IGNORED_WORDS = exports.VALID_SEPERATORS = void 0;
 //List of symbols which are allowed to seperate search terms
 const VALID_SEPERATORS = [
     ' ', '-', '/', ',', '+', '&'
@@ -39,3 +39,14 @@ const RemoveHtmlTags = (str) => {
     return str.replace(HTML_TAG_REGEX, '').trim();
 };
 exports.RemoveHtmlTags = RemoveHtmlTags;
+//Sorts an object array by any list of properties, in order
+const SortByProperties = (values, properties) => {
+    for (let i = properties.length - 1; i >= 0; i--) {
+        let nextProp = properties[i];
+        values.sort((a, b) => {
+            return b[nextProp] - a[nextProp];
+        });
+    }
+    return values;
+};
+exports.SortByProperties = SortByProperties;
