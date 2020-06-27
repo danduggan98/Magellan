@@ -59,13 +59,15 @@ const resources_1 = require("../../resources");
                 for (var lineReader_1 = __asyncValues(lineReader), lineReader_1_1; lineReader_1_1 = yield lineReader_1.next(), !lineReader_1_1.done;) {
                     const line = lineReader_1_1.value;
                     const nextRecipe = yield scrapePage(line, page);
+                    if (nextRecipe.recipeName === '')
+                        continue; //Page not found or bad data - skip this item
                     const data = JSON.stringify(nextRecipe);
                     if (counter)
                         writeStream.write(',\n');
                     writeStream.write(data);
                     //Display our progress
                     process.stdout.write('\r\x1b[K'); //Hacky way to clear the current line in console
-                    process.stdout.write('  > Recipes added so far: ' + (++counter).toString() + ' ');
+                    process.stdout.write('  > Recipes added so far: ' + (++counter).toString() + '\n');
                 }
             }
             catch (e_1_1) { e_1 = { error: e_1_1 }; }
@@ -89,7 +91,34 @@ const resources_1 = require("../../resources");
 //Find the desired data on a page and return it as a RecipeData object
 function scrapePage(url, page) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield page.goto(url);
+        //Navigate to the page - If this fails, try again up to five times
+        let pageReached = false;
+        for (let i = 0; i < 5; i++) {
+            try {
+                yield page.goto(url);
+            }
+            catch (err) {
+                //If the page doesn't connect, wait ten seconds and pray for divine intervention
+                console.log(`  ! Unable to reach ${url}. Retrying ...`);
+                yield new Promise(resolve => setTimeout(resolve, 10000));
+                continue;
+            }
+            pageReached = true;
+            break; //No error - stop trying and proceed
+        }
+        //If navigation ultimately fails, return some empty data to let scrapeSite know
+        if (!pageReached) {
+            let failureData = {
+                URL: '',
+                imageURL: '',
+                author: '',
+                recipeName: '',
+                ingredients: [],
+                directions: [],
+            };
+            console.log('  ! Page not found. Skipping this item.');
+            return failureData;
+        }
         //List of selectors for each item we want
         const selectors = {
             imageSelector: '.-image.initial.loading',
@@ -107,15 +136,15 @@ function scrapePage(url, page) {
         let pageData = {
             URL: url,
             imageURL: yield getElementByAttribute(page, selectors.imageSelector, 'src'),
-            author: parseName(yield getElementText(page, selectors.authorNoteSelector)),
-            recipeName: yield getElementText(page, selectors.recipeNameSelector),
+            author: parseAuthorName(yield getElementText(page, selectors.authorNoteSelector)),
+            recipeName: resources_1.RemoveHtmlTags(yield getElementText(page, selectors.recipeNameSelector)),
             difficulty: '',
             totalTime: times.totalTime,
             prepTime: times.prepTime,
             inactiveTime: times.inactiveTime,
             activeTime: times.activeTime,
             cookTime: times.cookTime,
-            yield: yield getElementText(page, selectors.yieldSelector),
+            yield: resources_1.RemoveHtmlTags(yield getElementText(page, selectors.yieldSelector)),
             ingredients: seperateIngredientsBySection(yield getAllElements(page, selectors.ingredientListSelector)),
             directions: seperateDirectionsBySection(yield getAllElements(page, selectors.directionsListSelector)),
             source: 'Taste of Home'
@@ -169,7 +198,7 @@ function getAllElements(page, selector) {
 }
 //Pulls the author name out of the descriptive paragraph
 // The name is found toward the end, between an emdash (either literal or encoded) and a comma
-function parseName(paragraph) {
+function parseAuthorName(paragraph) {
     const dash = '—';
     const emdash = '&amp;mdash;';
     const dashPos = paragraph.lastIndexOf(dash);
@@ -189,7 +218,7 @@ function parseName(paragraph) {
     const credits = paragraph.slice(namePos);
     const authorEndPos = credits.indexOf(',');
     const authorEnd = (authorEndPos >= 0) ? authorEndPos : credits.length;
-    return credits.slice(0, authorEnd);
+    return resources_1.RemoveHtmlTags(credits.slice(0, authorEnd));
 }
 //Pull each time out of the single time string
 function parseTimes(times) {
@@ -228,7 +257,7 @@ function parseTimes(times) {
     const colonIdx = prep.indexOf(':');
     if (colonIdx < 0)
         return parsedTimes; //No colon = nothing to find. Just return the empty strings
-    let prepDetails = prep.slice(colonIdx + 2);
+    let prepDetails = resources_1.RemoveHtmlTags(prep.slice(colonIdx + 2));
     parsedTimes.prepTime = prepDetails;
     if (prep.includes('total')) {
         parsedTimes.totalTime = prepDetails;
@@ -241,7 +270,7 @@ function parseTimes(times) {
             cookDetails += ' | ';
         cookDetails += nextDetails;
     }
-    parsedTimes.cookTime = cookDetails;
+    parsedTimes.cookTime = resources_1.RemoveHtmlTags(cookDetails);
     return parsedTimes;
 }
 //Break down the list of ingredients into sections with headers

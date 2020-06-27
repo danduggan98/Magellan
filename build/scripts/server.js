@@ -18,12 +18,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //TO-DO
 // Finish search bar + search algorithm
 // Make tertiary sort something other than id (similarity/length? popularity?), make sort function standalone and dynamic
+// USE INGREDIENT SEARCH FOR BLT (MAYO, BACON, TOMATO, BREAD) TO DIAGNOSE ACCURACY ISSUES (NOT REMOVING PUNCTUATION?)
 // Prioritize items where the search terms are grouped in order (e.g. search for 'potato salad' => 'German Potato Salad' > 'Sweet Potato Pecan Salad')
 // Make plurals and singulars give same results (e.g. sandwich vs. sandwiches, leaf vs. leaves, salad vs salads, etc.)
 // SANITIZE INPUTS DEAR GOD
 // 'See all/more' option allows you to slide through sets of the data
 // Search card - cut off long titles with ellipses, lower max height
-//CHANGE DATABASE POPULATION SCRIPTS TO UPDATE, NOT REWRITE, THE DATABASE (upsert, etc)
 // USE FIGMA TO MAKE PAGES CLEANER
 // Change vs code format/line space settings so everything but JSON and YAML have 4 spaces
 // SCRAPE + ADD TASTE OF HOME, BON APPETIT, AND OTHERS

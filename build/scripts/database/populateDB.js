@@ -26,32 +26,27 @@ const resources_1 = require("../resources");
             //Connect to Mongo
             const database = yield connectDB_1.default.connect();
             const recipeDB = database.db('recipeData');
-            console.log('- Connected to Mongo cluster - populating recipes database');
+            console.log('- Connected to Mongo cluster - populating recipe database');
             console.time('');
-            //Rebuild the recipes collection from scratch
-            const collName = 'recipes';
-            const collExists = yield recipeDB.listCollections({ name: collName }).next();
-            //Collection already exists - delete it
-            if (collExists) {
-                process.stdout.write('  > Found recipes collection. Deleting now ... ');
-                yield recipeDB.dropCollection(collName);
+            //Create a recipes collection if it does not currently exist
+            const COLL_NAME = 'recipes';
+            const collExists = yield recipeDB.listCollections({ name: COLL_NAME }).next();
+            if (!collExists) {
+                process.stdout.write('  > Recipes collection not found. Creating now ... ');
+                yield recipeDB.createCollection(COLL_NAME);
                 console.log('done');
             }
             else {
-                console.log('  > Recipes collection not found');
+                console.log('  > Found the Recipes collection');
             }
-            //Add the collection
-            process.stdout.write('  > Creating recipes collection ... ');
-            yield recipeDB.createCollection(collName);
-            console.log('done');
-            let recipesColl = recipeDB.collection(collName); //Jump to our collection
+            let recipesColl = recipeDB.collection(COLL_NAME); //Jump to our collection
             console.log('  > Inserting all recipes');
             //Add each set of recipes to our collection
             for (let i = 0; i < resources_1.DATA_FILES.length; i++) {
                 const current = resources_1.DATA_FILES[i];
                 const path = `${app_root_path_1.default}/${current.filePath}`;
                 //Read through the JSON file
-                process.stdout.write(`    * Adding recipes from ${current.source} ... `);
+                process.stdout.write(`    * Adding recipes from ${current.source} ...`);
                 const fileData = fs_1.default.readFileSync(path);
                 const jsonData = JSON.parse(fileData.toString());
                 const recipes = jsonData.data;
@@ -60,8 +55,22 @@ const resources_1 = require("../resources");
                     nextRecipe.source = current.source;
                     return nextRecipe;
                 });
-                yield recipesColl.insertMany(cleanedRecipes);
-                console.log('done');
+                //Insert any recipes that don't already exist
+                let count = 0;
+                yield Promise.all(cleanedRecipes.map((nextRecipe) => __awaiter(this, void 0, void 0, function* () {
+                    try {
+                        yield recipesColl.updateOne({ $and: [
+                                { recipeName: nextRecipe.recipeName },
+                                { author: nextRecipe.author }
+                            ] }, { $setOnInsert: { nextRecipe } }, { upsert: true });
+                        if ((++count) % Math.ceil((recipes.length / 7)) === 0)
+                            process.stdout.write('.'); //Track progress
+                    }
+                    catch (err) {
+                        console.log('Error adding item to database:', err);
+                    }
+                })));
+                console.log(' done');
             }
             database.close();
             process.stdout.write('- Successfully populated database in');

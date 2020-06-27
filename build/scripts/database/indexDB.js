@@ -150,26 +150,32 @@ function trimData(data) {
             console.log(' done');
             //////////  STEP 3. Store the indexes in the database  \\\\\\\\\\
             console.log('  > Storing indexes');
-            const collName = 'index';
-            const coll = yield recipeDB.listCollections({ name: collName }).next();
-            //Delete the index collection if it already exists
-            if (coll) {
-                process.stdout.write('    * Found index collection. Deleting now ... ');
-                yield recipeDB.dropCollection(collName);
+            const COLL_NAME = 'index';
+            const collExists = yield recipeDB.listCollections({ name: COLL_NAME }).next();
+            //Create the index collection if it does not already exist
+            if (!collExists) {
+                process.stdout.write('    * Index collection not found. Creating now ... ');
+                yield recipeDB.createCollection(COLL_NAME);
                 console.log('done');
             }
             else {
-                console.log('    * Index collection not found ');
+                console.log('    * Found the Index collection');
             }
-            //Create the index collection
-            process.stdout.write('    * Creating index collection ... ');
-            yield recipeDB.createCollection(collName);
-            console.log('done');
-            //Add the data
-            process.stdout.write('    * Adding indexes to database ... ');
-            const idx = recipeDB.collection(collName);
-            yield idx.insertMany(indexes);
-            console.log('done');
+            const indexColl = recipeDB.collection(COLL_NAME);
+            process.stdout.write('    * Adding indexes to database ...');
+            //Insert any recipes that don't already exist
+            let count = 0;
+            yield Promise.all(indexes.map((idx) => __awaiter(this, void 0, void 0, function* () {
+                try {
+                    yield indexColl.updateOne({ key: idx.key }, { $setOnInsert: { idx } }, { upsert: true });
+                    if ((++count) % Math.ceil((indexes.length / 7)) === 0)
+                        process.stdout.write('.'); //Track progress
+                }
+                catch (err) {
+                    console.log('Error adding item to database:', err);
+                }
+            })));
+            console.log(' done');
             console.timeEnd('- Indexing completed in');
             database.close();
         }
