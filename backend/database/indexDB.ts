@@ -166,30 +166,41 @@ function trimData(data: string): string {
         //////////  STEP 3. Store the indexes in the database  \\\\\\\\\\
 
         console.log('  > Storing indexes');
-        const collName: string = 'index';
-        const coll = await recipeDB.listCollections({name: collName}).next();
+        const COLL_NAME: string = 'index';
+        const collExists = await recipeDB.listCollections({ name: COLL_NAME }).next();
 
-        //Delete the index collection if it already exists
-        if (coll) {
-            process.stdout.write('    * Found index collection. Deleting now ... ');
-            await recipeDB.dropCollection(collName);
+        //Create the index collection if it does not already exist
+        if (!collExists) {
+            process.stdout.write('    * Index collection not found. Creating now ... ');
+            await recipeDB.createCollection(COLL_NAME);
             console.log('done');
         }
         else {
-            console.log('    * Index collection not found ');
+            console.log('    * Found the Index collection');
         }
 
-        //Create the index collection
-        process.stdout.write('    * Creating index collection ... ');
-        await recipeDB.createCollection(collName);
-        console.log('done');
+        const indexColl = recipeDB.collection(COLL_NAME);
+        process.stdout.write('    * Adding indexes to database ...');
 
-        //Add the data
-        process.stdout.write('    * Adding indexes to database ... ');
-        const idx = recipeDB.collection(collName);
-        await idx.insertMany(indexes);
+        //Insert any recipes that don't already exist
+        let count = 0;
+        await Promise.all(
+            indexes.map(async idx => {
+                try {
+                    await indexColl.updateOne(
+                        { key: idx.key },
+                        { $setOnInsert: { idx } },
+                        { upsert: true }
+                    );
+                    if ((++count) % Math.ceil((indexes.length / 7)) === 0) process.stdout.write('.'); //Track progress
+                }
+                catch (err) {
+                    console.log('Error adding item to database:', err);
+                }
+            }
+        ));
 
-        console.log('done');
+        console.log(' done');
         console.timeEnd('- Indexing completed in');
         database.close();
     }
