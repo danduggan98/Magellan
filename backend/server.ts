@@ -5,7 +5,6 @@
 //TO-DO
 // Finish search bar + search algorithm
     // Make tertiary sort something other than id (similarity/length? popularity?)
-    // USE INGREDIENT SEARCH FOR BLT (MAYO, BACON, TOMATO, BREAD) TO DIAGNOSE ACCURACY ISSUES (NOT REMOVING PUNCTUATION?)
     // Prioritize items where the search terms are grouped in order (e.g. search for 'potato salad' => 'German Potato Salad' > 'Sweet Potato Pecan Salad')
     // Make plurals and singulars give same results (e.g. sandwich vs. sandwiches, leaf vs. leaves, salad vs salads, etc.)
     // SANITIZE INPUTS DEAR GOD
@@ -135,7 +134,7 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
                 let nextWord = terms.slice(lastWordIndex, i);
 
                 //Remove whitespace, symbols, quotes, and numbers
-                let nextWordClean = nextWord.trim().replace(/[!@#$%^*(){}.'"1234567890]+/g, '');
+                let nextWordClean = nextWord.trim().replace(/[!@#$%^*(){}_:;<>\[\].'"1234567890]+/g, '');
                 lastWordIndex = ++i;
 
                 if (!IGNORED_WORDS.includes(nextWordClean) && nextWordClean.length > 2) {
