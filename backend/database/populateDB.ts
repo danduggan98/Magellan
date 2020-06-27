@@ -62,7 +62,7 @@ import { RecipeData } from 'magellan';
                                 { recipeName: nextRecipe.recipeName },
                                 { author: nextRecipe.author }
                             ]},
-                            { $setOnInsert: { nextRecipe } },
+                            { $setOnInsert: { ...nextRecipe } },
                             { upsert: true }
                         );
                         if ((++count) % Math.ceil((recipes.length / 7)) === 0) process.stdout.write('.'); //Track progress

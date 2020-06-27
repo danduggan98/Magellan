@@ -189,7 +189,7 @@ function trimData(data: string): string {
                 try {
                     await indexColl.updateOne(
                         { key: idx.key },
-                        { $setOnInsert: { idx } },
+                        { $setOnInsert: { ...idx } },
                         { upsert: true }
                     );
                     if ((++count) % Math.ceil((indexes.length / 7)) === 0) process.stdout.write('.'); //Track progress
