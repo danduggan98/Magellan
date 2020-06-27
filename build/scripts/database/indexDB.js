@@ -167,7 +167,7 @@ function trimData(data) {
             let count = 0;
             yield Promise.all(indexes.map((idx) => __awaiter(this, void 0, void 0, function* () {
                 try {
-                    yield indexColl.updateOne({ key: idx.key }, { $setOnInsert: { idx } }, { upsert: true });
+                    yield indexColl.updateOne({ key: idx.key }, { $setOnInsert: Object.assign({}, idx) }, { upsert: true });
                     if ((++count) % Math.ceil((indexes.length / 7)) === 0)
                         process.stdout.write('.'); //Track progress
                 }

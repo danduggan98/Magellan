@@ -62,7 +62,7 @@ const resources_1 = require("../resources");
                         yield recipesColl.updateOne({ $and: [
                                 { recipeName: nextRecipe.recipeName },
                                 { author: nextRecipe.author }
-                            ] }, { $setOnInsert: { nextRecipe } }, { upsert: true });
+                            ] }, { $setOnInsert: Object.assign({}, nextRecipe) }, { upsert: true });
                         if ((++count) % Math.ceil((recipes.length / 7)) === 0)
                             process.stdout.write('.'); //Track progress
                     }
