@@ -4,7 +4,7 @@
 
 //TO-DO
 // Finish search bar + search algorithm
-    // Make tertiary sort something other than id (similarity/length? popularity?), make sort function standalone and dynamic
+    // Make tertiary sort something other than id (similarity/length? popularity?)
     // USE INGREDIENT SEARCH FOR BLT (MAYO, BACON, TOMATO, BREAD) TO DIAGNOSE ACCURACY ISSUES (NOT REMOVING PUNCTUATION?)
     // Prioritize items where the search terms are grouped in order (e.g. search for 'potato salad' => 'German Potato Salad' > 'Sweet Potato Pecan Salad')
     // Make plurals and singulars give same results (e.g. sandwich vs. sandwiches, leaf vs. leaves, salad vs salads, etc.)
@@ -35,7 +35,7 @@ import express, { Request, Response } from 'express';
 import { ObjectID, Collection } from 'mongodb'
 import path from 'path';
 import client from './database/connectDB';
-import { VALID_SEPERATORS, IGNORED_WORDS } from './resources';
+import { VALID_SEPERATORS, IGNORED_WORDS, SortByProperties } from './resources';
 import { RecipeData, RecipeDataResult, IndexResult, IndexReference } from 'magellan';
 
 //Constants
@@ -193,24 +193,10 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
                 }
 
                 //Sort by whatever the user is looking for
-                if (type === 'name') {
-                    //Name, then ingredients
-                    masterList.sort((a, b) => {
-                        if (a.inName === b.inName) {
-                            return b.inIngs - a.inIngs;
-                        }
-                        return b.inName - a.inName;
-                    });
-                }
-                else {
-                    //Ingredients, then name
-                    masterList.sort((a, b) => {
-                        if (a.inIngs === b.inIngs) {
-                            return b.inName - a.inName;
-                        }
-                        return b.inIngs - a.inIngs;
-                    });
-                }
+                type === 'name'
+                    ? SortByProperties(masterList, ['inName', 'inIngs'])
+                    : SortByProperties(masterList, ['inIngs', 'inName'])
+                ;
             }
 
             //Pull just the ids out of each result as strings
