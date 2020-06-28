@@ -35,16 +35,18 @@ export default class SearchResults extends Component<Props, State> {
         ));
 
         return (
-            <div id='resultsContainer'>
-                <h2>Top Results:</h2>
-                <div id='resultsList'>
-                    {list}
-                </div>
+            <div id='wrapper'>
+                <div id='resultsContainer'>
+                    <h2>Top Results:</h2>
+                    <div id='resultsList'>
+                        {list}
+                    </div>
 
-                { overflow
-                  ? <div>See more results</div>
-                  : <p></p>
-                }
+                    { overflow
+                        ? <div>See more results</div>
+                        : <p></p>
+                    }
+                </div>
             </div>
         );
     }
