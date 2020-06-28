@@ -7,6 +7,7 @@
     max-width: 100%;
     min-height: 10px;
     max-height: 100px;
+    overflow: hidden;
 }
 
 #card:hover {
@@ -61,8 +62,6 @@
 #cardPhoto {
     width: 18%;
     height: 100%;
-    border-top-right-radius: 13px;
-    border-bottom-right-radius: 13px;
     border-left: 2px solid grey;
 }
 
