@@ -89,7 +89,7 @@ import { RemoveHtmlTags } from '../../resources';
         }
 
         //Finish all leftover recipes, then finalize the JSON file and close everything
-        scrapeRemaining(page, browser, lineReader, readStream, writeStream, counter);
+        await scrapeRemaining(page, browser, lineReader, readStream, writeStream, counter);
         writeStream.write(']}');
         console.timeEnd('  > Completed successfully in');
 
