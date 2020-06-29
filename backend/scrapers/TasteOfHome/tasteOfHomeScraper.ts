@@ -19,11 +19,11 @@ import { RemoveHtmlTags } from '../../resources';
 
         //Start Puppeteer using the stealth plugin
         puppeteer.use(StealthPlugin());
-        const browser = await puppeteer.launch({
+        let browser = await puppeteer.launch({
             headless: true
         });
 
-        const page = await browser.newPage();
+        let page = await browser.newPage();
         page.setDefaultNavigationTimeout(0); //Let navigation take as long as it needs
         console.log('- Started Puppeteer');
         console.time('  > Completed successfully in');
@@ -52,19 +52,40 @@ import { RemoveHtmlTags } from '../../resources';
                 continue; //Skip to where we left off
             }
 
-            const nextRecipe = await scrapePage(line, page);
-            if (nextRecipe.recipeName === '') continue; //Page not found or bad data - skip this item
-            const data = JSON.stringify(nextRecipe);
+            try {
+                const nextRecipe = await scrapePage(line, page);
+                if (nextRecipe.recipeName === '') continue; //Page not found or bad data - skip this item
+                const data = JSON.stringify(nextRecipe);
 
-            if (counter) writeStream.write(',\n');
-            writeStream.write(data);
-            counter++;
+                if (counter) writeStream.write(',\n');
+                writeStream.write(data);
+                counter++;
 
-            //Display our progress and track it in the environment
-            process.stdout.write('\r\x1b[K'); //Hacky way to clear the current line in console
-            process.stdout.write('  > Recipes added so far: ' + counter.toString() + '\n');
-            process.env.TOH_SCRAPER_PROGRESS = String(counter);
+                //Display our progress and track it in the environment
+                process.stdout.write('\r\x1b[K'); //Hacky way to clear the current line in console
+                process.stdout.write('  > Recipes added so far: ' + counter.toString() + '\n');
+            }
+            //Handle potential browser crashes by reloading the page and/or browser. Exit if unsuccessful
+            catch (navigationErr) {
+                try {
+                    await page.reload();
+                }
+                catch (pageReloadErr) {
+                    try {
+                        await browser.close();
+                    }
+                    catch (browserCloseErr) {
+                        console.log(`Fatal error: unable to restart browser.\nExiting after item #${counter}`);
+                        process.exitCode = 1;
+                    }
+                    browser = await puppeteer.launch({
+                        headless: true
+                    });
+                    page = await browser.newPage();
+                }
+            }
         }
+        
         writeStream.write(']}');
         console.timeEnd('  > Completed successfully in');
 
