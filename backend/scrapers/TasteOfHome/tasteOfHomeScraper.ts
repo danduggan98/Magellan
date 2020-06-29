@@ -3,7 +3,7 @@
 //
 
 import puppeteer from 'puppeteer-extra';
-import { Page } from 'puppeteer';
+import { Page, Browser } from 'puppeteer';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import fs from 'fs';
 import readline from 'readline';
@@ -47,9 +47,11 @@ import { RemoveHtmlTags } from '../../resources';
         if (!previousIndex) writeStream.write('{"data":[\n');
 
         for await (const line of lineReader) {
+
+            //Skip to where we left off
             if (counter < previousIndex) {
                 counter++;
-                continue; //Skip to where we left off
+                continue;
             }
 
             try {
@@ -61,7 +63,7 @@ import { RemoveHtmlTags } from '../../resources';
                 writeStream.write(data);
                 counter++;
 
-                //Display our progress and track it in the environment
+                //Display our progress
                 process.stdout.write('\r\x1b[K'); //Hacky way to clear the current line in console
                 process.stdout.write('  > Recipes added so far: ' + counter.toString() + '\n');
             }
@@ -85,7 +87,9 @@ import { RemoveHtmlTags } from '../../resources';
                 }
             }
         }
-        
+
+        //Finish all leftover recipes, then finalize the JSON file and close everything
+        scrapeRemaining(page, browser, lineReader, readStream, writeStream, counter);
         writeStream.write(']}');
         console.timeEnd('  > Completed successfully in');
 
@@ -371,3 +375,54 @@ function seperateDirectionsBySection(dirList: string[]): string[][] {
     );
     return finalList;
 }
+
+//Add all recipes that didn't get added in our initial pass
+async function scrapeRemaining(page: Page, browser: Browser, lineReader: readline.Interface, rStream: fs.ReadStream, wStream: fs.WriteStream, counter: number) {
+    console.log('- Gathering data for all remaining or overlooked items');
+
+    for await (const url of lineReader) {
+        let found = false;
+
+        for await (const nextLine of lineReader) {
+            let next: RecipeData = JSON.parse(nextLine);
+            if (next.URL === url){
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            try {
+                //Scrape and add the data
+                const nextRecipe = await scrapePage(url, page);
+                if (nextRecipe.recipeName === '') continue; //Page not found or bad data - skip this item
+                const data = JSON.stringify(nextRecipe);
+
+                wStream.write(`,\n${data}`);
+                counter++;
+
+                //Display our progress
+                process.stdout.write('\r\x1b[K'); //Hacky way to clear the current line in console
+                process.stdout.write('  > Recipes added so far: ' + counter.toString() + '\n');
+            }
+            //Handle potential browser crashes by reloading the page and/or browser. Exit if unsuccessful
+            catch (navigationErr) {
+                try {
+                    await page.reload();
+                }
+                catch (pageReloadErr) {
+                    try {
+                        await browser.close();
+                    }
+                    catch (browserCloseErr) {
+                        console.log(`Fatal error: unable to restart browser.\nExiting after item #${counter}`);
+                        process.exitCode = 1;
+                    }
+                    browser = await puppeteer.launch({
+                        headless: true
+                    });
+                    page = await browser.newPage();
+                }
+            }
+        }
+    }
+} 
