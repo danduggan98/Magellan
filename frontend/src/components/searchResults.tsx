@@ -9,8 +9,8 @@ interface Props {
 
 interface State {
     results: RecipeDataResult[],
-    maxResultsPerPage: number,
     numResults: number,
+    numResultsPerPage: number,
     numPages: number,
     currentPage: number
 }
@@ -21,16 +21,16 @@ export default class SearchResults extends Component<Props, State> {
         this.state = {
             results: props.data,
             numResults: 0,
-            maxResultsPerPage: 6, //Arbitrary
+            numResultsPerPage: 5, //Arbitrary
             numPages: 0,
             currentPage: 0
         };
     }
 
+    //When the component loads, calculate the number of pages needed
     componentDidMount() {
-        //Calculate the number of pages needed
         const numResults = this.state.results.length;
-        const pageDensity = this.state.maxResultsPerPage;
+        const pageDensity = this.state.numResultsPerPage;
         
         this.setState({
             numResults: numResults,
@@ -39,9 +39,14 @@ export default class SearchResults extends Component<Props, State> {
     }
 
     render() {
-        //Grab the recipes we will show, up to the given limit
-        const res = Array.from(this.state.results);
-        const visible = res.slice(0, this.state.maxResultsPerPage);
+        //Grab the recipes for this page
+        let curPage = this.state.currentPage;
+        let maxResults = this.state.numResultsPerPage;
+
+        const visible = (this.state.results).slice(
+            (curPage * maxResults),
+            ((curPage + 1) * maxResults)
+        );
 
         //Turn them into search cards
         const list = visible.map(recipe => (
@@ -74,9 +79,8 @@ export default class SearchResults extends Component<Props, State> {
                     </div>
                 </div>
 
-                <div id='numResults'>
-                    <div>{this.state.numResults} results found</div>
-                    <div>Viewing page {this.state.currentPage} of {this.state.numPages}</div>
+                <div id='pageDetails'>
+                    <div>Viewing page {this.state.currentPage + 1} of {this.state.numPages}</div>
                 </div>
             </div>
         );
