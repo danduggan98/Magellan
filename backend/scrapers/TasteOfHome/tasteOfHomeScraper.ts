@@ -7,6 +7,7 @@ import { Page } from 'puppeteer';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import fs from 'fs';
 import readline from 'readline';
+import dotenv from 'dotenv';
 import rootPath from 'app-root-path';
 import { RecipeData, TimeData } from 'magellan';
 import { RemoveHtmlTags } from '../../resources';
@@ -14,6 +15,8 @@ import { RemoveHtmlTags } from '../../resources';
 //Main function - runs automatically
 (async function scrapeSite() {
     try {
+        dotenv.config({ path: rootPath + '/.env' });
+
         //Start Puppeteer using the stealth plugin
         puppeteer.use(StealthPlugin());
         const browser = await puppeteer.launch({
@@ -30,7 +33,7 @@ import { RemoveHtmlTags } from '../../resources';
         const readStream = fs.createReadStream(inputFileName);
         
         const outputFileName: string = rootPath + '/data/TasteOfHome/TasteOfHomeDataRaw.json';
-        const writeStream = fs.createWriteStream(outputFileName);
+        const writeStream = fs.createWriteStream(outputFileName, {flags: 'a'}); //'a' = append
 
         //Read the data line by line
         console.log('- Reading data from file now');
@@ -40,19 +43,27 @@ import { RemoveHtmlTags } from '../../resources';
 
         //Scrape every page and store the data in an array
         let counter = 0;
+        let previousIndex = Number(process.env.TOH_SCRAPER_PROGRESS); //Where we left off the last time
+        if (!previousIndex) writeStream.write('{"data":[\n');
 
-        writeStream.write('{"data":[\n');
         for await (const line of lineReader) {
+            if (counter < previousIndex) {
+                counter++;
+                continue; //Skip to where we left off
+            }
+
             const nextRecipe = await scrapePage(line, page);
             if (nextRecipe.recipeName === '') continue; //Page not found or bad data - skip this item
             const data = JSON.stringify(nextRecipe);
 
             if (counter) writeStream.write(',\n');
             writeStream.write(data);
+            counter++;
 
-            //Display our progress
+            //Display our progress and track it in the environment
             process.stdout.write('\r\x1b[K'); //Hacky way to clear the current line in console
-            process.stdout.write('  > Recipes added so far: ' + (++counter).toString() + '\n');
+            process.stdout.write('  > Recipes added so far: ' + counter.toString() + '\n');
+            process.env.TOH_SCRAPER_PROGRESS = String(counter);
         }
         writeStream.write(']}');
         console.timeEnd('  > Completed successfully in');
