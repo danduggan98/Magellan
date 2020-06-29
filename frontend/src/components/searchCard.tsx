@@ -33,8 +33,10 @@ export default class SearchCard extends Component<Props, State> {
                             <div id='cardRecipeName'>{data.recipeName}</div>
                             <div id='secondaryDetails'>
                                 <div id='cardAuthor'>by {data.author}</div>
-                                <div id='cardSource'>from {data.source}</div>
-                                <div id='cardTotalTime'>{data.totalTime}</div>
+                                <div id='tertiaryDetails'>
+                                    <div id='cardSource'>from {data.source}</div>
+                                    <div id='cardTotalTime'>{data.totalTime}</div>
+                                </div>
                             </div>
                         </div>
                         { data.imageURL
