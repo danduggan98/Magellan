@@ -12,7 +12,7 @@ interface State {
     currentResults: JSX.Element[],
     numResults: number,
     numResultsPerPage: number,
-    numPages: number,
+    lastPage: number,
     currentPage: number
 }
 
@@ -24,8 +24,8 @@ export default class SearchResults extends Component<Props, State> {
             currentResults: [],
             numResults: 0,
             numResultsPerPage: 5, //Arbitrary
-            numPages: 0,
-            currentPage: 0
+            lastPage: 0,
+            currentPage: 1
         };
     }
 
@@ -33,14 +33,15 @@ export default class SearchResults extends Component<Props, State> {
     updateCurrentResults = () => {
         let curPage = this.state.currentPage;
         let maxResults = this.state.numResultsPerPage;
+        let res = this.state.results;
 
-        const visible = (this.state.results).slice(
+        const visibleResults = res.slice(
             (curPage * maxResults),
             ((curPage + 1) * maxResults)
         );
 
         //Turn them into search cards
-        const list = visible.map(recipe => (
+        const list = visibleResults.map(recipe => (
             <SearchCard info={recipe} />
         ));
 
@@ -62,9 +63,9 @@ export default class SearchResults extends Component<Props, State> {
 
     goToNextPage = () => {
         const curPage = this.state.currentPage;
-        const lastPage = this.state.numPages;
+        const lastPage = this.state.lastPage;
 
-        if (curPage < lastPage - 1) {
+        if (curPage < lastPage) {
             this.setState({
                 currentPage: curPage + 1
             });
@@ -79,7 +80,7 @@ export default class SearchResults extends Component<Props, State> {
         
         this.setState({
             numResults: numResults,
-            numPages: Math.ceil(numResults / pageDensity)
+            lastPage: Math.ceil(numResults / pageDensity)
         });
         this.updateCurrentResults();
     }
@@ -93,7 +94,7 @@ export default class SearchResults extends Component<Props, State> {
 
                 <div id='resultsContainer'>
                     <div id='scrollLeftButton'>
-                        { this.state.currentPage > 0
+                        { this.state.currentPage > 1
                             ? <button onClick={this.goToPreviousPage}>◀</button>
                             : <p> </p>
                         }
@@ -104,7 +105,7 @@ export default class SearchResults extends Component<Props, State> {
                     </div>
 
                     <div id='scrollRightButton'>
-                        { this.state.currentPage < this.state.numPages - 1
+                        { this.state.currentPage < this.state.lastPage
                             ? <button onClick={this.goToNextPage}>▶</button>
                             : <p> </p>
                         }
@@ -112,7 +113,7 @@ export default class SearchResults extends Component<Props, State> {
                 </div>
 
                 <div id='pageDetails'>
-                    <div>Viewing page {this.state.currentPage + 1} of {this.state.numPages}</div>
+                    <div>Viewing page {this.state.currentPage} of {this.state.lastPage}</div>
                 </div>
             </div>
         );
