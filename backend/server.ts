@@ -5,11 +5,11 @@
 //TO-DO
 // Finish search bar + search algorithm
     // Make tertiary sort something other than id (similarity/length? popularity?)
-    // Prioritize items where the search terms are grouped in order (e.g. search for 'potato salad' => 'German Potato Salad' > 'Sweet Potato Pecan Salad')
+    // Prioritize items where the search terms are grouped in order (e.g. search for 'potato salad' = 'German Potato Salad' > 'Sweet Potato Pecan Salad')
     // Make plurals and singulars give same results (e.g. sandwich vs. sandwiches, leaf vs. leaves, salad vs salads, etc.)
-    // SANITIZE INPUTS DEAR GOD
     // 'See all/more' option allows you to slide through sets of the data
-    // Search card - cut off long titles with ellipses, lower max height
+    // Search card - cut off long titles with ellipses, but let hover extend it to see the whole thing
+    //CACHE IMAGES IN PUBLIC FOLDER
 
 // USE FIGMA TO MAKE PAGES CLEANER
 // Change vs code format/line space settings so everything but JSON and YAML have 4 spaces
