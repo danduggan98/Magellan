@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import SearchCard from './searchCard';
 import { RecipeDataResult } from '../../../magellan'
 import '../styles/searchResults.css';
@@ -9,7 +9,6 @@ interface Props {
 
 interface State {
     results: RecipeDataResult[],
-    currentResults: JSX.Element[],
     numResults: number,
     numResultsPerPage: number,
     lastPage: number,
@@ -21,7 +20,6 @@ export default class SearchResults extends Component<Props, State> {
         super(props);
         this.state = {
             results: props.data,
-            currentResults: [],
             numResults: 0,
             numResultsPerPage: 5, //Arbitrary
             lastPage: 0,
@@ -29,36 +27,35 @@ export default class SearchResults extends Component<Props, State> {
         };
     }
 
-    //Grab the recipes for this page
-    updateCurrentResults = () => {
-        let curPage = this.state.currentPage;
-        let maxResults = this.state.numResultsPerPage;
-        let res = this.state.results;
+    //Returns the recipes to show on the current page
+    updateCurrentResults = (): JSX.Element[] => {
 
-        const visibleResults = res.slice(
-            (curPage * maxResults),
-            ((curPage + 1) * maxResults)
-        );
+        //Calculate the range of results to use
+        const curPage = this.state.currentPage;
+        const maxResults = this.state.numResultsPerPage;
+
+        let firstIdx = (curPage - 1) * maxResults;
+        let secondIdx = curPage * maxResults;
+
+        console.log(firstIdx, secondIdx);
 
         //Turn them into search cards
-        const list = visibleResults.map(recipe => (
+        const res = this.state.results;
+        const visibleResults = res.slice(firstIdx, secondIdx);
+
+        return visibleResults.map(recipe => (
             <SearchCard info={recipe} />
         ));
-
-        this.setState({
-            currentResults: list
-        });
     }
 
     goToPreviousPage = () => {
         const curPage = this.state.currentPage;
 
-        if (curPage > 0) {
+        if (curPage > 1) {
             this.setState({
                 currentPage: curPage - 1
             });
         }
-        this.updateCurrentResults();
     }
 
     goToNextPage = () => {
@@ -70,7 +67,6 @@ export default class SearchResults extends Component<Props, State> {
                 currentPage: curPage + 1
             });
         }
-        this.updateCurrentResults();
     }
 
     //When the component loads, calculate the number of pages needed
@@ -82,10 +78,11 @@ export default class SearchResults extends Component<Props, State> {
             numResults: numResults,
             lastPage: Math.ceil(numResults / pageDensity)
         });
-        this.updateCurrentResults();
     }
 
     render() {
+        const currentResults = this.updateCurrentResults();
+
         return (
             <div id='wrapper'>
                 <div id='topResultsLabel'>
@@ -101,7 +98,7 @@ export default class SearchResults extends Component<Props, State> {
                     </div>
 
                     <div id='resultsList'>
-                        {this.state.currentResults}
+                        {currentResults}
                     </div>
 
                     <div id='scrollRightButton'>
