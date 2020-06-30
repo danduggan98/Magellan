@@ -23,7 +23,7 @@
 
 #cardInfo {
     height: 100%;
-    width: 80%;
+    width: 77%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -68,7 +68,7 @@
 }
 
 #cardPhoto {
-    width: 15%;
+    width: 18%;
     height: 100%;
     border-left: 2px solid grey;
 }
