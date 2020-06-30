@@ -29,44 +29,6 @@ export default class SearchResults extends Component<Props, State> {
         };
     }
 
-    //Moves the page forward or backward
-    // Negative input = go back, positive input = go forward
-    goToPreviousPage = () => {
-        let curPage = this.state.currentPage;
-
-        if (curPage > 0) {
-            let prevPage = curPage - 1;
-            this.setState({
-                currentPage: prevPage
-            });
-        }
-        this.updateCurrentResults();
-    }
-
-    goToNextPage = () => {
-        let curPage = this.state.currentPage;
-        let lastPage = this.state.numPages;
-
-        if (curPage < lastPage - 1) {
-            let nextPage = curPage + 1;
-            this.setState({
-                currentPage: nextPage
-            });
-        }
-        this.updateCurrentResults();
-    }
-
-    //When the component loads, calculate the number of pages needed
-    componentDidMount() {
-        const numResults = this.state.results.length;
-        const pageDensity = this.state.numResultsPerPage;
-        
-        this.setState({
-            numResults: numResults,
-            numPages: Math.ceil(numResults / pageDensity)
-        });
-    }
-
     //Grab the recipes for this page
     updateCurrentResults = () => {
         let curPage = this.state.currentPage;
@@ -87,6 +49,41 @@ export default class SearchResults extends Component<Props, State> {
         });
     }
 
+    goToPreviousPage = () => {
+        const curPage = this.state.currentPage;
+
+        if (curPage > 0) {
+            this.setState({
+                currentPage: curPage - 1
+            });
+        }
+        this.updateCurrentResults();
+    }
+
+    goToNextPage = () => {
+        const curPage = this.state.currentPage;
+        const lastPage = this.state.numPages;
+
+        if (curPage < lastPage - 1) {
+            this.setState({
+                currentPage: curPage + 1
+            });
+        }
+        this.updateCurrentResults();
+    }
+
+    //When the component loads, calculate the number of pages needed
+    componentDidMount() {
+        const numResults = this.state.results.length;
+        const pageDensity = this.state.numResultsPerPage;
+        
+        this.setState({
+            numResults: numResults,
+            numPages: Math.ceil(numResults / pageDensity)
+        });
+        this.updateCurrentResults();
+    }
+
     render() {
         return (
             <div id='wrapper'>
@@ -97,9 +94,7 @@ export default class SearchResults extends Component<Props, State> {
                 <div id='resultsContainer'>
                     <div id='scrollLeftButton'>
                         { this.state.currentPage > 0
-                            ? <button onClick={this.goToPreviousPage}>
-                                ◀
-                              </button>
+                            ? <button onClick={this.goToPreviousPage}>◀</button>
                             : <p> </p>
                         }
                     </div>
@@ -110,9 +105,7 @@ export default class SearchResults extends Component<Props, State> {
 
                     <div id='scrollRightButton'>
                         { this.state.currentPage < this.state.numPages - 1
-                            ? <button onClick={this.goToNextPage}>
-                                ▶
-                              </button>
+                            ? <button onClick={this.goToNextPage}>▶</button>
                             : <p> </p>
                         }
                     </div>
