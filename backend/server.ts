@@ -206,23 +206,28 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
 
                 //Add a 'brevity' value to each item, and convert the ObjectIDs to strings
                 const finalResults = dbResults.map(element => {
-                    const name = element.recipeName;
-                    let numWords = 0;
-
-                    //Determine the number of words in the recipe name
-                    for (let i = 0; i < name.length; i++) {
-                        if (name.charAt(i) === ' ' || i === name.length - 1) {
-                            numWords++;
+                    if (type === 'name') {
+                        const name = element.recipeName;
+                        let numWords = 0;
+    
+                        //Determine the number of words in the recipe name
+                        for (let i = 0; i < name.length; i++) {
+                            if (name.charAt(i) === ' ' || i === name.length - 1) {
+                                numWords++;
+                            }
                         }
+                        element.brevity = 1.0 / numWords; //Inversely proportional to length of name
                     }
-                    element.brevity = 1.0 / numWords; //Inversely proportional to length of name
                     element._id = element._id.toString();
 
                     return element;
                 });
 
-                //Sort by brevity, leaving shorter items at the top
-                SortByProperties(finalResults, ['inIngs', 'inName', 'brevity']);
+                //Sort the final results based on the search type
+                type === 'name'
+                    ? SortByProperties(finalResults, ['inName', 'brevity'])
+                    : SortByProperties(finalResults, ['inIngs'])
+                ;
 
                 //JUST FOR TESTING
                 console.log('\nRESULTS:');
