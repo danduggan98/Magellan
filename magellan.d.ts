@@ -4,7 +4,7 @@
 
 //Holds each recipe in the format held by the database
 export interface RecipeData {
-    [key: string]: string | string[][] | undefined,
+    [key: string]: string | string[][] | number | undefined,
     URL:           string,
     imageURL:      string,
     author:        string,
@@ -23,8 +23,9 @@ export interface RecipeData {
 
 //Used strictly for recipes returned from the database - includes all the same values, but with the added _id field
 export interface RecipeDataResult extends RecipeData {
-    [key: string]: string | string[][] | undefined,
-    _id: string,
+    [key: string]: string | string[][] | number | undefined,
+    _id:           string,
+    brevity?:      number
 }
 
 //Information about each JSON file to add recipes from
