@@ -191,52 +191,47 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
                     }
                 }
 
-                //Sort by whatever the user is looking for
+                //Sort by whatever the user is looking for, then grab only the most relevant results
                 type === 'name'
                     ? SortByProperties(masterList, ['inName', 'inIngs'])
                     : SortByProperties(masterList, ['inIngs', 'inName'])
                 ;
-            }
+                const topResults = masterList.slice(0, limit);
+                console.log(topResults.slice(0,9)); //JUST FOR TESTING
 
-            //Pull just the ids out of each result as strings
-            const topResultsRaw = masterList.slice(0, limit);
-            console.log(topResultsRaw.slice(0,9));
-            const topResults = topResultsRaw.map(element => new ObjectID(element.id));
+                //Retrieve all info about each result from the database
+                const resultIDs = topResults.map(element => new ObjectID(element.id)); //Save each id as an ObjectID
+                const finalQuery = { _id: { $in: resultIDs } };
+                const dbResults: RecipeDataResult[] = await recipeCollection.find(finalQuery).toArray();
 
-            //Retrieve all info about each result from the database
-            const finalQuery = { _id: { $in: topResults } };
-            const dbResults: RecipeDataResult[] = await recipeCollection.find(finalQuery).toArray();
+                //Add a 'brevity' value to each item, and convert the ObjectIDs to strings
+                const finalResults = dbResults.map(element => {
+                    const name = element.recipeName;
+                    let numWords = 0;
 
-            //Ensure the ids from the database are strings, not ObjectIDs
-            const dbResultsRaw = dbResults.map(element => {
-                element._id = element._id.toString();
-                return element;
-            });
-
-            //Store the database results in the same order as the raw data
-            let finalResults: RecipeDataResult[] = [];
-
-            for (let m = 0; m < topResultsRaw.length; m++) {
-                const current = topResultsRaw[m].id;
-
-                for (let n = 0; n < dbResultsRaw.length; n++) {
-                    const next = dbResultsRaw[n];
-
-                    //Match found - add the full item to a final results array
-                    if (current === next._id) {
-                        finalResults.push(next);
-                        break;
+                    //Determine the number of words in the recipe name
+                    for (let i = 0; i < name.length; i++) {
+                        if (name.charAt(i) === ' ' || i === name.length - 1) {
+                            numWords++;
+                        }
                     }
-                }
+                    element.brevity = 1.0 / numWords; //Inversely proportional to length of name
+                    element._id = element._id.toString();
+
+                    return element;
+                });
+
+                //Sort by brevity, leaving shorter items at the top
+                SortByProperties(finalResults, ['inIngs', 'inName', 'brevity']);
+
+                //JUST FOR TESTING
+                console.log('\nRESULTS:');
+                finalResults.slice(0, 9).map(element => { console.log(element._id, ':', element.recipeName) });
+
+                //Send back the top results as JSON
+                res.json({ searchResults: finalResults });
+                console.timeEnd('  > Search execution time');
             }
-
-            //JUST FOR TESTING
-            console.log('\nRESULTS:');
-            finalResults.slice(0, 9).map(element => { console.log(element._id, ':', element.recipeName) });
-
-            //Send back the top results as JSON
-            res.json({ searchResults: finalResults });
-            console.timeEnd('  > Search execution time');
         }
     }
     catch (err) {
