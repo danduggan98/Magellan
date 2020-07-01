@@ -3,13 +3,13 @@
 //
 
 import client from './connectDB';
-import { VALID_SEPERATORS, IGNORED_WORDS } from '../resources'
+import { IGNORED_WORDS } from '../resources';
 import { RecipeDataResult, RecipeDataTrimmed, Index, IndexReference } from 'magellan';
 
 //Trim off unnecessary characters from a string
 function trimData(data: string): string {
     let trimmed = data.toLowerCase();
-    trimmed = trimmed.replace(/[!@#$%^&*()_{}:;"'<>.\[\]\\\|~`1234567890]+/g, ' '); //Remove numbers and invalid symbols
+    trimmed = trimmed.replace(/[!@#$%^&*()-_+{}:;"'<>,.\[\]\/\\\|~`1234567890]+/g, ' '); //Remove numbers and symbols
 
     for (let i = 0; i < IGNORED_WORDS.length; i++) {
         const rgxp = new RegExp(` +${IGNORED_WORDS[i]} +`, 'g');
@@ -74,9 +74,9 @@ function trimData(data: string): string {
 
             //Isolate each word and store it if not seen yet
             for (let j = 0; j < nextItemLen; j++) {
-                if (VALID_SEPERATORS.includes(nextItem.charAt(j)) || j === nextItemLen) {
+                if (nextItem.charAt(j) === ' ' || j === nextItemLen) {
                     let nextWord = nextItem.slice(lastWordIndex, j);
-                    lastWordIndex = ++j; //Move the index forward and skip the space/symbol
+                    lastWordIndex = ++j; //Move the index forward and skip the space
                     
                     //Add the word if unseen so far
                     if (!indexKeys.includes(nextWord) && nextWord !== '') {
@@ -118,7 +118,7 @@ function trimData(data: string): string {
 
                 //If this key is anywhere in the name, note it and skip to the ingredients
                 for (let k = 0; k < nextThreshold; k++) {
-                    if (VALID_SEPERATORS.includes(nextItem.charAt(k)) || k === nextThreshold) {
+                    if (nextItem.charAt(k) === ' ' || k === nextThreshold) {
                         nextWord = nextItem.slice(lastWordIndex, k);
                         lastWordIndex = ++k;
 
@@ -132,7 +132,7 @@ function trimData(data: string): string {
                 //If this word is anywhere in the ingredients, note it and stop searching
                 lastWordIndex = nextThreshold;
                 for (let l = nextThreshold; l < nextItemLen; l++) {
-                    if (VALID_SEPERATORS.includes(nextItem.charAt(l)) || l === nextItemLen) {
+                    if (nextItem.charAt(l) === ' ' || l === nextItemLen) {
                         nextWord = nextItem.slice(lastWordIndex, l);
                         lastWordIndex = ++l;
 
