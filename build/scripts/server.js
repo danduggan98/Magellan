@@ -18,12 +18,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //TO-DO
 // Finish search bar + search algorithm
 // Make tertiary sort something other than id (similarity/length? popularity?)
-// USE INGREDIENT SEARCH FOR BLT (MAYO, BACON, TOMATO, BREAD) TO DIAGNOSE ACCURACY ISSUES (NOT REMOVING PUNCTUATION?)
-// Prioritize items where the search terms are grouped in order (e.g. search for 'potato salad' => 'German Potato Salad' > 'Sweet Potato Pecan Salad')
+// Prioritize items where the search terms are grouped in order (e.g. search for 'potato salad' = 'German Potato Salad' > 'Sweet Potato Pecan Salad')
 // Make plurals and singulars give same results (e.g. sandwich vs. sandwiches, leaf vs. leaves, salad vs salads, etc.)
-// SANITIZE INPUTS DEAR GOD
 // 'See all/more' option allows you to slide through sets of the data
-// Search card - cut off long titles with ellipses, lower max height
+// Search card - cut off long titles with ellipses, but let hover extend it to see the whole thing
+//CACHE IMAGES IN PUBLIC FOLDER
 // USE FIGMA TO MAKE PAGES CLEANER
 // Change vs code format/line space settings so everything but JSON and YAML have 4 spaces
 // SCRAPE + ADD TASTE OF HOME, BON APPETIT, AND OTHERS
@@ -129,7 +128,7 @@ app.get('/api/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0,
             if (resources_1.VALID_SEPERATORS.includes(terms.charAt(i)) || i === terms.length) {
                 let nextWord = terms.slice(lastWordIndex, i);
                 //Remove whitespace, symbols, quotes, and numbers
-                let nextWordClean = nextWord.trim().replace(/[!@#$%^*(){}.'"1234567890]+/g, '');
+                let nextWordClean = nextWord.trim().replace(/[!@#$%^*(){}_:;<>\[\].'"1234567890]+/g, '');
                 lastWordIndex = ++i;
                 if (!resources_1.IGNORED_WORDS.includes(nextWordClean) && nextWordClean.length > 2) {
                     parsedTerms.push(nextWordClean);
@@ -177,42 +176,39 @@ app.get('/api/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0,
                         }
                     }
                 }
-                //Sort by whatever the user is looking for
+                //Sort by whatever the user is looking for, then grab only the most relevant results
                 type === 'name'
                     ? resources_1.SortByProperties(masterList, ['inName', 'inIngs'])
                     : resources_1.SortByProperties(masterList, ['inIngs', 'inName']);
-            }
-            //Pull just the ids out of each result as strings
-            const topResultsRaw = masterList.slice(0, limit);
-            console.log(topResultsRaw.slice(0, 9));
-            const topResults = topResultsRaw.map(element => new mongodb_1.ObjectID(element.id));
-            //Retrieve all info about each result from the database
-            const finalQuery = { _id: { $in: topResults } };
-            const dbResults = yield recipeCollection.find(finalQuery).toArray();
-            //Ensure the ids from the database are strings, not ObjectIDs
-            const dbResultsRaw = dbResults.map(element => {
-                element._id = element._id.toString();
-                return element;
-            });
-            //Store the database results in the same order as the raw data
-            let finalResults = [];
-            for (let m = 0; m < topResultsRaw.length; m++) {
-                const current = topResultsRaw[m].id;
-                for (let n = 0; n < dbResultsRaw.length; n++) {
-                    const next = dbResultsRaw[n];
-                    //Match found - add the full item to a final results array
-                    if (current === next._id) {
-                        finalResults.push(next);
-                        break;
+                const topResults = masterList.slice(0, limit);
+                console.log(topResults.slice(0, 9)); //JUST FOR TESTING
+                //Retrieve all info about each result from the database
+                const resultIDs = topResults.map(element => new mongodb_1.ObjectID(element.id)); //Save each id as an ObjectID
+                const finalQuery = { _id: { $in: resultIDs } };
+                const dbResults = yield recipeCollection.find(finalQuery).toArray();
+                //Add a 'brevity' value to each item, and convert the ObjectIDs to strings
+                const finalResults = dbResults.map(element => {
+                    const name = element.recipeName;
+                    let numWords = 0;
+                    //Determine the number of words in the recipe name
+                    for (let i = 0; i < name.length; i++) {
+                        if (name.charAt(i) === ' ' || i === name.length - 1) {
+                            numWords++;
+                        }
                     }
-                }
+                    element.brevity = 1.0 / numWords; //Inversely proportional to length of name
+                    element._id = element._id.toString();
+                    return element;
+                });
+                //Sort by brevity, leaving shorter items at the top
+                resources_1.SortByProperties(finalResults, ['inIngs', 'inName', 'brevity']);
+                //JUST FOR TESTING
+                console.log('\nRESULTS:');
+                finalResults.slice(0, 9).map(element => { console.log(element._id, ':', element.recipeName); });
+                //Send back the top results as JSON
+                res.json({ searchResults: finalResults });
+                console.timeEnd('  > Search execution time');
             }
-            //JUST FOR TESTING
-            console.log('\nRESULTS:');
-            finalResults.slice(0, 9).map(element => { console.log(element._id, ':', element.recipeName); });
-            //Send back the top results as JSON
-            res.json({ searchResults: finalResults });
-            console.timeEnd('  > Search execution time');
         }
     }
     catch (err) {

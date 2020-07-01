@@ -47,6 +47,5 @@ const SortByProperties = (values, properties) => {
             return b[nextProp] - a[nextProp];
         });
     }
-    return values;
 };
 exports.SortByProperties = SortByProperties;

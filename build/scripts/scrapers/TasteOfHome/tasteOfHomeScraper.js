@@ -26,6 +26,7 @@ const puppeteer_extra_1 = __importDefault(require("puppeteer-extra"));
 const puppeteer_extra_plugin_stealth_1 = __importDefault(require("puppeteer-extra-plugin-stealth"));
 const fs_1 = __importDefault(require("fs"));
 const readline_1 = __importDefault(require("readline"));
+const dotenv_1 = __importDefault(require("dotenv"));
 const app_root_path_1 = __importDefault(require("app-root-path"));
 const resources_1 = require("../../resources");
 //Main function - runs automatically
@@ -33,12 +34,13 @@ const resources_1 = require("../../resources");
     var e_1, _a;
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            dotenv_1.default.config({ path: app_root_path_1.default + '/.env' });
             //Start Puppeteer using the stealth plugin
             puppeteer_extra_1.default.use(puppeteer_extra_plugin_stealth_1.default());
-            const browser = yield puppeteer_extra_1.default.launch({
+            let browser = yield puppeteer_extra_1.default.launch({
                 headless: true
             });
-            const page = yield browser.newPage();
+            let page = yield browser.newPage();
             page.setDefaultNavigationTimeout(0); //Let navigation take as long as it needs
             console.log('- Started Puppeteer');
             console.time('  > Completed successfully in');
@@ -46,7 +48,7 @@ const resources_1 = require("../../resources");
             const inputFileName = app_root_path_1.default + '/backend/scrapers/TasteOfHome/TasteOfHomeRecipes.txt';
             const readStream = fs_1.default.createReadStream(inputFileName);
             const outputFileName = app_root_path_1.default + '/data/TasteOfHome/TasteOfHomeDataRaw.json';
-            const writeStream = fs_1.default.createWriteStream(outputFileName);
+            const writeStream = fs_1.default.createWriteStream(outputFileName, { flags: 'a' }); //'a' = append
             //Read the data line by line
             console.log('- Reading data from file now');
             const lineReader = readline_1.default.createInterface({
@@ -54,20 +56,49 @@ const resources_1 = require("../../resources");
             });
             //Scrape every page and store the data in an array
             let counter = 0;
-            writeStream.write('{"data":[\n');
+            let previousIndex = Number(process.env.TOH_SCRAPER_PROGRESS); //Where we left off the last time
+            if (!previousIndex)
+                writeStream.write('{"data":[\n');
             try {
                 for (var lineReader_1 = __asyncValues(lineReader), lineReader_1_1; lineReader_1_1 = yield lineReader_1.next(), !lineReader_1_1.done;) {
                     const line = lineReader_1_1.value;
-                    const nextRecipe = yield scrapePage(line, page);
-                    if (nextRecipe.recipeName === '')
-                        continue; //Page not found or bad data - skip this item
-                    const data = JSON.stringify(nextRecipe);
-                    if (counter)
-                        writeStream.write(',\n');
-                    writeStream.write(data);
-                    //Display our progress
-                    process.stdout.write('\r\x1b[K'); //Hacky way to clear the current line in console
-                    process.stdout.write('  > Recipes added so far: ' + (++counter).toString() + '\n');
+                    //Skip to where we left off
+                    if (counter < previousIndex) {
+                        counter++;
+                        continue;
+                    }
+                    try {
+                        const nextRecipe = yield scrapePage(line, page);
+                        if (nextRecipe.recipeName === '')
+                            continue; //Page not found or bad data - skip this item
+                        const data = JSON.stringify(nextRecipe);
+                        if (counter)
+                            writeStream.write(',\n');
+                        writeStream.write(data);
+                        counter++;
+                        //Display our progress
+                        process.stdout.write('\r\x1b[K'); //Hacky way to clear the current line in console
+                        process.stdout.write('  > Recipes added so far: ' + counter.toString() + '\n');
+                    }
+                    //Handle potential browser crashes by reloading the page and/or browser. Exit if unsuccessful
+                    catch (navigationErr) {
+                        try {
+                            yield page.reload();
+                        }
+                        catch (pageReloadErr) {
+                            try {
+                                yield browser.close();
+                            }
+                            catch (browserCloseErr) {
+                                console.log(`Fatal error: unable to restart browser.\nExiting after item #${counter}`);
+                                process.exitCode = 1;
+                            }
+                            browser = yield puppeteer_extra_1.default.launch({
+                                headless: true
+                            });
+                            page = yield browser.newPage();
+                        }
+                    }
                 }
             }
             catch (e_1_1) { e_1 = { error: e_1_1 }; }
@@ -77,6 +108,8 @@ const resources_1 = require("../../resources");
                 }
                 finally { if (e_1) throw e_1.error; }
             }
+            //Finish all leftover recipes, then finalize the JSON file and close everything
+            yield scrapeRemaining(page, browser, lineReader, readStream, writeStream, counter);
             writeStream.write(']}');
             console.timeEnd('  > Completed successfully in');
             readStream.close();
@@ -317,4 +350,75 @@ function seperateDirectionsBySection(dirList) {
     //Add the directions to a section with our header
     finalList.push(['main'].concat(formattedDirections));
     return finalList;
+}
+//Add all recipes that didn't get added in our initial pass
+function scrapeRemaining(page, browser, lineReader, rStream, wStream, counter) {
+    var lineReader_2, lineReader_2_1, lineReader_3, lineReader_3_1;
+    var e_2, _a, e_3, _b;
+    return __awaiter(this, void 0, void 0, function* () {
+        console.log('- Gathering data for all remaining or overlooked items');
+        try {
+            for (lineReader_2 = __asyncValues(lineReader); lineReader_2_1 = yield lineReader_2.next(), !lineReader_2_1.done;) {
+                const url = lineReader_2_1.value;
+                let found = false;
+                try {
+                    for (lineReader_3 = (e_3 = void 0, __asyncValues(lineReader)); lineReader_3_1 = yield lineReader_3.next(), !lineReader_3_1.done;) {
+                        const nextLine = lineReader_3_1.value;
+                        let next = JSON.parse(nextLine);
+                        if (next.URL === url) {
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                catch (e_3_1) { e_3 = { error: e_3_1 }; }
+                finally {
+                    try {
+                        if (lineReader_3_1 && !lineReader_3_1.done && (_b = lineReader_3.return)) yield _b.call(lineReader_3);
+                    }
+                    finally { if (e_3) throw e_3.error; }
+                }
+                if (!found) {
+                    try {
+                        //Scrape and add the data
+                        const nextRecipe = yield scrapePage(url, page);
+                        if (nextRecipe.recipeName === '')
+                            continue; //Page not found or bad data - skip this item
+                        const data = JSON.stringify(nextRecipe);
+                        wStream.write(`,\n${data}`);
+                        counter++;
+                        //Display our progress
+                        process.stdout.write('\r\x1b[K'); //Hacky way to clear the current line in console
+                        process.stdout.write('  > Recipes added so far: ' + counter.toString() + '\n');
+                    }
+                    //Handle potential browser crashes by reloading the page and/or browser. Exit if unsuccessful
+                    catch (navigationErr) {
+                        try {
+                            yield page.reload();
+                        }
+                        catch (pageReloadErr) {
+                            try {
+                                yield browser.close();
+                            }
+                            catch (browserCloseErr) {
+                                console.log(`Fatal error: unable to restart browser.\nExiting after item #${counter}`);
+                                process.exitCode = 1;
+                            }
+                            browser = yield puppeteer_extra_1.default.launch({
+                                headless: true
+                            });
+                            page = yield browser.newPage();
+                        }
+                    }
+                }
+            }
+        }
+        catch (e_2_1) { e_2 = { error: e_2_1 }; }
+        finally {
+            try {
+                if (lineReader_2_1 && !lineReader_2_1.done && (_a = lineReader_2.return)) yield _a.call(lineReader_2);
+            }
+            finally { if (e_2) throw e_2.error; }
+        }
+    });
 }
