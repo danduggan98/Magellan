@@ -9,7 +9,7 @@ import { RecipeDataResult, RecipeDataTrimmed, Index, IndexReference } from 'mage
 //Trim off unnecessary characters from a string
 function trimData(data: string): string {
     let trimmed = data.toLowerCase();
-    trimmed = trimmed.replace(/[!@#$%^&*()-_+{}:;"'<>,.\[\]\/\\\|~`1234567890]+/g, ' '); //Remove numbers and symbols
+    trimmed = trimmed.replace(/[!@#$%^&*()_{}:;"'<>.\[\]\\\|~`1234567890]+/g, ' '); //Remove numbers and invalid symbols
 
     for (let i = 0; i < IGNORED_WORDS.length; i++) {
         const rgxp = new RegExp(` +${IGNORED_WORDS[i]} +`, 'g');
@@ -72,11 +72,11 @@ function trimData(data: string): string {
             const nextItem = trimmedResults[i].data;
             const nextItemLen = nextItem.length;
 
-            //Isolate each word seperated by spaces and store it if not seen yet
+            //Isolate each word and store it if not seen yet
             for (let j = 0; j < nextItemLen; j++) {
                 if (VALID_SEPERATORS.includes(nextItem.charAt(j)) || j === nextItemLen) {
                     let nextWord = nextItem.slice(lastWordIndex, j);
-                    lastWordIndex = ++j; //Move the index forward and skip the space
+                    lastWordIndex = ++j; //Move the index forward and skip the space/symbol
                     
                     //Add the word if unseen so far
                     if (!indexKeys.includes(nextWord) && nextWord !== '') {
