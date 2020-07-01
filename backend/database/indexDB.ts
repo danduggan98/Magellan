@@ -3,7 +3,7 @@
 //
 
 import client from './connectDB';
-import { IGNORED_WORDS } from '../resources'
+import { VALID_SEPERATORS, IGNORED_WORDS } from '../resources'
 import { RecipeDataResult, RecipeDataTrimmed, Index, IndexReference } from 'magellan';
 
 //Trim off unnecessary characters from a string
@@ -74,7 +74,7 @@ function trimData(data: string): string {
 
             //Isolate each word seperated by spaces and store it if not seen yet
             for (let j = 0; j < nextItemLen; j++) {
-                if (nextItem.charAt(j) === ' ' || j === nextItemLen) {
+                if (VALID_SEPERATORS.includes(nextItem.charAt(j)) || j === nextItemLen) {
                     let nextWord = nextItem.slice(lastWordIndex, j);
                     lastWordIndex = ++j; //Move the index forward and skip the space
                     
@@ -118,7 +118,7 @@ function trimData(data: string): string {
 
                 //If this key is anywhere in the name, note it and skip to the ingredients
                 for (let k = 0; k < nextThreshold; k++) {
-                    if (nextItem.charAt(k) === ' ' || k === nextThreshold) {
+                    if (VALID_SEPERATORS.includes(nextItem.charAt(k)) || k === nextThreshold) {
                         nextWord = nextItem.slice(lastWordIndex, k);
                         lastWordIndex = ++k;
 
@@ -132,7 +132,7 @@ function trimData(data: string): string {
                 //If this word is anywhere in the ingredients, note it and stop searching
                 lastWordIndex = nextThreshold;
                 for (let l = nextThreshold; l < nextItemLen; l++) {
-                    if (nextItem.charAt(l) === ' ' || l === nextItemLen) {
+                    if (VALID_SEPERATORS.includes(nextItem.charAt(l)) || l === nextItemLen) {
                         nextWord = nextItem.slice(lastWordIndex, l);
                         lastWordIndex = ++l;
 
