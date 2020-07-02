@@ -176,17 +176,17 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
                 });
 
                 //Merge items with the same recipe id
-                for (let k = 0; k < masterList.length; k++) {
-                    let current = masterList[k];
+                for (let j = 0; j < masterList.length; j++) {
+                    let current = masterList[j];
                     
-                    for (let l = k + 1; l < masterList.length; l++) {
-                        let next = masterList[l];
+                    for (let k = j + 1; k < masterList.length; k++) {
+                        let next = masterList[k];
 
                         //Duplicate id found - add the counts from the second one to the first
                         if (current.id === next.id) {
                             current.inName += next.inName;
                             current.inIngs += next.inIngs;
-                            masterList.splice(l, 1); //Remove this item
+                            masterList.splice(k, 1); //Remove this item
                         }
                     }
                 }
@@ -197,7 +197,7 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
                     : SortByProperties(masterList, ['inIngs', 'inName'])
                 ;
                 const topResults = masterList.slice(0, limit);
-                console.log(topResults.slice(0,9)); //JUST FOR TESTING
+                console.log('FIRST SORT:', topResults); //JUST FOR TESTING
 
                 //Retrieve all info about each result from the database
                 const resultIDs = topResults.map(element => new ObjectID(element.id)); //Save each id as an ObjectID
@@ -219,19 +219,19 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
                         element.brevity = 1.0 / numWords; //Inversely proportional to length of name
                     }
                     element._id = element._id.toString();
-
+                    //current.accuracy = +((termsInName * 1.0 / numTerms).toFixed(3)); //Round to 3 decimal places
                     return element;
                 });
 
                 //Sort the final results based on the search type
                 type === 'name'
-                    ? SortByProperties(finalResults, ['brevity', 'inName'])
-                    : SortByProperties(finalResults, ['inIngs'])
+                    ? SortByProperties(finalResults, ['brevity'])
+                    : SortByProperties(finalResults, [''])
                 ;
 
                 //JUST FOR TESTING
                 console.log('\nRESULTS:');
-                finalResults.slice(0, 9).map(element => { console.log(element._id, ':', element.recipeName) });
+                finalResults.map(element => { console.log(element._id, ':', element.recipeName) });
 
                 //Send back the top results as JSON
                 res.json({ searchResults: finalResults });
