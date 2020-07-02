@@ -225,7 +225,7 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
 
                 //Sort the final results based on the search type
                 type === 'name'
-                    ? SortByProperties(finalResults, ['inName', 'brevity'])
+                    ? SortByProperties(finalResults, ['brevity', 'inName'])
                     : SortByProperties(finalResults, ['inIngs'])
                 ;
 
