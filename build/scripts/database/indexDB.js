@@ -73,9 +73,9 @@ function trimData(data) {
             for (let i = 0; i < numResults; i++) {
                 const nextItem = trimmedResults[i].data;
                 const nextItemLen = nextItem.length;
-                //Isolate each word seperated by spaces and store it if not seen yet
+                //Isolate each word and store it if not seen yet
                 for (let j = 0; j < nextItemLen; j++) {
-                    if (resources_1.VALID_SEPERATORS.includes(nextItem.charAt(j)) || j === nextItemLen) {
+                    if (nextItem.charAt(j) === ' ' || j === nextItemLen) {
                         let nextWord = nextItem.slice(lastWordIndex, j);
                         lastWordIndex = ++j; //Move the index forward and skip the space
                         //Add the word if unseen so far
@@ -110,7 +110,7 @@ function trimData(data) {
                     let ings = false;
                     //If this key is anywhere in the name, note it and skip to the ingredients
                     for (let k = 0; k < nextThreshold; k++) {
-                        if (resources_1.VALID_SEPERATORS.includes(nextItem.charAt(k)) || k === nextThreshold) {
+                        if (nextItem.charAt(k) === ' ' || k === nextThreshold) {
                             nextWord = nextItem.slice(lastWordIndex, k);
                             lastWordIndex = ++k;
                             if (nextWord === nextKey) {
@@ -122,7 +122,7 @@ function trimData(data) {
                     //If this word is anywhere in the ingredients, note it and stop searching
                     lastWordIndex = nextThreshold;
                     for (let l = nextThreshold; l < nextItemLen; l++) {
-                        if (resources_1.VALID_SEPERATORS.includes(nextItem.charAt(l)) || l === nextItemLen) {
+                        if (nextItem.charAt(l) === ' ' || l === nextItemLen) {
                             nextWord = nextItem.slice(lastWordIndex, l);
                             lastWordIndex = ++l;
                             if (nextWord === nextKey) {

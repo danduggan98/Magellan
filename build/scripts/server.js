@@ -188,20 +188,24 @@ app.get('/api/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0,
                 const dbResults = yield recipeCollection.find(finalQuery).toArray();
                 //Add a 'brevity' value to each item, and convert the ObjectIDs to strings
                 const finalResults = dbResults.map(element => {
-                    const name = element.recipeName;
-                    let numWords = 0;
-                    //Determine the number of words in the recipe name
-                    for (let i = 0; i < name.length; i++) {
-                        if (name.charAt(i) === ' ' || i === name.length - 1) {
-                            numWords++;
+                    if (type === 'name') {
+                        const name = element.recipeName;
+                        let numWords = 0;
+                        //Determine the number of words in the recipe name
+                        for (let i = 0; i < name.length; i++) {
+                            if (name.charAt(i) === ' ' || i === name.length - 1) {
+                                numWords++;
+                            }
                         }
+                        element.brevity = 1.0 / numWords; //Inversely proportional to length of name
                     }
-                    element.brevity = 1.0 / numWords; //Inversely proportional to length of name
                     element._id = element._id.toString();
                     return element;
                 });
-                //Sort by brevity, leaving shorter items at the top
-                resources_1.SortByProperties(finalResults, ['inIngs', 'inName', 'brevity']);
+                //Sort the final results based on the search type
+                type === 'name'
+                    ? resources_1.SortByProperties(finalResults, ['brevity', 'inName'])
+                    : resources_1.SortByProperties(finalResults, ['inIngs']);
                 //JUST FOR TESTING
                 console.log('\nRESULTS:');
                 finalResults.slice(0, 9).map(element => { console.log(element._id, ':', element.recipeName); });
