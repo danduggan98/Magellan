@@ -33,11 +33,14 @@ export default class SearchBar extends Component {
     //Launch a search in the server and store the results
     getResults = async () => {
 
-        //Ensure they have entered something
+        //Make sure they entered something
         if (this.state.input) {
 
-            //If so, query the db
-            const fetchURL = `/api/search/${this.state.searchType}/${this.state.input}/${this.state.maxResults}`;
+            //Remove all symbols, numbers, and trailing whitespace from the input for added security
+            let cleanInput = this.state.input.trim().replace(/[~`!@#$%^&*()-_+={[}\]|\\:;'"<,>.?/1234567890]+/g, '');
+
+            //Query the db
+            const fetchURL = `/api/search/${this.state.searchType}/${cleanInput}/${this.state.maxResults}`;
             this.setState({
                 results: [],
                 resultsFound: true,
