@@ -25,7 +25,8 @@ export interface RecipeData {
 export interface RecipeDataResult extends RecipeData {
     [key: string]: string | string[][] | number | undefined,
     _id:           string,
-    brevity?:      number
+    accuracy?:     number,
+    brevity?:     number
 }
 
 //Information about each JSON file to add recipes from
@@ -54,7 +55,7 @@ export interface Index {
 //Strictly for indexes returned from the database - includes an id and all other props
 export interface IndexResult extends Index {
     [key: string]: string | IndexReference[] | number,
-    _id: string,
+    _id:           string,
 }
 
 //Info about each recipe stored by an index in its 'recipes' array
@@ -75,9 +76,9 @@ export interface DuplicateRecipe {
 //Stores time data parsed from a single string
 export interface TimeData {
     [key: string]: string,
-    totalTime:    string,
-    prepTime:     string,
-    inactiveTime: string,
-    activeTime:   string,
-    cookTime:     string
+    totalTime:     string,
+    prepTime:      string,
+    inactiveTime:  string,
+    activeTime:    string,
+    cookTime:      string
 }
