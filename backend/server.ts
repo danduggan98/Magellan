@@ -4,7 +4,6 @@
 
 //TO-DO
 // Finish search bar + search algorithm
-    // Make tertiary sort something other than id (similarity/length? popularity?)
     // Prioritize items where the search terms are grouped in order (e.g. search for 'potato salad' = 'German Potato Salad' > 'Sweet Potato Pecan Salad')
     // Make plurals and singulars give same results (e.g. sandwich vs. sandwiches, leaf vs. leaves, salad vs salads, etc.)
     // 'See all/more' option allows you to slide through sets of the data
@@ -34,7 +33,7 @@ import express, { Request, Response } from 'express';
 import { ObjectID, Collection } from 'mongodb'
 import path from 'path';
 import client from './database/connectDB';
-import { VALID_SEPERATORS, IGNORED_WORDS, SortByProperties } from './resources';
+import { IGNORED_WORDS, SortByProperties } from './resources';
 import { RecipeData, RecipeDataResult, IndexResult, IndexReference } from 'magellan';
 
 //Constants
@@ -119,30 +118,34 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
     try {
         console.time('  > Search execution time');
         const type = req.params.type;
-        const terms = req.params.terms.toLowerCase();
+        const terms = req.params.terms;
         const limit = parseFloat(req.params.qty);
+
+        //Clean up the input submitted by the user
+        //Sets to lowercase and removes all symbols, numbers, and trailing whitespace
+        let cleanTerms = terms
+            .toLowerCase()
+            .trim()
+            .replace(/[~`!@#$%^&*()-_+={[}\]|\\:;'"<,>.?/1234567890]+/g, '')
+        ;
         
         //Search algorithm!
         //Parse individual search terms into a list
         let parsedTerms: string[] = [];
         let lastWordIndex = 0;
 
-        for (let i = 0; i <= terms.length; i++) {
+        for (let i = 0; i <= cleanTerms.length; i++) {
 
-            //Isolate properly seperated words
-            if (VALID_SEPERATORS.includes(terms.charAt(i)) || i === terms.length) {
-                let nextWord = terms.slice(lastWordIndex, i);
-
-                //Remove whitespace, symbols, quotes, and numbers
-                let nextWordClean = nextWord.trim().replace(/[!@#$%^*(){}_:;<>\[\].'"1234567890]+/g, '');
+            //Convert the input to an array of search terms
+            if (terms.charAt(i) === ' ' || i === cleanTerms.length) {
+                let nextWord = cleanTerms.slice(lastWordIndex, i);
                 lastWordIndex = ++i;
 
-                if (!IGNORED_WORDS.includes(nextWordClean) && nextWordClean.length > 2) {
-                    parsedTerms.push(nextWordClean);
+                if (!IGNORED_WORDS.includes(nextWord) && nextWord.length > 2) {
+                    parsedTerms.push(nextWord);
                 }
             }
         }
-
         console.log(`- Executing search with type '${type}' and terms '${parsedTerms}'`);
         const numTerms = parsedTerms.length;
 
@@ -197,41 +200,59 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
                     : SortByProperties(masterList, ['inIngs', 'inName'])
                 ;
                 const topResults = masterList.slice(0, limit);
-                console.log('FIRST SORT:', topResults); //JUST FOR TESTING
+                console.log('FIRST SORT:', topResults.slice(0,10)); //JUST FOR TESTING
 
                 //Retrieve all info about each result from the database
                 const resultIDs = topResults.map(element => new ObjectID(element.id)); //Save each id as an ObjectID
                 const finalQuery = { _id: { $in: resultIDs } };
                 const dbResults: RecipeDataResult[] = await recipeCollection.find(finalQuery).toArray();
 
-                //Add a 'brevity' value to each item, and convert the ObjectIDs to strings
+                //Add new properties to use in our final sort
                 const finalResults = dbResults.map(element => {
                     if (type === 'name') {
-                        const name = element.recipeName;
+                        const name = element.recipeName
+                            .toLowerCase()
+                            .trim()
+                            .replace(/[~`!@#$%^&*()-_+={[}\]|\\:;'"<,>.?/1234567890]+/g, ' ')
+                        ;
+
+                        let terms = parsedTerms.slice(); //Create a copy
+                        let lastWordIndex = 0;
+                        let termsPresent = 0;
                         let numWords = 0;
     
                         //Determine the number of words in the recipe name
-                        for (let i = 0; i < name.length; i++) {
-                            if (name.charAt(i) === ' ' || i === name.length - 1) {
+                        for (let i = 0; i <= name.length; i++) {
+                            if (name.charAt(i) === ' ' || i === name.length) {
+                                let nextWord = name.slice(lastWordIndex, i);
+                                lastWordIndex = ++i;
                                 numWords++;
+
+                                let nextWordPos = terms.indexOf(nextWord);
+                                if (nextWordPos > -1) {
+                                    termsPresent++;
+                                    terms.splice(nextWordPos, 1);
+                                }
                             }
                         }
-                        element.brevity = 1.0 / numWords; //Inversely proportional to length of name
+
+                        //Add properties and round to 3 decimal places
+                        element.accuracy = +((termsPresent * 1.0 / numTerms).toFixed(3));
+                        element.brevity  = +((termsPresent * 1.0 / numWords).toFixed(3));
                     }
                     element._id = element._id.toString();
-                    //current.accuracy = +((termsInName * 1.0 / numTerms).toFixed(3)); //Round to 3 decimal places
                     return element;
                 });
 
                 //Sort the final results based on the search type
                 type === 'name'
-                    ? SortByProperties(finalResults, ['brevity'])
+                    ? SortByProperties(finalResults, ['accuracy', 'brevity'])
                     : SortByProperties(finalResults, [''])
                 ;
 
                 //JUST FOR TESTING
                 console.log('\nRESULTS:');
-                finalResults.map(element => { console.log(element._id, ':', element.recipeName) });
+                finalResults.slice(0,10).map(element => {console.log(element._id, ':', element.recipeName)});
 
                 //Send back the top results as JSON
                 res.json({ searchResults: finalResults });
