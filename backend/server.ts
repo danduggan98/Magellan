@@ -118,31 +118,29 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
     try {
         console.time('  > Search execution time');
         const type = req.params.type;
-        const terms = req.params.terms;
+        const terms = req.params.terms.toLowerCase();
         const limit = parseFloat(req.params.qty);
-
-        //Clean up the input submitted by the user
-        //Sets to lowercase and removes all symbols, numbers, and trailing whitespace
-        let cleanTerms = terms
-            .toLowerCase()
-            .trim()
-            .replace(/[~`!@#$%^&*()-_+={[}\]|\\:;'"<,>.?/1234567890]+/g, '')
-        ;
         
         //Search algorithm!
         //Parse individual search terms into a list
         let parsedTerms: string[] = [];
         let lastWordIndex = 0;
 
-        for (let i = 0; i <= cleanTerms.length; i++) {
+        for (let i = 0; i <= terms.length; i++) {
 
             //Convert the input to an array of search terms
-            if (terms.charAt(i) === ' ' || i === cleanTerms.length) {
-                let nextWord = cleanTerms.slice(lastWordIndex, i);
+            if (terms.charAt(i) === ' ' || terms.charAt(i) === ',' || i === terms.length) {
+                let nextWord = terms.slice(lastWordIndex, i);
+
+                //Clean the word by removing all symbols, numbers, and trailing whitespace
+                let nextWordClean = nextWord
+                    .trim()
+                    .replace(/[~`!@#$%^&*()-_+={[}\]|\\:;'"<,>.?/1234567890]+/g, '')
+                ;
                 lastWordIndex = ++i;
 
-                if (!IGNORED_WORDS.includes(nextWord) && nextWord.length > 2) {
-                    parsedTerms.push(nextWord);
+                if (!IGNORED_WORDS.includes(nextWordClean) && nextWordClean.length > 2) {
+                    parsedTerms.push(nextWordClean);
                 }
             }
         }
@@ -209,15 +207,18 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
 
                 //Add new properties to use in our final sort
                 const finalResults = dbResults.map(element => {
+                    let termsList = parsedTerms.slice(); //Create a copy of the search input
+                    let lastWordIndex = 0;
+
+                    //Add 'accuracy' and 'brevity' properties
+                    // Accuracy = What portion of the search terms are in the name?
+                    // Brevity  = What percentage of the name is made of unique search terms?
                     if (type === 'name') {
                         const name = element.recipeName
                             .toLowerCase()
                             .trim()
                             .replace(/[~`!@#$%^&*()-_+={[}\]|\\:;'"<,>.?/1234567890]+/g, ' ')
                         ;
-
-                        let terms = parsedTerms.slice(); //Create a copy
-                        let lastWordIndex = 0;
                         let termsPresent = 0;
                         let numWords = 0;
     
@@ -231,7 +232,7 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
                                 let nextWordPos = terms.indexOf(nextWord);
                                 if (nextWordPos > -1) {
                                     termsPresent++;
-                                    terms.splice(nextWordPos, 1);
+                                    termsList.splice(nextWordPos, 1);
                                 }
                             }
                         }
@@ -240,6 +241,33 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
                         element.accuracy = +((termsPresent * 1.0 / numTerms).toFixed(3));
                         element.brevity  = +((termsPresent * 1.0 / numWords).toFixed(3));
                     }
+
+                    //Add an 'ingredientCount' property
+                    // IngredientCount = How many of the ingredients listed are in the ingredient list?
+                    else {                     
+                        const ings = element.ingredients
+                            .toString()
+                            .toLowerCase()
+                            .trim()
+                            .replace(/[~`!@#$%^&*()-_+={[}\]|\\:;'"<,>.?/1234567890]+/g, ' ')
+                        ;
+                        let ingsPresent = 0;
+
+                        for (let i = 0; i <= ings.length; i++) {
+                            if (ings.charAt(i) === ' ' || i === ings.length) {
+                                let nextIng = ings.slice(lastWordIndex, i);
+                                lastWordIndex = ++i;
+
+                                let nextIngPos = termsList.indexOf(nextIng);
+                                if (nextIngPos > -1) {
+                                    ingsPresent++;
+                                    termsList.splice(nextIngPos, 1);
+                                }
+                            }
+                        }
+                        element.ingredientCount = ingsPresent;
+                        console.log(element._id, element.ingredientCount);
+                    }
                     element._id = element._id.toString();
                     return element;
                 });
@@ -247,7 +275,7 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
                 //Sort the final results based on the search type
                 type === 'name'
                     ? SortByProperties(finalResults, ['accuracy', 'brevity'])
-                    : SortByProperties(finalResults, [''])
+                    : SortByProperties(finalResults, ['ingredientCount'])
                 ;
 
                 //JUST FOR TESTING
@@ -261,7 +289,7 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
         }
     }
     catch (err) {
-        console.log('Error in search route:', err)
+        console.log('Error in search route:', err);
     }
 });
 
