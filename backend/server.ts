@@ -33,7 +33,7 @@ import express, { Request, Response } from 'express';
 import { ObjectID, Collection } from 'mongodb'
 import path from 'path';
 import client from './database/connectDB';
-import { IGNORED_WORDS, SortByProperties } from './resources';
+import { SYMBOL_LIST, VALID_SEPERATORS, IGNORED_WORDS, SortByProperties } from './resources';
 import { RecipeData, RecipeDataResult, IndexResult, IndexReference } from 'magellan';
 
 //Constants
@@ -53,7 +53,7 @@ let indexCollection: Collection;
 
         //Save connections to the collections we will use later
         recipeCollection = database.db('recipeData').collection('recipes');
-        indexCollection = database.db('recipeData').collection('index');
+        indexCollection  = database.db('recipeData').collection('index');
     }
     catch (err) {
         console.log('Error in connectToMongo:', err)
@@ -122,20 +122,18 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
         const limit = parseFloat(req.params.qty);
         
         //Search algorithm!
-        //Parse individual search terms into a list
         let parsedTerms: string[] = [];
         let lastWordIndex = 0;
 
+        //Convert the input to an array of search terms
         for (let i = 0; i <= terms.length; i++) {
+            if (VALID_SEPERATORS.includes(terms.charAt(i)) || i === terms.length) {
 
-            //Convert the input to an array of search terms
-            if (terms.charAt(i) === ' ' || terms.charAt(i) === ',' || i === terms.length) {
+                //Isolate each word and clean it by removing all symbols, numbers, and trailing whitespace
                 let nextWord = terms.slice(lastWordIndex, i);
-
-                //Clean the word by removing all symbols, numbers, and trailing whitespace
                 let nextWordClean = nextWord
                     .trim()
-                    .replace(/[~`!@#$%^&*()-_+={[}\]|\\:;'"<,>.?/1234567890]+/g, '')
+                    .replace(SYMBOL_LIST, '')
                 ;
                 lastWordIndex = ++i;
 
@@ -144,10 +142,11 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
                 }
             }
         }
+
+        //Query the database if given a valid submission
         console.log(`- Executing search with type '${type}' and terms '${parsedTerms}'`);
         const numTerms = parsedTerms.length;
 
-        //Query the database given a valid submission
         if (!numTerms) {
             res.json({ error: 'No search results' });
             console.timeEnd('  > Search execution time');
@@ -162,7 +161,7 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
 
             //Search!
             const results: IndexResult[] = await indexCollection.find(query).toArray();
-            let masterList: IndexReference[] = []; //Will hold our final sorted results
+            let initialResults: IndexReference[] = []; //Will hold our initial sorted results
 
             //No results
             if (!results.length) {
@@ -173,35 +172,37 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
             else {
                 //Combine the results into one array
                 results.map(element => {
-                    masterList = masterList.concat(element.recipes);
+                    initialResults = initialResults.concat(element.recipes);
                 });
 
                 //Merge items with the same recipe id
-                for (let j = 0; j < masterList.length; j++) {
-                    let current = masterList[j];
+                for (let j = 0; j < initialResults.length; j++) {
+                    let current = initialResults[j];
                     
-                    for (let k = j + 1; k < masterList.length; k++) {
-                        let next = masterList[k];
+                    for (let k = j + 1; k < initialResults.length; k++) {
+                        let next = initialResults[k];
 
                         //Duplicate id found - add the counts from the second one to the first
                         if (current.id === next.id) {
                             current.inName += next.inName;
                             current.inIngs += next.inIngs;
-                            masterList.splice(k, 1); //Remove this item
+                            initialResults.splice(k, 1); //Remove this item
                         }
                     }
                 }
 
                 //Sort by whatever the user is looking for, then grab only the most relevant results
                 type === 'name'
-                    ? SortByProperties(masterList, ['inName', 'inIngs'])
-                    : SortByProperties(masterList, ['inIngs', 'inName'])
+                    ? SortByProperties(initialResults, ['inName', 'inIngs'])
+                    : SortByProperties(initialResults, ['inIngs', 'inName'])
                 ;
-                const topResults = masterList.slice(0, limit);
+                const topResults = initialResults.slice(0, limit);
                 console.log('FIRST SORT:', topResults.slice(0,10)); //JUST FOR TESTING
 
                 //Retrieve all info about each result from the database
-                const resultIDs = topResults.map(element => new ObjectID(element.id)); //Save each id as an ObjectID
+                const resultIDs = topResults.map(
+                    element => new ObjectID(element.id) //Save each id as an ObjectID
+                );
                 const finalQuery = { _id: { $in: resultIDs } };
                 const dbResults: RecipeDataResult[] = await recipeCollection.find(finalQuery).toArray();
 
@@ -214,18 +215,19 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
                     // Accuracy = What portion of the search terms are in the name?
                     // Brevity  = What percentage of the name is made of unique search terms?
                     if (type === 'name') {
-                        const name = element.recipeName
-                            .toLowerCase()
-                            .trim()
-                            .replace(/[~`!@#$%^&*()-_+={[}\]|\\:;'"<,>.?/1234567890]+/g, ' ')
-                        ;
+                        const name = element.recipeName.toLowerCase();
                         let termsPresent = 0;
                         let numWords = 0;
     
                         //Determine the number of words in the recipe name
                         for (let i = 0; i <= name.length; i++) {
-                            if (name.charAt(i) === ' ' || i === name.length) {
-                                let nextWord = name.slice(lastWordIndex, i);
+                            if (VALID_SEPERATORS.includes(name.charAt(i)) || i === name.length) {
+                                let nextWordRaw = name.slice(lastWordIndex, i);
+
+                                let nextWord = nextWordRaw
+                                    .trim()
+                                    .replace(SYMBOL_LIST, '')
+                                ;
                                 lastWordIndex = ++i;
                                 numWords++;
 
@@ -248,14 +250,17 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
                         const ings = element.ingredients
                             .toString()
                             .toLowerCase()
-                            .trim()
-                            .replace(/[~`!@#$%^&*()-_+={[}\]|\\:;'"<,>.?/1234567890]+/g, ' ')
                         ;
                         let ingsPresent = 0;
 
                         for (let i = 0; i <= ings.length; i++) {
-                            if (ings.charAt(i) === ' ' || i === ings.length) {
-                                let nextIng = ings.slice(lastWordIndex, i);
+                            if (VALID_SEPERATORS.includes(ings.charAt(i)) || i === ings.length) {
+                                let nextIngRaw = ings.slice(lastWordIndex, i);
+
+                                let nextIng = nextIngRaw
+                                    .trim()
+                                    .replace(SYMBOL_LIST, '')
+                                ;
                                 lastWordIndex = ++i;
 
                                 let nextIngPos = termsList.indexOf(nextIng);
