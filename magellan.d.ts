@@ -23,10 +23,11 @@ export interface RecipeData {
 
 //Used strictly for recipes returned from the database - includes all the same values, but with the added _id field
 export interface RecipeDataResult extends RecipeData {
-    [key: string]: string | string[][] | number | undefined,
-    _id:           string,
-    accuracy?:     number,
-    brevity?:     number
+    [key: string]:    string | string[][] | number | undefined,
+    _id:              string,
+    accuracy?:        number,
+    brevity?:         number,
+    ingredientCount?: number
 }
 
 //Information about each JSON file to add recipes from
