@@ -4,6 +4,14 @@
 
 import { RecipeDataFile } from 'magellan';
 
+//Regex containing all symbols
+const SYMBOL_LIST: RegExp = /[~`!@#$%^&*()-_+={[}\]|\\:;'"<,>.?\/1234567890]+/g;
+
+//List of all characters that can be used to seperate words in search inputs or recipe names
+const VALID_SEPERATORS: string[] = [
+    ' ', ',', '-'
+];
+
 //Alphabetical list of words to skip over when indexing the database or parsing search terms
 const IGNORED_WORDS: string[] = [
     'a', 'about', 'addition', 'additional', 'after', 'all', 'and', 'approximate', 'approximately', 'as', 'at', 'because', 'been', 'before', 'better', 'best', 'big', 'boil','boiling',
@@ -48,6 +56,8 @@ const SortByProperties = (values: any[], properties: string[]): void => {
 }
 
 export {
+    SYMBOL_LIST,
+    VALID_SEPERATORS,
     IGNORED_WORDS,
     DATA_FILES,
     RemoveHtmlTags,
