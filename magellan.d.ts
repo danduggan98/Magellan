@@ -38,7 +38,7 @@ export interface RecipeDataFile {
 }
 
 //Compressed version of a recipe used by the indexing script
-export interface RecipeDataTrimmed {
+export interface RecipeDataCondensed {
     [key: string]: string | number,
     id:            string,
     data:          string,
