@@ -3,12 +3,7 @@
 // Useful constants and file names for use around the app
 //
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SortByProperties = exports.RemoveHtmlTags = exports.DATA_FILES = exports.IGNORED_WORDS = exports.VALID_SEPERATORS = void 0;
-//List of symbols which are allowed to seperate search terms
-const VALID_SEPERATORS = [
-    ' ', '-', '/', ',', '+', '&'
-];
-exports.VALID_SEPERATORS = VALID_SEPERATORS;
+exports.SortByProperties = exports.RemoveHtmlTags = exports.DATA_FILES = exports.IGNORED_WORDS = void 0;
 //Alphabetical list of words to skip over when indexing the database or parsing search terms
 const IGNORED_WORDS = [
     'a', 'about', 'addition', 'additional', 'after', 'all', 'and', 'approximate', 'approximately', 'as', 'at', 'because', 'been', 'before', 'better', 'best', 'big', 'boil', 'boiling',

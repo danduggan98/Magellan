@@ -17,7 +17,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 //TO-DO
 // Finish search bar + search algorithm
-// Make tertiary sort something other than id (similarity/length? popularity?)
 // Prioritize items where the search terms are grouped in order (e.g. search for 'potato salad' = 'German Potato Salad' > 'Sweet Potato Pecan Salad')
 // Make plurals and singulars give same results (e.g. sandwich vs. sandwiches, leaf vs. leaves, salad vs salads, etc.)
 // 'See all/more' option allows you to slide through sets of the data
@@ -124,11 +123,13 @@ app.get('/api/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0,
         let parsedTerms = [];
         let lastWordIndex = 0;
         for (let i = 0; i <= terms.length; i++) {
-            //Isolate properly seperated words
-            if (resources_1.VALID_SEPERATORS.includes(terms.charAt(i)) || i === terms.length) {
+            //Convert the input to an array of search terms
+            if (terms.charAt(i) === ' ' || terms.charAt(i) === ',' || i === terms.length) {
                 let nextWord = terms.slice(lastWordIndex, i);
-                //Remove whitespace, symbols, quotes, and numbers
-                let nextWordClean = nextWord.trim().replace(/[!@#$%^*(){}_:;<>\[\].'"1234567890]+/g, '');
+                //Clean the word by removing all symbols, numbers, and trailing whitespace
+                let nextWordClean = nextWord
+                    .trim()
+                    .replace(/[~`!@#$%^&*()-_+={[}\]|\\:;'"<,>.?/1234567890]+/g, '');
                 lastWordIndex = ++i;
                 if (!resources_1.IGNORED_WORDS.includes(nextWordClean) && nextWordClean.length > 2) {
                     parsedTerms.push(nextWordClean);
@@ -164,15 +165,15 @@ app.get('/api/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0,
                     masterList = masterList.concat(element.recipes);
                 });
                 //Merge items with the same recipe id
-                for (let k = 0; k < masterList.length; k++) {
-                    let current = masterList[k];
-                    for (let l = k + 1; l < masterList.length; l++) {
-                        let next = masterList[l];
+                for (let j = 0; j < masterList.length; j++) {
+                    let current = masterList[j];
+                    for (let k = j + 1; k < masterList.length; k++) {
+                        let next = masterList[k];
                         //Duplicate id found - add the counts from the second one to the first
                         if (current.id === next.id) {
                             current.inName += next.inName;
                             current.inIngs += next.inIngs;
-                            masterList.splice(l, 1); //Remove this item
+                            masterList.splice(k, 1); //Remove this item
                         }
                     }
                 }
@@ -181,34 +182,75 @@ app.get('/api/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0,
                     ? resources_1.SortByProperties(masterList, ['inName', 'inIngs'])
                     : resources_1.SortByProperties(masterList, ['inIngs', 'inName']);
                 const topResults = masterList.slice(0, limit);
-                console.log(topResults.slice(0, 9)); //JUST FOR TESTING
+                console.log('FIRST SORT:', topResults.slice(0, 10)); //JUST FOR TESTING
                 //Retrieve all info about each result from the database
                 const resultIDs = topResults.map(element => new mongodb_1.ObjectID(element.id)); //Save each id as an ObjectID
                 const finalQuery = { _id: { $in: resultIDs } };
                 const dbResults = yield recipeCollection.find(finalQuery).toArray();
-                //Add a 'brevity' value to each item, and convert the ObjectIDs to strings
+                //Add new properties to use in our final sort
                 const finalResults = dbResults.map(element => {
+                    let termsList = parsedTerms.slice(); //Create a copy of the search input
+                    let lastWordIndex = 0;
+                    //Add 'accuracy' and 'brevity' properties
+                    // Accuracy = What portion of the search terms are in the name?
+                    // Brevity  = What percentage of the name is made of unique search terms?
                     if (type === 'name') {
-                        const name = element.recipeName;
+                        const name = element.recipeName
+                            .toLowerCase()
+                            .trim()
+                            .replace(/[~`!@#$%^&*()-_+={[}\]|\\:;'"<,>.?/1234567890]+/g, ' ');
+                        let termsPresent = 0;
                         let numWords = 0;
                         //Determine the number of words in the recipe name
-                        for (let i = 0; i < name.length; i++) {
-                            if (name.charAt(i) === ' ' || i === name.length - 1) {
+                        for (let i = 0; i <= name.length; i++) {
+                            if (name.charAt(i) === ' ' || i === name.length) {
+                                let nextWord = name.slice(lastWordIndex, i);
+                                lastWordIndex = ++i;
                                 numWords++;
+                                let nextWordPos = terms.indexOf(nextWord);
+                                if (nextWordPos > -1) {
+                                    termsPresent++;
+                                    termsList.splice(nextWordPos, 1);
+                                }
                             }
                         }
-                        element.brevity = 1.0 / numWords; //Inversely proportional to length of name
+                        //Add properties and round to 3 decimal places
+                        element.accuracy = +((termsPresent * 1.0 / numTerms).toFixed(3));
+                        element.brevity = +((termsPresent * 1.0 / numWords).toFixed(3));
+                    }
+                    //Add an 'ingredientCount' property
+                    // IngredientCount = How many of the ingredients listed are in the ingredient list?
+                    else {
+                        const ings = element.ingredients
+                            .toString()
+                            .toLowerCase()
+                            .trim()
+                            .replace(/[~`!@#$%^&*()-_+={[}\]|\\:;'"<,>.?/1234567890]+/g, ' ');
+                        let ingsPresent = 0;
+                        for (let i = 0; i <= ings.length; i++) {
+                            if (ings.charAt(i) === ' ' || i === ings.length) {
+                                let nextIng = ings.slice(lastWordIndex, i);
+                                lastWordIndex = ++i;
+                                let nextIngPos = termsList.indexOf(nextIng);
+                                if (nextIngPos > -1) {
+                                    ingsPresent++;
+                                    termsList.splice(nextIngPos, 1);
+                                }
+                            }
+                        }
+                        element.ingredientCount = ingsPresent;
+                        console.log(element._id, element.ingredientCount);
                     }
                     element._id = element._id.toString();
                     return element;
                 });
                 //Sort the final results based on the search type
                 type === 'name'
-                    ? resources_1.SortByProperties(finalResults, ['brevity', 'inName'])
-                    : resources_1.SortByProperties(finalResults, ['inIngs']);
+                    ? resources_1.SortByProperties(finalResults, ['accuracy', 'brevity'])
+                    : resources_1.SortByProperties(finalResults, ['ingredientCount']);
                 //JUST FOR TESTING
                 console.log('\nRESULTS:');
-                finalResults.slice(0, 9).map(element => { console.log(element._id, ':', element.recipeName); });
+                finalResults.slice(0, 10).map(element => { console.log(element._id, ':', element.recipeName); });
                 //Send back the top results as JSON
                 res.json({ searchResults: finalResults });
                 console.timeEnd('  > Search execution time');
