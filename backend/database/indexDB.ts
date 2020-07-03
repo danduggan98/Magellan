@@ -3,20 +3,8 @@
 //
 
 import client from './connectDB';
-import { IGNORED_WORDS } from '../resources';
-import { RecipeDataResult, RecipeDataTrimmed, Index, IndexReference } from 'magellan';
-
-//Trim off unnecessary characters from a string
-function trimData(data: string): string {
-    let trimmed = data.toLowerCase();
-    trimmed = trimmed.replace(/[!@#$%^&*()-_+{}:;"'<>,.\[\]\/\\\|~`1234567890]+/g, ' '); //Remove numbers and symbols
-
-    for (let i = 0; i < IGNORED_WORDS.length; i++) {
-        const rgxp = new RegExp(` +${IGNORED_WORDS[i]} +`, 'g');
-        trimmed = trimmed.replace(rgxp, ' ');
-    }
-    return trimmed.replace(/\s+/g, ' ').trim(); //Remove extra spaces
-}
+import { SYMBOL_LIST, VALID_SEPERATORS, IGNORED_WORDS } from '../resources';
+import { RecipeDataResult, RecipeDataCondensed, Index, IndexReference } from 'magellan';
 
 //Main indexing function - runs automatically
 (async function indexDB() {
@@ -35,9 +23,9 @@ function trimData(data: string): string {
         console.log('done');
 
         //Cut the results down to just the recipe name and ingredients
-        // Remove unnecessary characters, concatenate the two, and store the index that seperates them
-        process.stdout.write('  > Trimming recipe info ... ');
-        const trimmedResults: RecipeDataTrimmed[] = results.map(element => {
+        // Concatenate the two and store the index that seperates them
+        process.stdout.write('  > Condensing recipe info ... ');
+        const condensedResults: RecipeDataCondensed[] = results.map(element => {
             let data = '';
             let threshold = 0; //Index that seperates the name and ingredients
 
@@ -53,9 +41,9 @@ function trimData(data: string): string {
                 if (!name) threshold = data.length;
             }
 
-            let nextIndex: RecipeDataTrimmed = {
+            let nextIndex: RecipeDataCondensed = {
                 id: element._id.toString(),
-                data: trimData(data),
+                data: data.toLowerCase(),
                 threshold: threshold
             }
             return nextIndex;
@@ -64,22 +52,26 @@ function trimData(data: string): string {
 
         //Find and store all the unique words in our result
         process.stdout.write('  > Finding all unique words ... ');
-        const numResults = trimmedResults.length;
+        const numResults = condensedResults.length;
         let lastWordIndex = 0;
         let indexKeys: string[] = []; //Stores the unique words
 
         for (let i = 0; i < numResults; i++) {
-            const nextItem = trimmedResults[i].data;
+            const nextItem = condensedResults[i].data;
             const nextItemLen = nextItem.length;
 
             //Isolate each word and store it if not seen yet
-            for (let j = 0; j < nextItemLen; j++) {
-                if (nextItem.charAt(j) === ' ' || j === nextItemLen) {
-                    let nextWord = nextItem.slice(lastWordIndex, j);
+            for (let j = 0; j <= nextItemLen; j++) {
+                if (VALID_SEPERATORS.includes(nextItem.charAt(j)) || j === nextItemLen) {
+                    let nextWordRaw = nextItem.slice(lastWordIndex, j);
+                    let nextWord = nextWordRaw
+                        .trim()
+                        .replace(SYMBOL_LIST, '')
+                    ;
                     lastWordIndex = ++j; //Move the index forward and skip the space
                     
-                    //Add the word if unseen so far
-                    if (!indexKeys.includes(nextWord) && nextWord !== '') {
+                    //Add the word if unseen so far and not in our blacklist
+                    if (!IGNORED_WORDS.includes(nextWord) && !indexKeys.includes(nextWord) && nextWord !== '') {
                         indexKeys.push(nextWord);
                     }
                 }
@@ -105,11 +97,11 @@ function trimData(data: string): string {
 
             //Look through the data for this key
             for (let j = 0; j < numResults; j++) {
-                const nextItem = trimmedResults[j].data;
+                const nextItem = condensedResults[j].data;
                 const nextItemLen = nextItem.length;
 
-                const nextID = trimmedResults[j].id;
-                const nextThreshold = trimmedResults[j].threshold;
+                const nextID = condensedResults[j].id;
+                const nextThreshold = condensedResults[j].threshold;
                 let lastWordIndex = 0;
                 let nextWord = '';
 
@@ -117,9 +109,12 @@ function trimData(data: string): string {
                 let ings: boolean = false;
 
                 //If this key is anywhere in the name, note it and skip to the ingredients
-                for (let k = 0; k < nextThreshold; k++) {
-                    if (nextItem.charAt(k) === ' ' || k === nextThreshold) {
-                        nextWord = nextItem.slice(lastWordIndex, k);
+                for (let k = 0; k <= nextThreshold; k++) {
+                    if (VALID_SEPERATORS.includes(nextItem.charAt(k)) || k === nextThreshold) {
+                        nextWord = nextItem.slice(lastWordIndex, k)
+                            .trim()
+                            .replace(SYMBOL_LIST, '')
+                        ;
                         lastWordIndex = ++k;
 
                         if (nextWord === nextKey) {
@@ -131,9 +126,12 @@ function trimData(data: string): string {
 
                 //If this word is anywhere in the ingredients, note it and stop searching
                 lastWordIndex = nextThreshold;
-                for (let l = nextThreshold; l < nextItemLen; l++) {
-                    if (nextItem.charAt(l) === ' ' || l === nextItemLen) {
-                        nextWord = nextItem.slice(lastWordIndex, l);
+                for (let l = nextThreshold; l <= nextItemLen; l++) {
+                    if (VALID_SEPERATORS.includes(nextItem.charAt(l)) || l === nextItemLen) {
+                            nextWord = nextItem.slice(lastWordIndex, l)
+                            .trim()
+                            .replace(SYMBOL_LIST, '')
+                        ;
                         lastWordIndex = ++l;
 
                         if (nextWord === nextKey) {
@@ -154,12 +152,12 @@ function trimData(data: string): string {
                 }
             }
 
+            //Save our result
             index.frequency = index.recipes.length;
+            indexes.push(index);
 
             //Console progress indicator - adds a dot with each additional 10% complete
             if (i % Math.ceil((numKeys / 7)) === 0) process.stdout.write('.');
-
-            indexes.push(index); //Save our result
         }
         console.log(' done');
 
