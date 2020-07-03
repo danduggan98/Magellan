@@ -6,6 +6,7 @@
 // Finish search bar + search algorithm
     // Prioritize items where the search terms are grouped in order (e.g. search for 'potato salad' = 'German Potato Salad' > 'Sweet Potato Pecan Salad')
     // Make plurals and singulars give same results (e.g. sandwich vs. sandwiches, leaf vs. leaves, salad vs salads, etc.)
+    // Make word parser a standalone function in resources
     // 'See all/more' option allows you to slide through sets of the data
     // Search card - cut off long titles with ellipses, but let hover extend it to see the whole thing
     //CACHE IMAGES IN PUBLIC FOLDER
