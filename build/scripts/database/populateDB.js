@@ -75,6 +75,7 @@ const resources_1 = require("../resources");
             database.close();
             process.stdout.write('- Successfully populated database in');
             console.timeEnd('');
+            console.log('\n');
         }
         catch (err) {
             console.log("Error in 'populateDB':", err);

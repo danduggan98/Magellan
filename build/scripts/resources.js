@@ -3,7 +3,15 @@
 // Useful constants and file names for use around the app
 //
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SortByProperties = exports.RemoveHtmlTags = exports.DATA_FILES = exports.IGNORED_WORDS = void 0;
+exports.SortByProperties = exports.RemoveHtmlTags = exports.DATA_FILES = exports.IGNORED_WORDS = exports.VALID_SEPERATORS = exports.SYMBOL_LIST = void 0;
+//Regex containing all symbols
+const SYMBOL_LIST = /[~`!@#$%^&*()-_+={[}\]|\\:;'"<,>.?\/1234567890]+/g;
+exports.SYMBOL_LIST = SYMBOL_LIST;
+//List of all characters that can be used to seperate words in search inputs or recipe names
+const VALID_SEPERATORS = [
+    ' ', ',', '-'
+];
+exports.VALID_SEPERATORS = VALID_SEPERATORS;
 //Alphabetical list of words to skip over when indexing the database or parsing search terms
 const IGNORED_WORDS = [
     'a', 'about', 'addition', 'additional', 'after', 'all', 'and', 'approximate', 'approximately', 'as', 'at', 'because', 'been', 'before', 'better', 'best', 'big', 'boil', 'boiling',
