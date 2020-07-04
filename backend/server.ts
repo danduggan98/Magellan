@@ -219,6 +219,7 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
                         const name = element.recipeName.toLowerCase();
                         let termsPresent = 0;
                         let numWords = 0;
+                        let foundTerms: string[] = [];
     
                         //Determine the number of words in the recipe name
                         for (let i = 0; i <= name.length; i++) {
@@ -232,10 +233,14 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
                                 lastWordIndex = ++i;
                                 numWords++;
 
+                                //Check if the word is a search term we have not seen yet
                                 let nextWordPos = terms.indexOf(nextWord);
-                                if (nextWordPos > -1) {
+                                let alreadyFound = foundTerms.indexOf(nextWord) > -1;
+
+                                if (!alreadyFound && nextWordPos > -1) {
                                     termsPresent++;
                                     termsList.splice(nextWordPos, 1);
+                                    foundTerms.push(nextWord);
                                 }
                             }
                         }
@@ -243,6 +248,7 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
                         //Add properties and round to 3 decimal places
                         element.accuracy = +((termsPresent * 1.0 / numTerms).toFixed(3));
                         element.brevity  = +((termsPresent * 1.0 / numWords).toFixed(3));
+                        console.log(element._id, ':', element.accuracy, element.brevity);
                     }
 
                     //Add an 'ingredientCount' property
