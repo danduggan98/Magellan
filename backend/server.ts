@@ -234,8 +234,8 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
                                 numWords++;
 
                                 //Check if the word is a search term we have not seen yet
-                                let nextWordPos = terms.indexOf(nextWord);
-                                let alreadyFound = foundTerms.indexOf(nextWord) > -1;
+                                let nextWordPos = termsList.indexOf(nextWord);
+                                let alreadyFound = foundTerms.includes(nextWord);
 
                                 if (!alreadyFound && nextWordPos > -1) {
                                     termsPresent++;
@@ -248,11 +248,11 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
                         //Add properties and round to 3 decimal places
                         element.accuracy = +((termsPresent * 1.0 / numTerms).toFixed(3));
                         element.brevity  = +((termsPresent * 1.0 / numWords).toFixed(3));
-                        console.log(element._id, ':', element.accuracy, element.brevity);
+                        console.log('id:', element._id, ', acc:', element.accuracy, ', brev:', element.brevity);
                     }
 
                     //Add an 'ingredientCount' property
-                    // IngredientCount = How many of the ingredients listed are in the ingredient list?
+                    // IngredientCount = How many of the search terms are in the ingredient list?
                     else {                     
                         const ings = element.ingredients
                             .toString()
