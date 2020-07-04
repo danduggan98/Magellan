@@ -3,7 +3,7 @@
 // Useful constants and file names for use around the app
 //
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SortByProperties = exports.RemoveHtmlTags = exports.DATA_FILES = exports.IGNORED_WORDS = exports.VALID_SEPERATORS = exports.SYMBOL_LIST = void 0;
+exports.SortByProperties = exports.ParseTerms = exports.RemoveHtmlTags = exports.DATA_FILES = exports.IGNORED_WORDS = exports.VALID_SEPERATORS = exports.SYMBOL_LIST = void 0;
 //Regex containing all symbols
 const SYMBOL_LIST = /[~`!@#$%^&*()-_+={[}\]|\\:;'"<,>.?\/1234567890]+/g;
 exports.SYMBOL_LIST = SYMBOL_LIST;
@@ -53,3 +53,20 @@ const SortByProperties = (values, properties) => {
     }
 };
 exports.SortByProperties = SortByProperties;
+//Parses and isolates each word in a given string
+// Calls an externally defined callback function on each parsed word
+const ParseTerms = (source, callback) => {
+    let lastWordIndex = 0;
+    for (let i = 0; i <= source.length; i++) {
+        if (VALID_SEPERATORS.includes(source.charAt(i)) || i === source.length) {
+            //Isolate each word and clean it by removing all symbols, numbers, and trailing whitespace
+            let nextWord = source.slice(lastWordIndex, i);
+            let nextWordClean = nextWord
+                .trim()
+                .replace(SYMBOL_LIST, '');
+            lastWordIndex = ++i;
+            callback(nextWordClean);
+        }
+    }
+};
+exports.ParseTerms = ParseTerms;

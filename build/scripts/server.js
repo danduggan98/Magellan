@@ -17,12 +17,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 //TO-DO
 // Finish search bar + search algorithm
-// Prioritize items where the search terms are grouped in order (e.g. search for 'potato salad' = 'German Potato Salad' > 'Sweet Potato Pecan Salad')
+// (ADJACENCY PROP - for name) Prioritize items where the search terms are grouped in order (e.g. search for 'potato salad' = 'German Potato Salad' > 'Sweet Potato Pecan Salad')
+// (RAND PROP - for both) At the aboslute end, Sort items by a random number assign during the search to get more search variety
 // Make plurals and singulars give same results (e.g. sandwich vs. sandwiches, leaf vs. leaves, salad vs salads, etc.)
-// Make word parser a standalone function in resources
 // 'See all/more' option allows you to slide through sets of the data
 // Search card - cut off long titles with ellipses, but let hover extend it to see the whole thing
-//CACHE IMAGES IN PUBLIC FOLDER
+// CACHE IMAGES IN PUBLIC FOLDER
 // USE FIGMA TO MAKE PAGES CLEANER
 // Change vs code format/line space settings so everything but JSON and YAML have 4 spaces
 // SCRAPE + ADD TASTE OF HOME, BON APPETIT, AND OTHERS
@@ -121,21 +121,12 @@ app.get('/api/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0,
         const limit = parseFloat(req.params.qty);
         //Search algorithm!
         let parsedTerms = [];
-        let lastWordIndex = 0;
         //Convert the input to an array of search terms
-        for (let i = 0; i <= terms.length; i++) {
-            if (resources_1.VALID_SEPERATORS.includes(terms.charAt(i)) || i === terms.length) {
-                //Isolate each word and clean it by removing all symbols, numbers, and trailing whitespace
-                let nextWord = terms.slice(lastWordIndex, i);
-                let nextWordClean = nextWord
-                    .trim()
-                    .replace(resources_1.SYMBOL_LIST, '');
-                lastWordIndex = ++i;
-                if (!resources_1.IGNORED_WORDS.includes(nextWordClean) && nextWordClean.length > 2) {
-                    parsedTerms.push(nextWordClean);
-                }
+        resources_1.ParseTerms(terms, (word) => {
+            if (!resources_1.IGNORED_WORDS.includes(word) && word.length > 2) {
+                parsedTerms.push(word);
             }
-        }
+        });
         //Query the database if given a valid submission
         console.log(`- Executing search with type '${type}' and terms '${parsedTerms}'`);
         const numTerms = parsedTerms.length;
@@ -182,7 +173,7 @@ app.get('/api/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0,
                     ? resources_1.SortByProperties(initialResults, ['inName', 'inIngs'])
                     : resources_1.SortByProperties(initialResults, ['inIngs', 'inName']);
                 const topResults = initialResults.slice(0, limit);
-                console.log('FIRST SORT:', topResults.slice(0, 10)); //JUST FOR TESTING
+                console.log('FIRST SORT:', topResults); //JUST FOR TESTING
                 //Retrieve all info about each result from the database
                 const resultIDs = topResults.map(element => new mongodb_1.ObjectID(element.id) //Save each id as an ObjectID
                 );
@@ -191,7 +182,6 @@ app.get('/api/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0,
                 //Add new properties to use in our final sort
                 const finalResults = dbResults.map(element => {
                     let termsList = parsedTerms.slice(); //Create a copy of the search input
-                    let lastWordIndex = 0;
                     //Add 'accuracy' and 'brevity' properties
                     // Accuracy = What portion of the search terms are in the name?
                     // Brevity  = What percentage of the name is made of unique search terms?
@@ -201,24 +191,17 @@ app.get('/api/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0,
                         let numWords = 0;
                         let foundTerms = [];
                         //Determine the number of words in the recipe name
-                        for (let i = 0; i <= name.length; i++) {
-                            if (resources_1.VALID_SEPERATORS.includes(name.charAt(i)) || i === name.length) {
-                                let nextWordRaw = name.slice(lastWordIndex, i);
-                                let nextWord = nextWordRaw
-                                    .trim()
-                                    .replace(resources_1.SYMBOL_LIST, '');
-                                lastWordIndex = ++i;
-                                numWords++;
-                                //Check if the word is a search term we have not seen yet
-                                let nextWordPos = termsList.indexOf(nextWord);
-                                let alreadyFound = foundTerms.includes(nextWord);
-                                if (!alreadyFound && nextWordPos > -1) {
-                                    termsPresent++;
-                                    termsList.splice(nextWordPos, 1);
-                                    foundTerms.push(nextWord);
-                                }
+                        resources_1.ParseTerms(name, (word) => {
+                            numWords++;
+                            //Check if the word is a search term we haven't seen yet
+                            let nextWordPos = termsList.indexOf(word);
+                            let alreadyFound = foundTerms.includes(word);
+                            if (!alreadyFound && nextWordPos > -1) {
+                                termsPresent++;
+                                termsList.splice(nextWordPos, 1);
+                                foundTerms.push(word);
                             }
-                        }
+                        });
                         //Add properties and round to 3 decimal places
                         element.accuracy = +((termsPresent * 1.0 / numTerms).toFixed(3));
                         element.brevity = +((termsPresent * 1.0 / numWords).toFixed(3));
@@ -231,20 +214,13 @@ app.get('/api/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0,
                             .toString()
                             .toLowerCase();
                         let ingsPresent = 0;
-                        for (let i = 0; i <= ings.length; i++) {
-                            if (resources_1.VALID_SEPERATORS.includes(ings.charAt(i)) || i === ings.length) {
-                                let nextIngRaw = ings.slice(lastWordIndex, i);
-                                let nextIng = nextIngRaw
-                                    .trim()
-                                    .replace(resources_1.SYMBOL_LIST, '');
-                                lastWordIndex = ++i;
-                                let nextIngPos = termsList.indexOf(nextIng);
-                                if (nextIngPos > -1) {
-                                    ingsPresent++;
-                                    termsList.splice(nextIngPos, 1);
-                                }
+                        resources_1.ParseTerms(ings, (word) => {
+                            let nextIngPos = termsList.indexOf(word);
+                            if (nextIngPos > -1) {
+                                ingsPresent++;
+                                termsList.splice(nextIngPos, 1);
                             }
-                        }
+                        });
                         element.ingredientCount = ingsPresent;
                         console.log(element._id, element.ingredientCount);
                     }
@@ -257,7 +233,7 @@ app.get('/api/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0,
                     : resources_1.SortByProperties(finalResults, ['ingredientCount']);
                 //JUST FOR TESTING
                 console.log('\nRESULTS:');
-                finalResults.slice(0, 10).map(element => { console.log(element._id, ':', element.recipeName); });
+                finalResults.map(element => { console.log(element._id, ':', element.recipeName); });
                 //Send back the top results as JSON
                 res.json({ searchResults: finalResults });
                 console.timeEnd('  > Search execution time');

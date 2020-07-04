@@ -62,10 +62,9 @@ const resources_1 = require("../resources");
             let indexKeys = []; //Stores the unique words
             for (let i = 0; i < numResults; i++) {
                 const nextItem = condensedResults[i].data;
-                const nextItemLen = nextItem.length;
                 //Isolate each word and store it if not seen yet
-                for (let j = 0; j <= nextItemLen; j++) {
-                    if (resources_1.VALID_SEPERATORS.includes(nextItem.charAt(j)) || j === nextItemLen) {
+                for (let j = 0; j <= nextItem.length; j++) {
+                    if (resources_1.VALID_SEPERATORS.includes(nextItem.charAt(j)) || j === nextItem.length) {
                         let nextWordRaw = nextItem.slice(lastWordIndex, j);
                         let nextWord = nextWordRaw
                             .trim()
@@ -93,18 +92,18 @@ const resources_1 = require("../resources");
                 };
                 //Look through the data for this key
                 for (let j = 0; j < numResults; j++) {
-                    const nextItem = condensedResults[j].data;
-                    const nextItemLen = nextItem.length;
-                    const nextID = condensedResults[j].id;
-                    const nextThreshold = condensedResults[j].threshold;
+                    const nextItem = condensedResults[j];
+                    const nextItemData = nextItem.data;
+                    const nextID = nextItem.id;
+                    const nextThreshold = nextItem.threshold;
                     let lastWordIndex = 0;
                     let nextWord = '';
                     let name = false;
                     let ings = false;
                     //If this key is anywhere in the name, note it and skip to the ingredients
                     for (let k = 0; k <= nextThreshold; k++) {
-                        if (resources_1.VALID_SEPERATORS.includes(nextItem.charAt(k)) || k === nextThreshold) {
-                            nextWord = nextItem.slice(lastWordIndex, k)
+                        if (resources_1.VALID_SEPERATORS.includes(nextItemData.charAt(k)) || k === nextThreshold) {
+                            nextWord = nextItemData.slice(lastWordIndex, k)
                                 .trim()
                                 .replace(resources_1.SYMBOL_LIST, '');
                             lastWordIndex = ++k;
@@ -116,9 +115,9 @@ const resources_1 = require("../resources");
                     }
                     //If this word is anywhere in the ingredients, note it and stop searching
                     lastWordIndex = nextThreshold;
-                    for (let l = nextThreshold; l <= nextItemLen; l++) {
-                        if (resources_1.VALID_SEPERATORS.includes(nextItem.charAt(l)) || l === nextItemLen) {
-                            nextWord = nextItem.slice(lastWordIndex, l)
+                    for (let l = nextThreshold; l <= nextItemData.length; l++) {
+                        if (resources_1.VALID_SEPERATORS.includes(nextItemData.charAt(l)) || l === nextItemData.length) {
+                            nextWord = nextItemData.slice(lastWordIndex, l)
                                 .trim()
                                 .replace(resources_1.SYMBOL_LIST, '');
                             lastWordIndex = ++l;
