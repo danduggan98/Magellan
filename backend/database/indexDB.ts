@@ -3,7 +3,7 @@
 //
 
 import client from './connectDB';
-import { IGNORED_WORDS, ParseTerms } from '../resources';
+import { SYMBOL_LIST, VALID_SEPERATORS, IGNORED_WORDS } from '../resources';
 import { RecipeDataResult, RecipeDataCondensed, Index, IndexReference } from 'magellan';
 
 //Main indexing function - runs automatically
@@ -52,17 +52,30 @@ import { RecipeDataResult, RecipeDataCondensed, Index, IndexReference } from 'ma
 
         //Find and store all the unique words in our result
         process.stdout.write('  > Finding all unique words ... ');
+        const numResults = condensedResults.length;
+        let lastWordIndex = 0;
         let indexKeys: string[] = []; //Stores the unique words
 
-        for (let i = 0; i < condensedResults.length; i++) {
-            const nextItemData = condensedResults[i].data;
+        for (let i = 0; i < numResults; i++) {
+            const nextItem = condensedResults[i].data;
 
             //Isolate each word and store it if not seen yet
-            ParseTerms(nextItemData, (word) => {
-                if (!IGNORED_WORDS.includes(word) && !indexKeys.includes(word) && word !== '') {
-                    indexKeys.push(word);
+            for (let j = 0; j <= nextItem.length; j++) {
+                if (VALID_SEPERATORS.includes(nextItem.charAt(j)) || j === nextItem.length) {
+                    let nextWordRaw = nextItem.slice(lastWordIndex, j);
+                    let nextWord = nextWordRaw
+                        .trim()
+                        .replace(SYMBOL_LIST, '')
+                    ;
+                    lastWordIndex = ++j; //Move the index forward and skip the space
+                    
+                    //Add the word if unseen so far and not in our blacklist
+                    if (!IGNORED_WORDS.includes(nextWord) && !indexKeys.includes(nextWord) && nextWord !== '') {
+                        indexKeys.push(nextWord);
+                    }
                 }
-            });
+            }
+            lastWordIndex = 0;
         }
         console.log('done');
 
@@ -82,34 +95,51 @@ import { RecipeDataResult, RecipeDataCondensed, Index, IndexReference } from 'ma
             };
 
             //Look through the data for this key
-            for (let j = 0; j < condensedResults.length; j++) {
+            for (let j = 0; j < numResults; j++) {
                 const nextItem = condensedResults[j];
 
                 const nextItemData  = nextItem.data;
                 const nextID        = nextItem.id;
                 const nextThreshold = nextItem.threshold;
 
+                let lastWordIndex = 0;
+                let nextWord = '';
+
                 let name: boolean = false;
                 let ings: boolean = false;
 
-                //If this key is anywhere in the name, note it
-                ParseTerms(nextItemData, (word) => {
-                    if (word === nextKey) {
-                        name = true;
-                    }
-                });
+                //If this key is anywhere in the name, note it and skip to the ingredients
+                for (let k = 0; k <= nextThreshold; k++) {
+                    if (VALID_SEPERATORS.includes(nextItemData.charAt(k)) || k === nextThreshold) {
+                        nextWord = nextItemData.slice(lastWordIndex, k)
+                            .trim()
+                            .replace(SYMBOL_LIST, '')
+                        ;
+                        lastWordIndex = ++k;
 
-                //If this word is anywhere in the ingredients, note it
-                ParseTerms(
-                    nextItemData.slice(
-                        nextThreshold, nextItemData.length + 1
-                    ),
-                    (word) => {
-                        if (word === nextKey) {
-                            ings = true;
+                        if (nextWord === nextKey) {
+                            name = true;
+                            break;
                         }
                     }
-                );
+                }
+
+                //If this word is anywhere in the ingredients, note it and stop searching
+                lastWordIndex = nextThreshold;
+                for (let l = nextThreshold; l <= nextItemData.length; l++) {
+                    if (VALID_SEPERATORS.includes(nextItemData.charAt(l)) || l === nextItemData.length) {
+                            nextWord = nextItemData.slice(lastWordIndex, l)
+                            .trim()
+                            .replace(SYMBOL_LIST, '')
+                        ;
+                        lastWordIndex = ++l;
+
+                        if (nextWord === nextKey) {
+                            ings = true;
+                            break;
+                        }
+                    }
+                }
 
                 //Add the recipe to the index if the word was found anywhere
                 if (name || ings) {
