@@ -55,11 +55,32 @@ const SortByProperties = (values: any[], properties: string[]): void => {
     }
 }
 
+//Parses and isolates each word in a given string
+// Calls an externally defined callback function on each parsed word
+const ParseTerms = (source: string, callback: (word: string) => void): void => {
+    let lastWordIndex = 0;
+
+    for (let i = 0; i <= source.length; i++) {
+        if (VALID_SEPERATORS.includes(source.charAt(i)) || i === source.length) {
+    
+            //Isolate each word and clean it by removing all symbols, numbers, and trailing whitespace
+            let nextWord = source.slice(lastWordIndex, i);
+            let nextWordClean = nextWord
+                .trim()
+                .replace(SYMBOL_LIST, '')
+            ;
+            lastWordIndex = ++i;
+            callback(nextWordClean);
+        }
+    }
+}
+
 export {
     SYMBOL_LIST,
     VALID_SEPERATORS,
     IGNORED_WORDS,
     DATA_FILES,
     RemoveHtmlTags,
+    ParseTerms,
     SortByProperties
 };
