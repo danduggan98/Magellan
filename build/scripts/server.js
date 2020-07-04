@@ -199,6 +199,7 @@ app.get('/api/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0,
                         const name = element.recipeName.toLowerCase();
                         let termsPresent = 0;
                         let numWords = 0;
+                        let foundTerms = [];
                         //Determine the number of words in the recipe name
                         for (let i = 0; i <= name.length; i++) {
                             if (resources_1.VALID_SEPERATORS.includes(name.charAt(i)) || i === name.length) {
@@ -208,19 +209,23 @@ app.get('/api/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0,
                                     .replace(resources_1.SYMBOL_LIST, '');
                                 lastWordIndex = ++i;
                                 numWords++;
-                                let nextWordPos = terms.indexOf(nextWord);
-                                if (nextWordPos > -1) {
+                                //Check if the word is a search term we have not seen yet
+                                let nextWordPos = termsList.indexOf(nextWord);
+                                let alreadyFound = foundTerms.includes(nextWord);
+                                if (!alreadyFound && nextWordPos > -1) {
                                     termsPresent++;
                                     termsList.splice(nextWordPos, 1);
+                                    foundTerms.push(nextWord);
                                 }
                             }
                         }
                         //Add properties and round to 3 decimal places
                         element.accuracy = +((termsPresent * 1.0 / numTerms).toFixed(3));
                         element.brevity = +((termsPresent * 1.0 / numWords).toFixed(3));
+                        console.log('id:', element._id, ', acc:', element.accuracy, ', brev:', element.brevity);
                     }
                     //Add an 'ingredientCount' property
-                    // IngredientCount = How many of the ingredients listed are in the ingredient list?
+                    // IngredientCount = How many of the search terms are in the ingredient list?
                     else {
                         const ings = element.ingredients
                             .toString()
