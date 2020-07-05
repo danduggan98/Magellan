@@ -59,9 +59,11 @@ const SortByProperties = (values: any[], properties: string[]): void => {
 // Calls an externally defined callback function on each parsed word
 const ParseTerms = (source: string, callback: (word: string, idx: number) => void): void => {
     let lastWordIndex = 0;
+    let wordIdx = 0;
 
     for (let i = 0; i <= source.length; i++) {
         if (VALID_SEPERATORS.includes(source.charAt(i)) || i === source.length) {
+            wordIdx++;
     
             //Isolate each word and clean it by removing all symbols, numbers, and trailing whitespace
             let nextWord = source.slice(lastWordIndex, i);
@@ -70,7 +72,7 @@ const ParseTerms = (source: string, callback: (word: string, idx: number) => voi
                 .replace(SYMBOL_LIST, '')
             ;
             lastWordIndex = ++i;
-            callback(nextWordClean, i);
+            callback(nextWordClean, wordIdx);
         }
     }
 }
