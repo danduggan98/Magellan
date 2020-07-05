@@ -17,9 +17,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 //TO-DO
 // Finish search bar + search algorithm
-// (ADJACENCY PROP - for name) Prioritize items where the search terms are grouped in order (e.g. search for 'potato salad' = 'German Potato Salad' > 'Sweet Potato Pecan Salad')
-// (RAND PROP - for both) At the aboslute end, Sort items by a random number assign during the search to get more search variety
-// Make plurals and singulars give same results (e.g. sandwich vs. sandwiches, leaf vs. leaves, salad vs salads, etc.)
 // 'See all/more' option allows you to slide through sets of the data
 // Search card - cut off long titles with ellipses, but let hover extend it to see the whole thing
 // CACHE IMAGES IN PUBLIC FOLDER
@@ -173,7 +170,6 @@ app.get('/api/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0,
                     ? resources_1.SortByProperties(initialResults, ['inName', 'inIngs'])
                     : resources_1.SortByProperties(initialResults, ['inIngs', 'inName']);
                 const topResults = initialResults.slice(0, limit);
-                console.log('FIRST SORT:', topResults); //JUST FOR TESTING
                 //Retrieve all info about each result from the database
                 const resultIDs = topResults.map(element => new mongodb_1.ObjectID(element.id) //Save each id as an ObjectID
                 );
@@ -182,33 +178,49 @@ app.get('/api/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0,
                 //Add new properties to use in our final sort
                 const finalResults = dbResults.map(element => {
                     let termsList = parsedTerms.slice(); //Create a copy of the search input
-                    //Add 'accuracy' and 'brevity' properties
-                    // Accuracy = What portion of the search terms are in the name?
-                    // Brevity  = What percentage of the name is made of unique search terms?
+                    //Properties for name searches
+                    // - Accuracy  = What portion of the search terms are in the name?
+                    // - Brevity   = What percentage of the name is made of unique search terms?
+                    // - Adjacency = How far apart are the search terms within the name?
+                    // - Rand      = Random number to make items with identical scores appear in different orders each time
                     if (type === 'name') {
                         const name = element.recipeName.toLowerCase();
                         let termsPresent = 0;
                         let numWords = 0;
                         let foundTerms = [];
+                        let adjacencyIdx = -1;
+                        let maxDistance = 0;
                         //Determine the number of words in the recipe name
-                        resources_1.ParseTerms(name, (word) => {
+                        resources_1.ParseTerms(name, (word, curIdx) => {
                             numWords++;
                             //Check if the word is a search term we haven't seen yet
                             let nextWordPos = termsList.indexOf(word);
                             let alreadyFound = foundTerms.includes(word);
-                            if (!alreadyFound && nextWordPos > -1) {
+                            if (nextWordPos > -1 && !alreadyFound) {
+                                //Add the term to our list
                                 termsPresent++;
                                 termsList.splice(nextWordPos, 1);
                                 foundTerms.push(word);
+                                //Update/track adjacency information
+                                if (adjacencyIdx < 0)
+                                    adjacencyIdx = curIdx;
+                                let dist = curIdx - adjacencyIdx;
+                                if (dist > maxDistance)
+                                    maxDistance = dist;
+                                adjacencyIdx = curIdx;
                             }
                         });
                         //Add properties and round to 3 decimal places
                         element.accuracy = +((termsPresent * 1.0 / numTerms).toFixed(3));
                         element.brevity = +((termsPresent * 1.0 / numWords).toFixed(3));
-                        console.log('id:', element._id, ', acc:', element.accuracy, ', brev:', element.brevity);
+                        element.rand = Math.floor((Math.random() * 100) + 1);
+                        element.adjacency = (maxDistance === 0)
+                            ? 0.0
+                            : +((1.0 / maxDistance).toFixed(3));
                     }
-                    //Add an 'ingredientCount' property
-                    // IngredientCount = How many of the search terms are in the ingredient list?
+                    //Properties for ingredient searches
+                    // - Accuracy = What portion of the search terms are in the ingredient list?
+                    // - Rand = Random number to make items with identical scores appear in different orders each time
                     else {
                         const ings = element.ingredients
                             .toString()
@@ -221,19 +233,22 @@ app.get('/api/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0,
                                 termsList.splice(nextIngPos, 1);
                             }
                         });
-                        element.ingredientCount = ingsPresent;
-                        console.log(element._id, element.ingredientCount);
+                        element.accuracy = ingsPresent;
+                        element.rand = Math.floor((Math.random() * 100) + 1);
                     }
                     element._id = element._id.toString();
                     return element;
                 });
                 //Sort the final results based on the search type
                 type === 'name'
-                    ? resources_1.SortByProperties(finalResults, ['accuracy', 'brevity'])
-                    : resources_1.SortByProperties(finalResults, ['ingredientCount']);
-                //JUST FOR TESTING
+                    ? resources_1.SortByProperties(finalResults, ['accuracy', 'adjacency', 'brevity', 'rand'])
+                    : resources_1.SortByProperties(finalResults, ['accuracy', 'rand']);
+                //PRINT RESULTS FOR TESTING
                 console.log('\nRESULTS:');
-                finalResults.map(element => { console.log(element._id, ':', element.recipeName); });
+                finalResults.map(element => {
+                    console.log(element._id, ':', element.recipeName);
+                    console.log('Accuracy:', element.accuracy, ', Brevity:', element.brevity || 'N/A', ', Adjacency:', element.adjacency || 'N/A', ', Rand:', element.rand, '\n');
+                });
                 //Send back the top results as JSON
                 res.json({ searchResults: finalResults });
                 console.timeEnd('  > Search execution time');

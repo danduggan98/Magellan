@@ -57,15 +57,17 @@ exports.SortByProperties = SortByProperties;
 // Calls an externally defined callback function on each parsed word
 const ParseTerms = (source, callback) => {
     let lastWordIndex = 0;
+    let wordIdx = 0;
     for (let i = 0; i <= source.length; i++) {
         if (VALID_SEPERATORS.includes(source.charAt(i)) || i === source.length) {
+            wordIdx++;
             //Isolate each word and clean it by removing all symbols, numbers, and trailing whitespace
             let nextWord = source.slice(lastWordIndex, i);
             let nextWordClean = nextWord
                 .trim()
                 .replace(SYMBOL_LIST, '');
             lastWordIndex = ++i;
-            callback(nextWordClean);
+            callback(nextWordClean, wordIdx);
         }
     }
 };
