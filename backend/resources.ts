@@ -57,7 +57,7 @@ const SortByProperties = (values: any[], properties: string[]): void => {
 
 //Parses and isolates each word in a given string
 // Calls an externally defined callback function on each parsed word
-const ParseTerms = (source: string, callback: (word: string) => void): void => {
+const ParseTerms = (source: string, callback: (word: string, idx: number) => void): void => {
     let lastWordIndex = 0;
 
     for (let i = 0; i <= source.length; i++) {
@@ -70,7 +70,7 @@ const ParseTerms = (source: string, callback: (word: string) => void): void => {
                 .replace(SYMBOL_LIST, '')
             ;
             lastWordIndex = ++i;
-            callback(nextWordClean);
+            callback(nextWordClean, i);
         }
     }
 }
