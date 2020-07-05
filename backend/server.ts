@@ -183,7 +183,6 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
                     : SortByProperties(initialResults, ['inIngs', 'inName'])
                 ;
                 const topResults = initialResults.slice(0, limit);
-                console.log('FIRST SORT:', topResults); //JUST FOR TESTING
 
                 //Retrieve all info about each result from the database
                 const resultIDs = topResults.map(
@@ -197,10 +196,10 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
                     let termsList = parsedTerms.slice(); //Create a copy of the search input
 
                     //Properties for name searches
-                    // - Accuracy = What portion of the search terms are in the name?
-                    // - Brevity  = What percentage of the name is made of unique search terms?
+                    // - Accuracy  = What portion of the search terms are in the name?
+                    // - Brevity   = What percentage of the name is made of unique search terms?
                     // - Adjacency = How far apart are the search terms within the name?
-                    // - Rand = Random number to make items with identical scores appear in different orders each time
+                    // - Rand      = Random number to make items with identical scores appear in different orders each time
                     if (type === 'name') {
                         const name = element.recipeName.toLowerCase();
                         let termsPresent = 0;
@@ -269,14 +268,14 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
 
                 //Sort the final results based on the search type
                 type === 'name'
-                    ? SortByProperties(finalResults, ['accuracy', 'brevity', 'adjacency', 'rand'])
+                    ? SortByProperties(finalResults, ['accuracy', 'adjacency', 'brevity', 'rand'])
                     : SortByProperties(finalResults, ['accuracy', 'rand'])
                 ;
 
-                //JUST FOR TESTING
+                //PRINT RESULTS FOR TESTING
                 console.log('\nRESULTS:');
                 finalResults.map(element => {
-                    console.log(element._id, ':', element.recipeName)
+                    console.log(element._id, ':', element.recipeName);
                     console.log('Accuracy:', element.accuracy, ', Brevity:', element.brevity || 'N/A', ', Adjacency:', element.adjacency || 'N/A', ', Rand:', element.rand, '\n');
                 });
 
