@@ -26,9 +26,9 @@ export interface RecipeDataResult extends RecipeData {
     [key: string]:    string | string[][] | number | undefined,
     _id:              string,
     accuracy?:        number,
+    adjacency?:       number,
     brevity?:         number,
-    ingredientCount?: number,
-    rand?:            number
+    rand?:            number,
 }
 
 //Information about each JSON file to add recipes from
