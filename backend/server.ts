@@ -226,7 +226,8 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
                         //Add properties and round to 3 decimal places
                         element.accuracy = +((termsPresent * 1.0 / numTerms).toFixed(3));
                         element.brevity  = +((termsPresent * 1.0 / numWords).toFixed(3));
-                        console.log('id:', element._id, ', acc:', element.accuracy, ', brev:', element.brevity);
+                        element.rand = Math.floor((Math.random() * 100) + 1);
+                        console.log('id:', element._id, ', acc:', element.accuracy, ', brev:', element.brevity, ', rand:', element.rand);
                     }
 
                     //Add an 'ingredientCount' property
@@ -246,7 +247,8 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
                             }
                         });
                         element.ingredientCount = ingsPresent;
-                        console.log(element._id, element.ingredientCount);
+                        element.rand = Math.floor((Math.random() * 100) + 1);
+                        console.log(element._id, element.ingredientCount, element.rand);
                     }
 
                     element._id = element._id.toString();
@@ -255,8 +257,8 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
 
                 //Sort the final results based on the search type
                 type === 'name'
-                    ? SortByProperties(finalResults, ['accuracy', 'brevity'])
-                    : SortByProperties(finalResults, ['ingredientCount'])
+                    ? SortByProperties(finalResults, ['accuracy', 'brevity', 'rand'])
+                    : SortByProperties(finalResults, ['ingredientCount', 'rand'])
                 ;
 
                 //JUST FOR TESTING
