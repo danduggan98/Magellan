@@ -2,29 +2,6 @@
 // Web Server
 //
 
-//TO-DO
-// Finish search bar + search algorithm
-    // 'See all/more' option allows you to slide through sets of the data
-    // Search card - cut off long titles with ellipses, but let hover extend it to see the whole thing
-    // CACHE IMAGES IN PUBLIC FOLDER
-
-// USE FIGMA TO MAKE PAGES CLEANER
-// Change vs code format/line space settings so everything but JSON and YAML have 4 spaces
-// SCRAPE + ADD TASTE OF HOME, BON APPETIT, AND OTHERS
-// Name fixer should properly capitalize names with prefixes, e.g. 'McCargo', etc. (store prefix list in resources?)
-
-// HOST ON AMAZON!!!!!!!!!!!!!!
-// Use Passport for authentication
-// Recipe submission page
-// Sidebar with links (account, saved recipes, etc.)
-// Logins + saved recipes
-
-// Add unique keys to all react lists, ensure existing keys are unique
-// Change all css pixel sizes to REM
-// Let users change number of servings
-// Exclude ingredients
-// Vegan, gluten-free, etc. notices
-
 ////////// SETUP \\\\\\\\\\
 
 import express, { Request, Response } from 'express';
