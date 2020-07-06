@@ -14,6 +14,10 @@
     box-shadow: 3px 3px 8px grey;
 }
 
+#card:hover div{
+    white-space: normal;
+}
+
 #cardContents {
     height: 100%;
     display: flex;
@@ -21,12 +25,12 @@
     justify-content: space-between;
 }
 
-.expandableCard { 
-    transition: all .2s ease-in-out; 
+.expandableCard {
+    transition: all .1s ease-in-out;
 }
-    
+
 .expandableCard:hover { 
-    transform: scale(1.1); 
+    transform: scale(1.1);
 }
 
 #cardInfo {
@@ -50,9 +54,10 @@
     color: black;
     font-size: 20px;
     font-weight: 500;
+    padding-top: 9px;
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    padding-top: 9px;
 }
 
 #cardAuthor {
