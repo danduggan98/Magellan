@@ -21,6 +21,14 @@
     justify-content: space-between;
 }
 
+.expandableCard { 
+    transition: all .2s ease-in-out; 
+}
+    
+.expandableCard:hover { 
+    transform: scale(1.1); 
+}
+
 #cardInfo {
     height: 100%;
     width: 77%;
@@ -35,20 +43,21 @@
     display: flex;
     justify-content: space-between;
     flex-direction: row;
-    padding-bottom: 12px;
+    padding-bottom: 9px;
 }
 
 #cardRecipeName {
     color: black;
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 500;
     overflow: hidden;
-    padding-top: 12px;
+    text-overflow: ellipsis;
+    padding-top: 9px;
 }
 
 #cardAuthor {
     color: midnightblue;
-    width: 50%;
+    max-width: 50%;
 }
 
 #cardSource {
@@ -64,7 +73,7 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    width: 50%;
+    min-width: 50%;
 }
 
 #cardPhoto {
