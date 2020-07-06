@@ -23,7 +23,7 @@ export default class SearchCard extends Component<Props, State> {
         const link = `/recipe/${data._id}`;
 
         return (
-            <div id='card'>
+            <div id='card' className='expandableCard'>
                 <a className='cardRecipeLink'
                     target='_blank'
                     rel='noopener noreferrer'
