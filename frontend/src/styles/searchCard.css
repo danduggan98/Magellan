@@ -5,8 +5,8 @@
     height: auto;
     min-width: 300px;
     max-width: 100%;
-    min-height: 10px;
-    max-height: 100px;
+    min-height: 60px;
+    max-height: 150px;
     overflow: hidden;
 }
 
@@ -14,7 +14,7 @@
     box-shadow: 3px 3px 8px grey;
 }
 
-#card:hover div{
+#card:hover div {
     white-space: normal;
 }
 
@@ -39,7 +39,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding-left: 12px;
+    padding-left: 2%;
 }
 
 #secondaryDetails {
@@ -47,14 +47,15 @@
     display: flex;
     justify-content: space-between;
     flex-direction: row;
-    padding-bottom: 9px;
+    padding-top: 3%;
+    padding-bottom: 2%;
 }
 
 #cardRecipeName {
     color: black;
     font-size: 20px;
     font-weight: 500;
-    padding-top: 9px;
+    padding-top: 2%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
