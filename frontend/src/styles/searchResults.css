@@ -44,6 +44,7 @@
 
 .scrollButton {
     width: 50px;
+    cursor: pointer;
     background: transparent;
     border: none !important;
     text-align: center;
