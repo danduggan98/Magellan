@@ -11,6 +11,7 @@
 import fs from 'fs';
 import rootPath from 'app-root-path';
 import { RecipeData, DuplicateRecipe } from 'magellan';
+import { FixCharacterEncodings} from '../resources';
 
 // Main function - runs automatically
 (async function removeDuplicates() {
@@ -25,7 +26,7 @@ import { RecipeData, DuplicateRecipe } from 'magellan';
             let numRemoved = 0;
 
             const fileData: Buffer = fs.readFileSync(nextFilePath);
-            const jsonData = JSON.parse(fileData.toString());
+            const jsonData = JSON.parse(FixCharacterEncodings(fileData.toString()));
             let recipes: RecipeData[] = jsonData.data;
 
             console.log(`\n- Processing "${nextFile}"`);
@@ -121,7 +122,7 @@ import { RecipeData, DuplicateRecipe } from 'magellan';
 })();
 
 //Convert an author name from all caps to normal
-function fixAuthorName(name: string) {
+function fixAuthorName(name: string): string {
     let fixedName = name.toString().toLowerCase(); //Make lowercase
     fixedName = fixedName.charAt(0).toUpperCase() + fixedName.slice(1); //Capitalize first letter
 
