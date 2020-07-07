@@ -24,7 +24,6 @@
 #resultsList {
     display: grid;
     grid-template-columns: repeat(1, minmax(100px, 1fr));
-    grid-auto-rows: 1fr;
     gap: 1rem;
     margin-bottom: 25px;
 }
