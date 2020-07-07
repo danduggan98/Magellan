@@ -18,19 +18,18 @@
 #scrollLeftButton {
     text-align: center;
     font-size: 45px;
-    margin-right: 30px;
+    margin-right: 40px;
 }
 
 #resultsList {
     display: flex;
     flex-direction: column;
-    margin-bottom: 25px;
 }
 
 #scrollRightButton {
     text-align: center;
     font-size: 45px;
-    margin-left: 30px;
+    margin-left: 40px;
 }
 
 .scrollButton {
