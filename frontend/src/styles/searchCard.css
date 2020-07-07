@@ -3,15 +3,17 @@
     border-radius: 15px;
     width: auto;
     height: auto;
-    min-width: 300px;
-    max-width: 100%;
-    min-height: 100px;
-    max-height: 150px;
+    min-width: 500px;
+    max-width: 800px;
+    min-height: 85px;
+    max-height: 100px;
     overflow: hidden;
+    margin-bottom: 1rem;
 }
 
 #card:hover {
     box-shadow: 3px 3px 8px grey;
+    max-height: 150px;
 }
 
 #card:hover div {
@@ -53,7 +55,7 @@
 
 #cardRecipeName {
     color: black;
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 500;
     padding-top: 2%;
     white-space: nowrap;
