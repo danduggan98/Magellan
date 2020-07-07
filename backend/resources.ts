@@ -77,6 +77,18 @@ const ParseTerms = (source: string, callback: (word: string, idx: number) => voi
     }
 }
 
+//Convert character encodings to their actual character equivalents
+function FixCharacterEncodings(data: string): string {
+    let text = data
+        .replace(/&amp;/g,  '&')
+        .replace(/&lt;/g,   '<')
+        .replace(/&gt;/g,   '>')
+        .replace(/&quot;/g, `"`)
+        .replace(/&apos;/g, `'`)
+    ;
+    return text;
+}
+
 export {
     SYMBOL_LIST,
     VALID_SEPERATORS,
@@ -84,5 +96,6 @@ export {
     DATA_FILES,
     RemoveHtmlTags,
     ParseTerms,
-    SortByProperties
+    SortByProperties,
+    FixCharacterEncodings
 };
