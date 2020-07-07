@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import SearchCard from './searchCard';
-import { RecipeDataResult } from '../../../magellan'
+import { RecipeDataResult } from '../../../magellan';
 import '../styles/searchResults.css';
 
 interface Props {
@@ -9,6 +9,7 @@ interface Props {
 
 interface State {
     results: RecipeDataResult[],
+    currentResults: JSX.Element[],
     numResults: number,
     numResultsPerPage: number,
     lastPage: number,
@@ -20,6 +21,7 @@ export default class SearchResults extends Component<Props, State> {
         super(props);
         this.state = {
             results: props.data,
+            currentResults: [],
             numResults: 0,
             numResultsPerPage: 5, //Arbitrary
             lastPage: 0,
@@ -28,8 +30,8 @@ export default class SearchResults extends Component<Props, State> {
     }
 
     //Returns the recipes to show on the current page
-    updateCurrentResults = (): JSX.Element[] => {
-
+    updateCurrentResults = (): void => {
+        console.log('updating current results');
         //Calculate the range of results to use
         const curPage = this.state.currentPage;
         const maxResults = this.state.numResultsPerPage;
@@ -40,25 +42,32 @@ export default class SearchResults extends Component<Props, State> {
         console.log(firstIdx, secondIdx);
 
         //Turn them into search cards
-        const res = this.state.results;
-        const visibleResults = res.slice(firstIdx, secondIdx);
+        const visibleResults = this.state.results
+            .slice(firstIdx, secondIdx)
+            .map(recipe => (
+                <SearchCard info={recipe} />
+            )
+        );
 
-        return visibleResults.map(recipe => (
-            <SearchCard info={recipe} />
-        ));
+        this.setState({
+            currentResults: visibleResults}, () => {
+                console.log('visible results updated')
+            }
+        );
     }
 
-    goToPreviousPage = () => {
+    goToPreviousPage = (): void => {
         const curPage = this.state.currentPage;
 
         if (curPage > 1) {
             this.setState({
                 currentPage: curPage - 1
             });
+            this.updateCurrentResults();
         }
     }
 
-    goToNextPage = () => {
+    goToNextPage = (): void => {
         const curPage = this.state.currentPage;
         const lastPage = this.state.lastPage;
 
@@ -66,6 +75,7 @@ export default class SearchResults extends Component<Props, State> {
             this.setState({
                 currentPage: curPage + 1
             });
+            this.updateCurrentResults();
         }
     }
 
@@ -78,11 +88,11 @@ export default class SearchResults extends Component<Props, State> {
             numResults: numResults,
             lastPage: Math.ceil(numResults / pageDensity)
         });
+        this.updateCurrentResults();
     }
 
     render() {
-        const currentResults = this.updateCurrentResults();
-
+        console.log('rendering');
         return (
             <div id='wrapper'>
                 <div id='topResultsLabel'>
@@ -92,19 +102,25 @@ export default class SearchResults extends Component<Props, State> {
                 <div id='resultsContainer'>
                     <div id='scrollLeftButton'>
                         { this.state.currentPage > 1
-                            ? <button onClick={this.goToPreviousPage}>◀</button>
-                            : <p> </p>
+                            ? <button
+                                className='scrollButton'
+                                onClick={this.goToPreviousPage}
+                              >◀</button>
+                            : <div className='scrollPlaceholder'> </div>
                         }
                     </div>
 
                     <div id='resultsList'>
-                        {currentResults}
+                        {this.state.currentResults}
                     </div>
 
                     <div id='scrollRightButton'>
                         { this.state.currentPage < this.state.lastPage
-                            ? <button onClick={this.goToNextPage}>▶</button>
-                            : <p> </p>
+                            ? <button
+                                className='scrollButton'
+                                onClick={this.goToNextPage}
+                              >▶</button>
+                            : <div className='scrollPlaceholder'> </div>
                         }
                     </div>
                 </div>
