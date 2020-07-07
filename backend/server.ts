@@ -208,14 +208,14 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
                             }
                         });
 
-                        //Add properties and round to 3 decimal places
-                        element.accuracy  = +((termsPresent * 1.0 / numTerms).toFixed(3));
-                        element.brevity   = +((termsPresent * 1.0 / numWords).toFixed(3));
-                        element.rand      = Math.floor((Math.random() * 100) + 1);
+                        //Add properties
+                        element.accuracy  = (termsPresent * 1.0 / numTerms);
+                        element.brevity   = (termsPresent * 1.0 / numWords);
                         element.adjacency = (maxDistance === 0)
                             ? 0.0
-                            : +((1.0 / maxDistance).toFixed(3))
+                            : (1.0 / maxDistance)
                         ;
+                        element.rand      = Math.floor((Math.random() * 100) + 1);
                     }
 
                     //Properties for ingredient searches
