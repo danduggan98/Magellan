@@ -30,6 +30,7 @@ export default class SearchResults extends Component<Props, State> {
     //Returns the recipes to show on the current page
     updateCurrentResults = (): void => {
         console.log('updating current results');
+
         //Calculate the range of results to use
         const curPage = this.state.currentPage;
         const maxResults = this.state.numResultsPerPage;
@@ -48,36 +49,41 @@ export default class SearchResults extends Component<Props, State> {
         );
 
         this.setState({
-            currentResults: visibleResults}, () => {
-                console.log('visible results updated')
-            }
-        );
+            currentResults: visibleResults
+        }, () => {
+            console.log('visible results updated');
+            this.forceUpdate();
+        });
     }
 
     goToPreviousPage = (): void => {
-        console.log('going to previous page')
+        console.log('going to previous page');
+
         const curPage = this.state.currentPage;
 
         if (curPage > 1) {
             this.setState({
                 currentPage: curPage - 1
-            }, () => console.log('page num decremented')
-            );
-            this.updateCurrentResults();
+            }, () => {
+                console.log('page num decremented');
+                this.updateCurrentResults();
+            });
         }
     }
 
     goToNextPage = (): void => {
-        console.log('going to next page')
+        console.log('going to next page');
+
         const curPage = this.state.currentPage;
         const lastPage = this.state.lastPage;
 
         if (curPage < lastPage) {
             this.setState({
                 currentPage: curPage + 1
-            }, () => console.log('page num incremented')
-            );
-            this.updateCurrentResults();
+            }, () => {
+                console.log('page num incremented')
+                this.updateCurrentResults();
+            });
         }
     }
 
@@ -89,8 +95,9 @@ export default class SearchResults extends Component<Props, State> {
         this.setState({
             numResults: numResults,
             lastPage: Math.ceil(numResults / pageDensity)
+        }, () => {
+            this.updateCurrentResults();
         });
-        this.updateCurrentResults();
     }
 
     render() {
