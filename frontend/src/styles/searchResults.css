@@ -19,6 +19,11 @@
     text-align: center;
     font-size: 45px;
     margin-right: 40px;
+    transition: .1s;
+}
+
+#scrollLeftButton:active {
+    transform: translateX(-10px);
 }
 
 #resultsList {
@@ -30,6 +35,11 @@
     text-align: center;
     font-size: 45px;
     margin-left: 40px;
+    transition: .1s;
+}
+
+#scrollRightButton:active {
+    transform: translateX(10px);
 }
 
 .scrollButton {
@@ -44,10 +54,6 @@
 
 .scrollButton:hover {
     opacity: 1
-}
-
-.scrollButton:active {
-    transform: translateX(10px);
 }
 
 .scrollPlaceholder {
