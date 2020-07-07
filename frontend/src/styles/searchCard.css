@@ -6,7 +6,7 @@
     min-width: 500px;
     max-width: 800px;
     min-height: 85px;
-    max-height: 100px;
+    max-height: 90px;
     overflow: hidden;
     margin-bottom: 1rem;
 }
@@ -37,7 +37,7 @@
 
 #cardInfo {
     height: 100%;
-    width: 77%;
+    width: 78%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -85,7 +85,7 @@
 }
 
 #cardPhoto {
-    width: 18%;
+    width: 17%;
     height: 100%;
     border-left: 2px solid grey;
 }
