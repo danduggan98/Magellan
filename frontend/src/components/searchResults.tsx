@@ -8,7 +8,6 @@ interface Props {
 }
 
 interface State {
-    results: RecipeDataResult[],
     currentResults: JSX.Element[],
     numResults: number,
     numResultsPerPage: number,
@@ -20,7 +19,6 @@ export default class SearchResults extends Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
-            results: props.data,
             currentResults: [],
             numResults: 0,
             numResultsPerPage: 5, //Arbitrary
@@ -42,7 +40,7 @@ export default class SearchResults extends Component<Props, State> {
         console.log(firstIdx, secondIdx);
 
         //Turn them into search cards
-        const visibleResults = this.state.results
+        const visibleResults = this.props.data
             .slice(firstIdx, secondIdx)
             .map(recipe => (
                 <SearchCard info={recipe} />
@@ -57,31 +55,35 @@ export default class SearchResults extends Component<Props, State> {
     }
 
     goToPreviousPage = (): void => {
+        console.log('going to previous page')
         const curPage = this.state.currentPage;
 
         if (curPage > 1) {
             this.setState({
                 currentPage: curPage - 1
-            });
+            }, () => console.log('page num decremented')
+            );
             this.updateCurrentResults();
         }
     }
 
     goToNextPage = (): void => {
+        console.log('going to next page')
         const curPage = this.state.currentPage;
         const lastPage = this.state.lastPage;
 
         if (curPage < lastPage) {
             this.setState({
                 currentPage: curPage + 1
-            });
+            }, () => console.log('page num incremented')
+            );
             this.updateCurrentResults();
         }
     }
 
     //When the component loads, calculate the number of pages needed
     componentDidMount() {
-        const numResults = this.state.results.length;
+        const numResults = this.props.data.length;
         const pageDensity = this.state.numResultsPerPage;
         
         this.setState({
