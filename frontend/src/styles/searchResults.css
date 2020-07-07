@@ -4,7 +4,7 @@
     justify-content: space-evenly;
     align-items: center;
     margin: auto;
-    max-width: 1000px;
+    max-width: 100%;
     margin-top: 10px;
 }
 
@@ -18,7 +18,7 @@
 #scrollLeftButton {
     text-align: center;
     font-size: 45px;
-    padding-right: 20px;
+    margin-right: 30px;
 }
 
 #resultsList {
@@ -30,5 +30,28 @@
 #scrollRightButton {
     text-align: center;
     font-size: 45px;
-    padding-left: 20px;
+    margin-left: 30px;
+}
+
+.scrollButton {
+    width: 50px;
+    background: transparent;
+    border: none !important;
+    text-align: center;
+    font-size: 40px;
+    transition: 0.2s;
+    opacity: 0.8;
+}
+
+.scrollButton:hover {
+    opacity: 1
+}
+
+.scrollButton:active {
+    transform: translateX(10px);
+}
+
+.scrollPlaceholder {
+    width: 50px;
+    visibility: hidden;
 }
