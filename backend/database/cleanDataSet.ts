@@ -11,7 +11,7 @@
 import fs from 'fs';
 import rootPath from 'app-root-path';
 import { RecipeData, DuplicateRecipe } from 'magellan';
-import { FixCharacterEncodings} from '../resources';
+import { ParseTerms, FixCharacterEncodings} from '../resources';
 
 // Main function - runs automatically
 (async function removeDuplicates() {
@@ -121,16 +121,36 @@ import { FixCharacterEncodings} from '../resources';
     }
 })();
 
+//Used by the following function
+const NAME_PREFIXES = [`d'`, 'mc', 'mac', `o'`];
+
 //Convert an author name from all caps to normal
 function fixAuthorName(name: string): string {
-    let fixedName = name.toString().toLowerCase(); //Make lowercase
-    fixedName = fixedName.charAt(0).toUpperCase() + fixedName.slice(1); //Capitalize first letter
+    let fixedName = '';
 
-    //Capitalize the rest
-    for (let i = 0; i < fixedName.length; i++) {
-        if (fixedName.charAt(i) === ' ') {
-            fixedName = fixedName.slice(0, i+1) + fixedName.charAt(i+1).toUpperCase() + fixedName.slice(i+2);
+	ParseTerms(name.slice().toLowerCase(), (nameSection) => {
+        //Check if the name begins with a prefix
+        let hasPrefix = false;
+        let prefixLen = 0;
+
+        for (let i = 0; i < NAME_PREFIXES.length; i++) {
+            let nextPrefix = NAME_PREFIXES[i];
+
+            if (nameSection.includes(nextPrefix)) {
+                hasPrefix = true;
+                prefixLen = nextPrefix.length;
+                break;
+            }
         }
-    }
-    return fixedName;
+
+        hasPrefix === true
+            //Capitalize prefix and first letter after it
+            ? fixedName += nameSection.charAt(0).toUpperCase() + nameSection.slice(1, prefixLen)
+                        +  nameSection.charAt(prefixLen).toUpperCase() + nameSection.slice(prefixLen+1) + ' '
+
+            //Capitalize just the first letter
+            : fixedName += nameSection.charAt(0).toUpperCase() + nameSection.slice(1) + ' '
+        ;
+    })
+    return fixedName.trim();
 }
