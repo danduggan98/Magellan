@@ -36,6 +36,9 @@ const DATA_FILES: RecipeDataFile[] = [
     }*/
 ];
 
+//Used by the FixAuthorName function
+const NAME_PREFIXES = [`d'`, 'mc', 'mac', `o'`];
+
 //Used to find any HTML which might appear in a string
 const HTML_TAG_REGEX = /<div.*?>|<\/div>|<a.*?>|<\/a>|<img.*?>|<\/img>|<b.*?>|<\/b>|<p.*?>|<\/p>|<i.*?>|<\/i>|<span.*?>|<\/span>/g;
 
@@ -89,11 +92,14 @@ function FixCharacterEncodings(data: string): string {
     return text;
 }
 
+//\d+\/?\d*
+
 export {
     SYMBOL_LIST,
     VALID_SEPERATORS,
     IGNORED_WORDS,
     DATA_FILES,
+    NAME_PREFIXES,
     RemoveHtmlTags,
     ParseTerms,
     SortByProperties,
