@@ -29,11 +29,11 @@ const DATA_FILES = [
     {
         filePath: 'data/FoodNetwork/FoodNetworkDataClean.json',
         source: 'Food Network'
-    } /*,
+    },
     {
         filePath: 'data/TasteOfHome/TasteOfHomeDataClean.json',
-        source:   'Taste of Home'
-    }*/
+        source: 'Taste of Home'
+    }
 ];
 exports.DATA_FILES = DATA_FILES;
 //Used by the FixAuthorName function
