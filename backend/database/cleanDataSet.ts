@@ -11,7 +11,7 @@
 import fs from 'fs';
 import rootPath from 'app-root-path';
 import { RecipeData, DuplicateRecipe } from 'magellan';
-import { ParseTerms, FixCharacterEncodings} from '../resources';
+import { NAME_PREFIXES, ParseTerms, FixCharacterEncodings} from '../resources';
 
 // Main function - runs automatically
 (async function removeDuplicates() {
@@ -121,9 +121,6 @@ import { ParseTerms, FixCharacterEncodings} from '../resources';
     }
 })();
 
-//Used by the following function
-const NAME_PREFIXES = [`d'`, 'mc', 'mac', `o'`];
-
 //Convert an author name from all caps to normal
 function fixAuthorName(name: string): string {
     let fixedName = '';
@@ -152,5 +149,13 @@ function fixAuthorName(name: string): string {
             : fixedName += nameSection.charAt(0).toUpperCase() + nameSection.slice(1) + ' '
         ;
     })
-    return fixedName.trim();
+
+    //Fix suffixes
+    let finalName = fixedName
+        .replace('Jr', 'Jr.')
+        .replace('Sr', 'Sr.')
+        .replace('Dr', 'Dr.')
+        .trim()
+    ;
+    return finalName;
 }
