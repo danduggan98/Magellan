@@ -23,6 +23,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = __importDefault(require("fs"));
 const app_root_path_1 = __importDefault(require("app-root-path"));
+const resources_1 = require("../resources");
 // Main function - runs automatically
 (function removeDuplicates() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -35,7 +36,7 @@ const app_root_path_1 = __importDefault(require("app-root-path"));
                 const nextFilePath = `${app_root_path_1.default}/data/${folderName}/${nextFile}`;
                 let numRemoved = 0;
                 const fileData = fs_1.default.readFileSync(nextFilePath);
-                const jsonData = JSON.parse(fileData.toString());
+                const jsonData = JSON.parse(resources_1.FixCharacterEncodings(fileData.toString()));
                 let recipes = jsonData.data;
                 console.log(`\n- Processing "${nextFile}"`);
                 process.stdout.write(`  > Cleaning data now ...`);
@@ -118,13 +119,31 @@ const app_root_path_1 = __importDefault(require("app-root-path"));
 })();
 //Convert an author name from all caps to normal
 function fixAuthorName(name) {
-    let fixedName = name.toString().toLowerCase(); //Make lowercase
-    fixedName = fixedName.charAt(0).toUpperCase() + fixedName.slice(1); //Capitalize first letter
-    //Capitalize the rest
-    for (let i = 0; i < fixedName.length; i++) {
-        if (fixedName.charAt(i) === ' ') {
-            fixedName = fixedName.slice(0, i + 1) + fixedName.charAt(i + 1).toUpperCase() + fixedName.slice(i + 2);
+    let fixedName = '';
+    resources_1.ParseTerms(name.slice().toLowerCase(), (nameSection) => {
+        //Check if the name begins with a prefix
+        let hasPrefix = false;
+        let prefixLen = 0;
+        for (let i = 0; i < resources_1.NAME_PREFIXES.length; i++) {
+            let nextPrefix = resources_1.NAME_PREFIXES[i];
+            if (nameSection.includes(nextPrefix)) {
+                hasPrefix = true;
+                prefixLen = nextPrefix.length;
+                break;
+            }
         }
-    }
-    return fixedName;
+        hasPrefix === true
+            //Capitalize prefix and first letter after it
+            ? fixedName += nameSection.charAt(0).toUpperCase() + nameSection.slice(1, prefixLen)
+                + nameSection.charAt(prefixLen).toUpperCase() + nameSection.slice(prefixLen + 1) + ' '
+            //Capitalize just the first letter
+            : fixedName += nameSection.charAt(0).toUpperCase() + nameSection.slice(1) + ' ';
+    });
+    //Fix suffixes
+    let finalName = fixedName
+        .replace('Jr', 'Jr.')
+        .replace('Sr', 'Sr.')
+        .replace('Dr', 'Dr.')
+        .trim();
+    return finalName;
 }

@@ -15,25 +15,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-//TO-DO
-// Finish search bar + search algorithm
-// 'See all/more' option allows you to slide through sets of the data
-// Search card - cut off long titles with ellipses, but let hover extend it to see the whole thing
-// CACHE IMAGES IN PUBLIC FOLDER
-// USE FIGMA TO MAKE PAGES CLEANER
-// Change vs code format/line space settings so everything but JSON and YAML have 4 spaces
-// SCRAPE + ADD TASTE OF HOME, BON APPETIT, AND OTHERS
-// Name fixer should properly capitalize names with prefixes, e.g. 'McCargo', etc. (store prefix list in resources?)
-// HOST ON AMAZON!!!!!!!!!!!!!!
-// Use Passport for authentication
-// Recipe submission page
-// Sidebar with links (account, saved recipes, etc.)
-// Logins + saved recipes
-// Add unique keys to all react lists, ensure existing keys are unique
-// Change all css pixel sizes to REM
-// Let users change number of servings
-// Exclude ingredients
-// Vegan, gluten-free, etc. notices
 ////////// SETUP \\\\\\\\\\
 const express_1 = __importDefault(require("express"));
 const mongodb_1 = require("mongodb");
@@ -210,13 +191,13 @@ app.get('/api/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0,
                                 adjacencyIdx = curIdx;
                             }
                         });
-                        //Add properties and round to 3 decimal places
-                        element.accuracy = +((termsPresent * 1.0 / numTerms).toFixed(3));
-                        element.brevity = +((termsPresent * 1.0 / numWords).toFixed(3));
-                        element.rand = Math.floor((Math.random() * 100) + 1);
+                        //Add properties
+                        element.accuracy = (termsPresent * 1.0 / numTerms);
+                        element.brevity = (termsPresent * 1.0 / numWords);
                         element.adjacency = (maxDistance === 0)
                             ? 0.0
-                            : +((1.0 / maxDistance).toFixed(3));
+                            : (1.0 / maxDistance);
+                        element.rand = Math.floor((Math.random() * 100) + 1);
                     }
                     //Properties for ingredient searches
                     // - Accuracy = What portion of the search terms are in the ingredient list?

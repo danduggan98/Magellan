@@ -3,7 +3,7 @@
 // Useful constants and file names for use around the app
 //
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SortByProperties = exports.ParseTerms = exports.RemoveHtmlTags = exports.DATA_FILES = exports.IGNORED_WORDS = exports.VALID_SEPERATORS = exports.SYMBOL_LIST = void 0;
+exports.FixCharacterEncodings = exports.SortByProperties = exports.ParseTerms = exports.RemoveHtmlTags = exports.NAME_PREFIXES = exports.DATA_FILES = exports.IGNORED_WORDS = exports.VALID_SEPERATORS = exports.SYMBOL_LIST = void 0;
 //Regex containing all symbols
 const SYMBOL_LIST = /[~`!@#$%^&*()-_+={[}\]|\\:;'"<,>.?\/1234567890]+/g;
 exports.SYMBOL_LIST = SYMBOL_LIST;
@@ -36,6 +36,9 @@ const DATA_FILES = [
     }*/
 ];
 exports.DATA_FILES = DATA_FILES;
+//Used by the FixAuthorName function
+const NAME_PREFIXES = [`d'`, 'mc', 'mac', `o'`];
+exports.NAME_PREFIXES = NAME_PREFIXES;
 //Used to find any HTML which might appear in a string
 const HTML_TAG_REGEX = /<div.*?>|<\/div>|<a.*?>|<\/a>|<img.*?>|<\/img>|<b.*?>|<\/b>|<p.*?>|<\/p>|<i.*?>|<\/i>|<span.*?>|<\/span>/g;
 //Method to remove HTML content and whitespace from a string
@@ -72,3 +75,14 @@ const ParseTerms = (source, callback) => {
     }
 };
 exports.ParseTerms = ParseTerms;
+//Convert character encodings to their actual character equivalents
+function FixCharacterEncodings(data) {
+    let text = data
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, `"`)
+        .replace(/&apos;/g, `'`);
+    return text;
+}
+exports.FixCharacterEncodings = FixCharacterEncodings;
