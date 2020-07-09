@@ -68,8 +68,12 @@
     max-width: 43%;
 }
 
-#cardSource {
+.FNsource {
     color: darkgreen;
+}
+
+.TOHsource {
+    color: darkorchid;
 }
 
 #cardTotalTime {
