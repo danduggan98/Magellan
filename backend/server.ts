@@ -7,9 +7,10 @@
 import express, { Request, Response } from 'express';
 import { ObjectID, Collection } from 'mongodb'
 import path from 'path';
+import bcrypt from 'bcryptjs';
 import client from './database/connectDB';
 import { IGNORED_WORDS, EMAIL_REGEX, SortByProperties, ParseTerms } from './resources';
-import { RecipeData, RecipeDataResult, IndexResult, IndexReference } from 'magellan';
+import { RecipeData, RecipeDataResult, IndexResult, IndexReference, User } from 'magellan';
 
 //Constants
 const PORT = Number(process.env.PORT) || 5000;
@@ -18,8 +19,8 @@ const REACT_BUNDLE_PATH = path.resolve('./') + '/build/frontend';
 
 //Store persistent connections to our database collections
 let recipeCollection: Collection;
-let indexCollection: Collection;
-let usersCollection: Collection;
+let indexCollection:  Collection;
+let usersCollection:  Collection;
 
 //Automatically connect to database
 (async function connectToMongo() {
@@ -299,11 +300,32 @@ app.post('/register', async (req: Request, res: Response) => {
 
         //No errors -> try to register the user
         else {
+            //Look for the email in the database
+            const userExists = await usersCollection.findOne({ email: email });
+            if (userExists) {
+                errors.push({ err: 'Email already in use. Please use a different one' });
+                res.json(errors);
+            }
+            //Email not found - they can be added
+            else {
+                //Salt + hash the password
+                const salt   = await bcrypt.genSalt();
+                const pwHash = await bcrypt.hash(password, salt);
+                
+                const user: User = {
+                    email,
+                    password: pwHash
+                }
+
+                //Add the user, redirect to home page, and flash a message indicating success
+                await usersCollection.insertOne(user);
+
+            }
 
         }
     }
     catch (err) {
-        console.log('Error in registration', err);
+        console.log('Error in registration:', err);
     }
 });
 
