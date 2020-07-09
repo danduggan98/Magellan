@@ -17,6 +17,10 @@
         "rebuild_database": "cd build/scripts/database && node populateDB.js && node indexDB.js"
     },
     "dependencies": {
+        "@types/bcryptjs": "^2.4.2",
+        "@types/connect-flash": "0.0.35",
+        "@types/express-session": "^1.17.0",
+        "@types/passport": "^1.0.4",
         "app-root-path": "^3.0.0",
         "bcryptjs": "^2.4.3",
         "concurrently": "^5.1.0",
