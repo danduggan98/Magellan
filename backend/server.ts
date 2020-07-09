@@ -278,20 +278,21 @@ app.get('*', (req: Request, res: Response) => {
 ////////// FORM HANDLERS \\\\\\\\\\
 
 //Registration
-app.post('/register', async (req: Request, res: Response) => {
+app.post('/auth/register', async (req: Request, res: Response) => {
     try {
-        const { email, password, confirmPW } = req.body; //Retrieve the form inputs
+        const { email, password, confirmPassword } = req.body; //Retrieve the form inputs
+        console.log('recieved registration attempt:', email, password);
 
         //Check for errors and store any found
         let errors = [];
 
-        if (!email)     errors.push({ err: 'Please enter your email' });
-        if (!password)  errors.push({ err: 'Please enter a new password' });
-        if (!confirmPW) errors.push({ err: 'Please confirm your password' });
+        if (!email)           errors.push({ err: 'Please enter your email' });
+        if (!password)        errors.push({ err: 'Please enter a new password' });
+        if (!confirmPassword) errors.push({ err: 'Please confirm your password' });
 
-        if (password.length < 8)      errors.push({ err: 'Your password must contain at least 8 characters' });
-        if (password !== confirmPW)   errors.push({ err: 'Both passwords must match' });
-        if (!EMAIL_REGEX.test(email)) errors.push({ err: 'Invalid email. Make sure it is spelled correctly or try another one' });
+        if (password.length < 8)          errors.push({ err: 'Your password must contain at least 8 characters' });
+        if (password !== confirmPassword) errors.push({ err: 'Both passwords must match' });
+        if (!EMAIL_REGEX.test(email))     errors.push({ err: 'Invalid email. Make sure it is spelled correctly or try another one' });
 
         //If errors remain, send them to the page to be displayed
         if (errors.length) {
@@ -319,9 +320,8 @@ app.post('/register', async (req: Request, res: Response) => {
 
                 //Add the user, redirect to home page, and flash a message indicating success
                 await usersCollection.insertOne(user);
-
+                res.redirect('/login');
             }
-
         }
     }
     catch (err) {
@@ -330,7 +330,7 @@ app.post('/register', async (req: Request, res: Response) => {
 });
 
 //Login requests
-app.post('/login', async (req: Request) => {
+app.post('auth/login', async (req: Request) => {
     try {
         const username = req.body.username;
         const password = req.body.password;
