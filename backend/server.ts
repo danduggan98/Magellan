@@ -38,9 +38,10 @@ let usersCollection:  Collection;
     }
 })();
 
-//Set up Express app to serve static React pages
+//Set up Express app
 const app = express();
-app.use(express.static(REACT_BUNDLE_PATH));
+app.use(express.static(REACT_BUNDLE_PATH)); //Serve static React pages
+app.use(express.urlencoded({ extended: true })); //Body parser
 
 ////////// PAGES \\\\\\\\\\
 
