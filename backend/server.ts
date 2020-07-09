@@ -8,7 +8,7 @@ import express, { Request, Response } from 'express';
 import { ObjectID, Collection } from 'mongodb'
 import path from 'path';
 import client from './database/connectDB';
-import { IGNORED_WORDS, SortByProperties, ParseTerms } from './resources';
+import { IGNORED_WORDS, EMAIL_REGEX, SortByProperties, ParseTerms } from './resources';
 import { RecipeData, RecipeDataResult, IndexResult, IndexReference } from 'magellan';
 
 //Constants
@@ -19,6 +19,7 @@ const REACT_BUNDLE_PATH = path.resolve('./') + '/build/frontend';
 //Store persistent connections to our database collections
 let recipeCollection: Collection;
 let indexCollection: Collection;
+let usersCollection: Collection;
 
 //Automatically connect to database
 (async function connectToMongo() {
@@ -29,6 +30,7 @@ let indexCollection: Collection;
         //Save connections to the collections we will use later
         recipeCollection = database.db('recipeData').collection('recipes');
         indexCollection  = database.db('recipeData').collection('index');
+        usersCollection  = database.db('userData').collection('users');
     }
     catch (err) {
         console.log('Error in connectToMongo:', err)
@@ -80,7 +82,7 @@ app.get('/api/recipe/:recipeid', async (req: Request, res: Response) => {
         }
     }
     catch (err) {
-        console.log('Error in recipe route:', err)
+        console.log('Error in recipe route:', err);
     }
 });
 
@@ -274,6 +276,37 @@ app.get('*', (req: Request, res: Response) => {
 
 ////////// FORM HANDLERS \\\\\\\\\\
 
+//Registration
+app.post('/register', async (req: Request, res: Response) => {
+    try {
+        const { email, password, confirmPW } = req.body; //Retrieve the form inputs
+
+        //Check for errors and store any found
+        let errors = [];
+
+        if (!email)     errors.push({ err: 'Please enter your email' });
+        if (!password)  errors.push({ err: 'Please enter a new password' });
+        if (!confirmPW) errors.push({ err: 'Please confirm your password' });
+
+        if (password.length < 8)      errors.push({ err: 'Your password must contain at least 8 characters' });
+        if (password !== confirmPW)   errors.push({ err: 'Both passwords must match' });
+        if (!EMAIL_REGEX.test(email)) errors.push({ err: 'Invalid email. Make sure it is spelled correctly or try another one' });
+
+        //If errors remain, send them to the page to be displayed
+        if (errors.length) {
+            res.json(errors);
+        }
+
+        //No errors -> try to register the user
+        else {
+
+        }
+    }
+    catch (err) {
+        console.log('Error in registration', err);
+    }
+});
+
 //Login requests
 app.post('/login', async (req: Request) => {
     try {
@@ -281,7 +314,7 @@ app.post('/login', async (req: Request) => {
         const password = req.body.password;
     }
     catch (err) {
-        console.log('Error in login route:', err)
+        console.log('Error in login', err);
     }
 });
 
