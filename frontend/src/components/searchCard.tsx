@@ -22,6 +22,18 @@ export default class SearchCard extends Component<Props, State> {
         const data = this.state.recipe;
         const link = `/recipe/${data._id}`;
 
+        //Select the appropriate class so we can give each source a unique color
+        let src = '';
+        
+        switch(data.source) {
+            case ("Food Network"):
+                src = "FNsource";
+                break;
+            case ("Taste of Home"):
+                src = "TOHsource";
+                break;
+        }
+
         return (
             <div id='card' className='expandableCard'>
                 <a className='cardRecipeLink'
@@ -32,10 +44,24 @@ export default class SearchCard extends Component<Props, State> {
                         <div id='cardInfo'>
                             <div id='cardRecipeName'>{data.recipeName}</div>
                             <div id='secondaryDetails'>
-                                <div id='cardAuthor'>by {data.author}</div>
+                                { data.author
+                                    ? <div id='cardAuthor'>by {data.author}</div>
+                                    : <p></p>
+                                }
+
                                 <div id='tertiaryDetails'>
-                                    <div id='cardSource'>from {data.source}</div>
-                                    <div id='cardTotalTime'>{data.totalTime}</div>
+                                    { data.source
+                                        ? <div id='cardSource' className={src}>
+                                            from {data.source}
+                                          </div>
+                                        : <p></p>
+                                    }
+
+                                    { data.totalTime
+                                        ? <div id='cardTotalTime'>{data.totalTime}</div>
+                                        : <p></p>
+                                    }
+                                    
                                 </div>
                             </div>
                         </div>
