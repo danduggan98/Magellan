@@ -84,3 +84,11 @@ export interface TimeData {
     activeTime:    string,
     cookTime:      string
 }
+
+//Stores user information
+export interface User {
+    [key: string]: string | string[] | undefined,
+    email:         string,
+    password:      string,
+    savedRecipes?: string[]
+}
