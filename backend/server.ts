@@ -291,9 +291,9 @@ app.post('/auth/register', async (req: Request, res: Response) => {
         if (!password)        errors.push({ err: 'Please enter a new password' });
         if (!confirmPassword) errors.push({ err: 'Please confirm your password' });
 
-        if (password.length < 8)          errors.push({ err: 'Your password must contain at least 8 characters' });
-        if (password !== confirmPassword) errors.push({ err: 'Both passwords must match' });
-        if (!EMAIL_REGEX.test(email))     errors.push({ err: 'Invalid email. Make sure it is spelled correctly or try another one' });
+        if (password && password.length < 8)   errors.push({ err: 'Your password must contain at least 8 characters' });
+        if (password !== confirmPassword)      errors.push({ err: 'Both passwords must match' });
+        if (email && !EMAIL_REGEX.test(email)) errors.push({ err: 'Invalid email. Make sure it is spelled correctly or try another one' });
 
         //If errors remain, send them to the page to be displayed
         if (errors.length) {
@@ -305,7 +305,7 @@ app.post('/auth/register', async (req: Request, res: Response) => {
             //Look for the email in the database
             const userExists = await usersCollection.findOne({ email: email });
             if (userExists) {
-                errors.push({ err: 'Email already in use. Please use a different one' });
+                errors.push({ err: 'Email already in use. Please try a different one' });
                 res.json(errors);
             }
             //Email not found - they can be added
