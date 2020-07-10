@@ -8,6 +8,7 @@ import express, { Request, Response } from 'express';
 import { ObjectID, Collection } from 'mongodb'
 import path from 'path';
 import bcrypt from 'bcryptjs';
+import cors from 'cors';
 import client from './database/connectDB';
 import { IGNORED_WORDS, EMAIL_REGEX, SortByProperties, ParseTerms } from './resources';
 import { RecipeData, RecipeDataResult, IndexResult, IndexReference, User } from 'magellan';
@@ -42,6 +43,7 @@ let usersCollection:  Collection;
 const app = express();
 app.use(express.static(REACT_BUNDLE_PATH)); //Serve static React pages
 app.use(express.urlencoded({ extended: true })); //Body parser
+app.use(cors());
 
 ////////// PAGES \\\\\\\\\\
 
@@ -282,7 +284,7 @@ app.get('*', (req: Request, res: Response) => {
 app.post('/auth/register', async (req: Request, res: Response) => {
     try {
         const { email, password, confirmPassword } = req.body; //Retrieve the form inputs
-        console.log('recieved registration attempt:', email, password);
+        console.log('Server recieved', email, password, confirmPassword);
 
         //Check for errors and store any found
         let errors = [];
@@ -304,10 +306,12 @@ app.post('/auth/register', async (req: Request, res: Response) => {
         else {
             //Look for the email in the database
             const userExists = await usersCollection.findOne({ email: email });
+
             if (userExists) {
                 errors.push({ err: 'Email already in use. Please try a different one' });
                 res.json(errors);
             }
+
             //Email not found - they can be added
             else {
                 //Salt + hash the password
