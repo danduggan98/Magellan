@@ -25,14 +25,21 @@ export default class Register extends Component {
     //Submit the form and save any errors that might have returned
     submitPage = (event: React.FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
-        console.log('VALUES SENT TO SUBMITPAGE:', JSON.stringify(this.state))
+
+        const inputs = JSON.stringify({
+            email:           this.state.email,
+            password:        this.state.password,
+            confirmPassword: this.state.confirmPassword
+        });
+        console.log('VALUES SENT TO SUBMITPAGE:', inputs)
+
         const options = {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(this.state)
+            body: inputs
         };
 
         try {
@@ -40,7 +47,7 @@ export default class Register extends Component {
                 console.log('fetching results')
                 const response  = await fetch('/auth/register', options);
                 const errors = await response.json();
-                console.log('results:', errors)
+                console.log('results from server:', errors)
 
                 this.setState({
                     errors: errors.toString()
