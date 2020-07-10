@@ -45,13 +45,16 @@ export default class Register extends Component {
         try {
             (async() => {
                 console.log('fetching results')
-                const response  = await fetch('/auth/register', options);
-                const errors = await response.json();
-                console.log('results from server:', errors)
+                console.log('options at fetch time', options)
+                const response = await fetch('/auth/register', options);
+                const errs: string[] = await response.json();
+                console.log('results from server:', errs);
 
                 this.setState({
-                    errors: errors.toString()
-                })
+                    errors: errs.map(
+                        err => err.toString()
+                    )
+                });
             })();
         }
         catch (err) {
