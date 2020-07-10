@@ -2,22 +2,54 @@ import React, { Component } from 'react';
 import '../styles/register.css';
 
 interface State {
-    emailInput: string,
-    passwordInput: string,
-    confirmPasswordInput: string
+    email: string,
+    password: string,
+    confirmPassword: string,
+    errors: string[]
 };
 
 export default class Register extends Component {
     state: State = {
-        emailInput: '',
-        passwordInput: '',
-        confirmPasswordInput: ''
+        email: '',
+        password: '',
+        confirmPassword: '',
+        errors: []
     };
 
     //Store the most recent inputs in state
-    updateInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    updateInput = (event: React.ChangeEvent<HTMLInputElement>): void => {
         let { id, value } = event.currentTarget;
         this.setState({ [id]: value });
+    }
+
+    //Submit the form and save any errors that might have returned
+    submitPage = (event: React.FormEvent<HTMLFormElement>): void => {
+        event.preventDefault();
+        console.log('VALUES SENT TO SUBMITPAGE:', JSON.stringify(this.state))
+        const options = {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(this.state)
+        };
+
+        try {
+            (async() => {
+                console.log('fetching results')
+                const response  = await fetch('/auth/register', options);
+                const errors = await response.json();
+                console.log('results:', errors)
+
+                this.setState({
+                    errors: errors.toString()
+                })
+            })();
+        }
+        catch (err) {
+            console.log('Error submitting registration form:', err);
+        }
     }
 
     render() {
@@ -27,58 +59,65 @@ export default class Register extends Component {
 
                 <form
                     name='registerForm'
-                    action='/auth/register'
-                    method='POST'>
+                    onSubmit={this.submitPage}>
+
+                    <div>ERRORS:
+                        {
+                        this.state.errors.length
+                            ? this.state.errors
+                            : ''
+                        }
+                    </div>
 
                     <div id='formWrapper'>
                         <label
                             id='emailLabel'
                             className='label'
-                            htmlFor='emailInput'>
+                            htmlFor='email'>
                                 Email Address:
                         </label>
                         <input
                             className='input'
-                            id='emailInput'
+                            id='email'
                             name='email'
                             type='text'
                             autoComplete='off'
                             placeholder='Email Address'
-                            value={this.state.emailInput}
+                            value={this.state.email}
                             onChange={this.updateInput}>
                         </input>
 
                         <label
                             id='passwordLabel'
                             className='label'
-                            htmlFor='passwordInput'>
+                            htmlFor='password'>
                                 Password:
                         </label>
                         <input
                             className='input'
-                            id='passwordInput'
+                            id='password'
                             name='password'
                             type='password'
                             autoComplete='off'
                             placeholder='Password'
-                            value={this.state.passwordInput}
+                            value={this.state.password}
                             onChange={this.updateInput}>
                         </input>
 
                         <label
                             id='confirmPasswordLabel'
                             className='label'
-                            htmlFor='confirmPasswordInput'>
+                            htmlFor='confirmPassword'>
                                 Confirm Password:
                         </label>
                         <input
                             className='input'
-                            id='confirmPasswordInput'
+                            id='confirmPassword'
                             name='confirmPassword'
                             type='password'
                             autoComplete='off'
                             placeholder='Confirm Password'
-                            value={this.state.confirmPasswordInput}
+                            value={this.state.confirmPassword}
                             onChange={this.updateInput}>
                         </input>
                     </div>
