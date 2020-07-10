@@ -31,7 +31,6 @@ export default class Register extends Component {
             password:        this.state.password,
             confirmPassword: this.state.confirmPassword
         });
-        console.log('VALUES SENT TO SUBMITPAGE:', inputs)
 
         const options = {
             method: 'POST',
@@ -44,16 +43,13 @@ export default class Register extends Component {
 
         try {
             (async() => {
-                console.log('fetching results')
-                console.log('options at fetch time', options)
                 const response = await fetch('/auth/register', options);
-                const errs: string[] = await response.json();
-                console.log('results from server:', errs);
+                const errors: string[] = await response.json();
+                
+                if (!errors.length) console.log('SUCCESS! USER ADDED!');
 
                 this.setState({
-                    errors: errs.map(
-                        err => err.toString()
-                    )
+                    errors
                 });
             })();
         }
