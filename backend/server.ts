@@ -8,7 +8,6 @@ import express, { Request, Response } from 'express';
 import { ObjectID, Collection } from 'mongodb'
 import path from 'path';
 import bcrypt from 'bcryptjs';
-import cors from 'cors';
 import client from './database/connectDB';
 import { IGNORED_WORDS, EMAIL_REGEX, SortByProperties, ParseTerms } from './resources';
 import { RecipeData, RecipeDataResult, IndexResult, IndexReference, User } from 'magellan';
@@ -42,8 +41,7 @@ let usersCollection:  Collection;
 //Set up Express app
 const app = express();
 app.use(express.static(REACT_BUNDLE_PATH)); //Serve static React pages
-app.use(express.urlencoded({ extended: true })); //Body parser
-app.use(cors());
+app.use(express.json()); //Body parser
 
 ////////// PAGES \\\\\\\\\\
 
@@ -284,7 +282,6 @@ app.get('*', (req: Request, res: Response) => {
 app.post('/auth/register', async (req: Request, res: Response) => {
     try {
         const { email, password, confirmPassword } = req.body; //Retrieve the form inputs
-        console.log('Server recieved', email, password, confirmPassword);
 
         //Check for errors and store any found
         let errors: string[] = [];
@@ -323,7 +320,7 @@ app.post('/auth/register', async (req: Request, res: Response) => {
                     password: pwHash
                 }
 
-                //Add the user, redirect to home page, and flash a message indicating success
+                //Add the user and redirect to home page
                 await usersCollection.insertOne(user);
                 res.redirect('/login');
             }
