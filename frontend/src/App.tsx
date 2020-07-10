@@ -26,6 +26,10 @@ export default function App() {
           <Link to='/login' className='loginButton'>
             Log In
           </Link>
+
+          <Link to='/register' className='registerButton'>
+            Register
+          </Link>
         </div>
 
         <Switch>
