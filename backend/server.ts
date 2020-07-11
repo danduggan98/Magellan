@@ -384,13 +384,19 @@ app.post('/auth/login', async (req: Request, res: Response) => {
             //Hash the given password
             const pwHash = await bcrypt.hash(password, userSalt);
 
-            //Search for the user and redirect if the credentials match
+            //Search for the user and create a session if the credentials match
             const user: User | null = await usersCollection.findOne({
                 email: email,
                 password: pwHash
             });
 
-            if (!user) {
+            if (user) { //Create a session
+                if (req.session) {
+                    req.session.loggedIn = true;
+                    req.session.email = email;
+                }
+            }
+            else {
                 errors.push('Incorrect password. Please try again');
             }
             res.json(errors);
@@ -398,6 +404,18 @@ app.post('/auth/login', async (req: Request, res: Response) => {
     }
     catch (err) {
         console.log('Error in login:', err);
+    }
+});
+
+//Login requests
+app.get('/auth/logout', (req: Request, res: Response) => {
+    let errors: string[] = [];
+    
+    if (req.session && req.session.loggedIn) {
+        req.session.destroy((err) => {
+            if (err) errors.push(err);
+            res.json(errors);
+        });
     }
 });
 
