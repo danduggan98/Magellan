@@ -90,6 +90,5 @@ export interface User {
     [key: string]: string | string[] | undefined,
     email:         string,
     password:      string,
-    salt:          string,
     savedRecipes?: string[]
 }
