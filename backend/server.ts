@@ -410,7 +410,7 @@ app.post('/auth/login', async (req: Request, res: Response) => {
 //Login requests
 app.get('/auth/logout', (req: Request, res: Response) => {
     let errors: string[] = [];
-    
+
     if (req.session && req.session.loggedIn) {
         req.session.destroy((err) => {
             if (err) errors.push(err);
@@ -422,7 +422,7 @@ app.get('/auth/logout', (req: Request, res: Response) => {
 ////////// ERROR PAGES \\\\\\\\\\
 
 //Handle 404 errors
-app.use((req, res) => {
+app.use((req: Request, res: Response) => {
     res.status(404).send('Error 404 - Page Not Found');
 });
 
