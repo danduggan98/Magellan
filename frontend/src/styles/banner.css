@@ -1,0 +1,32 @@
+#logoBanner {
+    border-bottom: 1px solid black;
+    border-width: 3px;
+    margin-bottom: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .loginButton {
+    color: black;
+    font-size: large;
+    font-weight: bold;
+    text-decoration: none;
+    margin-right: 12px;
+  }
+  
+  .loginButton:visited {
+    color: inherit;
+  }
+  
+  .logo {
+    font-size: xx-large;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-weight: 1000;
+    color: black;
+    text-decoration: none;
+  }
+  
+  .logo:visited {
+    color: inherit;
+  }
