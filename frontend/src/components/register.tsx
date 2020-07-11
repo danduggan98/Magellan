@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 import '../styles/register.css';
 
 interface State {
@@ -138,6 +138,13 @@ export default class Register extends Component {
                             value={this.state.confirmPassword}
                             onChange={this.updateInput}>
                         </input>
+                    </div>
+
+                    <div id='registerLink'>
+                        Already have an account?
+                        <Link to='/login'>
+                            Log in here
+                        </Link>
                     </div>
 
                     <div id='submitButtonWrapper'>
