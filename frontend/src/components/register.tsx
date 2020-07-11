@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
+import { Redirect } from 'react-router-dom';
 import '../styles/register.css';
 
 interface State {
     email: string,
     password: string,
     confirmPassword: string,
-    errors: string[]
+    errors: string[],
+    redirectAfterSumbit: boolean
 };
 
 export default class Register extends Component {
@@ -13,7 +15,8 @@ export default class Register extends Component {
         email: '',
         password: '',
         confirmPassword: '',
-        errors: []
+        errors: [],
+        redirectAfterSumbit: false
     };
 
     //Store the most recent inputs in state
@@ -46,11 +49,16 @@ export default class Register extends Component {
                 const response = await fetch('/auth/register', options);
                 const errors: string[] = await response.json();
                 
-                if (!errors.length) console.log('SUCCESS! USER ADDED!');
-
-                this.setState({
-                    errors
-                });
+                if (!errors.length) {
+                    this.setState({
+                        redirectAfterSumbit: true
+                    });
+                }
+                else {
+                    this.setState({
+                        errors
+                    });
+                }
             })();
         }
         catch (err) {
@@ -59,6 +67,10 @@ export default class Register extends Component {
     }
 
     render() {
+        if (this.state.redirectAfterSumbit) {
+            return (<Redirect to='/login' />);
+        }
+
         return (
             <div id='registerWrapper'>
                 <div id='registerHeader'>Create an account</div>
