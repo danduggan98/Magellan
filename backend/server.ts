@@ -297,9 +297,9 @@ app.post('/auth/register', async (req: Request, res: Response) => {
                 errors.push('Invalid email. Make sure it is spelled correctly or try another one');
             }
             else {
-                const userExists: User | null = await usersCollection.findOne({ email: email });
+                const user: User | null = await usersCollection.findOne({ email: email });
 
-                if (userExists) {
+                if (user) {
                     errors.push('Email already in use. Please try a different one');
                 }
             }
@@ -334,15 +334,14 @@ app.post('/auth/register', async (req: Request, res: Response) => {
             const salt   = await bcrypt.genSalt();
             const pwHash = await bcrypt.hash(password, salt);
             
-            const user: User = {
+            const newUser: User = {
                 email,
                 password: pwHash,
-                salt,
                 savedRecipes: []
             }
 
             //Add the user and redirect to home page
-            await usersCollection.insertOne(user);
+            await usersCollection.insertOne(newUser);
             res.json(errors);
         }
     }
@@ -361,10 +360,10 @@ app.post('/auth/login', async (req: Request, res: Response) => {
         let userSalt: string = '';
 
         if (email) {
-            const userExists: User | null = await usersCollection.findOne({ email: email });
+            const user: User | null = await usersCollection.findOne({ email: email });
 
-            if (userExists) {
-                userSalt = userExists.salt;
+            if (user) {
+                userSalt = bcrypt.getSalt(user.password);
             }
             else {
                 errors.push('Email not found. Make sure it is spelled correctly or try another one');
@@ -386,12 +385,14 @@ app.post('/auth/login', async (req: Request, res: Response) => {
             const pwHash = await bcrypt.hash(password, userSalt);
 
             //Search for the user and redirect if the credentials match
-            const validated: User | null = await usersCollection.findOne({ 
+            const user: User | null = await usersCollection.findOne({
                 email: email,
                 password: pwHash
             });
 
-            if (!validated) errors.push('Incorrect password. Please try again');
+            if (!user) {
+                errors.push('Incorrect password. Please try again');
+            }
             res.json(errors);
         }
     }
