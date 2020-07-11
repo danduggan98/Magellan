@@ -5,7 +5,7 @@
 ////////// SETUP \\\\\\\\\\
 
 import express, { Request, Response } from 'express';
-import { ObjectID, Collection } from 'mongodb'
+import { ObjectID, Collection } from 'mongodb';
 import path from 'path';
 import bcrypt from 'bcryptjs';
 import session from 'express-session';
@@ -297,7 +297,8 @@ app.post('/auth/register', async (req: Request, res: Response) => {
                 errors.push('Invalid email. Make sure it is spelled correctly or try another one');
             }
             else {
-                const userExists = await usersCollection.findOne({ email: email });
+                const userExists: User | null = await usersCollection.findOne({ email: email });
+
                 if (userExists) {
                     errors.push('Email already in use. Please try a different one');
                 }
@@ -336,6 +337,7 @@ app.post('/auth/register', async (req: Request, res: Response) => {
             const user: User = {
                 email,
                 password: pwHash,
+                salt,
                 savedRecipes: []
             }
 
@@ -350,13 +352,51 @@ app.post('/auth/register', async (req: Request, res: Response) => {
 });
 
 //Login requests
-app.post('auth/login', async (req: Request) => {
+app.post('auth/login', async (req: Request, res: Response) => {
     try {
-        const username = req.body.username;
-        const password = req.body.password;
+        const { email, password } = req.body; //Retrieve the form inputs
+
+        //Check for errors and store any found
+        let errors: string[] = [];
+        let userSalt: string = '';
+
+        if (email) {
+            const userExists: User | null = await usersCollection.findOne({ email: email });
+
+            if (userExists) {
+                userSalt = userExists.salt;
+            }
+            else {
+                errors.push('Email not found. Make sure it is spelled correctly or try another one');
+            }
+        }
+        else {
+            errors.push('Please enter your email');
+        }
+
+        if (!password) {
+            errors.push('Please enter your password');
+        }
+
+        if (errors.length) {
+            res.json(errors);
+        }
+        else {
+            //Hash the given password
+            const pwHash = await bcrypt.hash(password, userSalt);
+
+            //Search for the user and redirect if the credentials match
+            const validated: User | null = await usersCollection.findOne({ 
+                email: email,
+                password: pwHash
+            });
+
+            if (!validated) errors.push('Incorrect password. Please try again');
+            res.json(errors);
+        }
     }
     catch (err) {
-        console.log('Error in login', err);
+        console.log('Error in login:', err);
     }
 });
 
