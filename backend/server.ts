@@ -8,8 +8,9 @@ import express, { Request, Response } from 'express';
 import { ObjectID, Collection } from 'mongodb'
 import path from 'path';
 import bcrypt from 'bcryptjs';
+import session from 'express-session';
 import client from './database/connectDB';
-import { IGNORED_WORDS, EMAIL_REGEX, SortByProperties, ParseTerms } from './resources';
+import { IGNORED_WORDS, EMAIL_REGEX, SortByProperties, ParseTerms, RandomString } from './resources';
 import { RecipeData, RecipeDataResult, IndexResult, IndexReference, User } from 'magellan';
 
 //Constants
@@ -42,6 +43,11 @@ let usersCollection:  Collection;
 const app = express();
 app.use(express.static(REACT_BUNDLE_PATH)); //Serve static React pages
 app.use(express.json()); //Body parser
+app.use(session({ //Track sessions
+    secret: RandomString(10),
+    resave: true,
+    saveUninitialized: true
+}));
 
 ////////// PAGES \\\\\\\\\\
 
