@@ -1,4 +1,5 @@
 import React from 'react';
+import Banner from './components/banner';
 import Recipe from './components/recipe';
 import Home from './components/home';
 import Register from './components/register';
@@ -7,7 +8,6 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link,
   Redirect
 } from 'react-router-dom';
 
@@ -18,15 +18,7 @@ export default function App() {
     <div>
       <Router>
 
-        <div id='logoBanner'>
-          <Link to='/home' className='logo'>
-            MAGELLAN
-          </Link>
-
-          <Link to='/login' className='loginButton'>
-            Log In
-          </Link>
-        </div>
+        <Banner />
 
         <Switch>
           <Route path={'/recipe/:recipeid'} component={Recipe} />
