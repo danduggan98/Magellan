@@ -87,7 +87,7 @@ export default class Register extends Component {
                         }
                     </div>
 
-                    <div id='formWrapper'>
+                    <div id='inputWrapper'>
                         <label
                             id='emailLabel'
                             className='label'
