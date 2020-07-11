@@ -84,7 +84,7 @@ const ParseTerms = (source: string, callback: (word: string, idx: number) => voi
 }
 
 //Convert character encodings to their actual character equivalents
-function FixCharacterEncodings(data: string): string {
+const FixCharacterEncodings = (data: string): string => {
     let text = data
         .replace(/&amp;/g,  '&')
         .replace(/&lt;/g,   '<')
@@ -93,6 +93,15 @@ function FixCharacterEncodings(data: string): string {
         .replace(/&apos;/g, `'`)
     ;
     return text;
+}
+
+const RandomString = (size: number): string => {
+    let chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    let str = '';
+    for (let i = 0; i < size; i++) {
+        str += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return str;
 }
 
 //\d+\/?\d*
@@ -107,5 +116,6 @@ export {
     RemoveHtmlTags,
     ParseTerms,
     SortByProperties,
-    FixCharacterEncodings
+    FixCharacterEncodings,
+    RandomString
 };
