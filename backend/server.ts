@@ -352,7 +352,7 @@ app.post('/auth/register', async (req: Request, res: Response) => {
 });
 
 //Login requests
-app.post('auth/login', async (req: Request, res: Response) => {
+app.post('/auth/login', async (req: Request, res: Response) => {
     try {
         const { email, password } = req.body; //Retrieve the form inputs
 
