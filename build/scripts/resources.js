@@ -3,7 +3,7 @@
 // Useful constants and file names for use around the app
 //
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FixCharacterEncodings = exports.SortByProperties = exports.ParseTerms = exports.RemoveHtmlTags = exports.NAME_PREFIXES = exports.DATA_FILES = exports.IGNORED_WORDS = exports.VALID_SEPERATORS = exports.SYMBOL_LIST = void 0;
+exports.RandomString = exports.FixCharacterEncodings = exports.SortByProperties = exports.ParseTerms = exports.RemoveHtmlTags = exports.EMAIL_REGEX = exports.NAME_PREFIXES = exports.DATA_FILES = exports.IGNORED_WORDS = exports.VALID_SEPERATORS = exports.SYMBOL_LIST = void 0;
 //Regex containing all symbols
 const SYMBOL_LIST = /[~`!@#$%^&*()-_+={[}\]|\\:;'"<,>.?\/1234567890]+/g;
 exports.SYMBOL_LIST = SYMBOL_LIST;
@@ -41,6 +41,9 @@ const NAME_PREFIXES = [`d'`, 'mc', 'mac', `o'`];
 exports.NAME_PREFIXES = NAME_PREFIXES;
 //Used to find any HTML which might appear in a string
 const HTML_TAG_REGEX = /<div.*?>|<\/div>|<a.*?>|<\/a>|<img.*?>|<\/img>|<b.*?>|<\/b>|<p.*?>|<\/p>|<i.*?>|<\/i>|<span.*?>|<\/span>/g;
+//Finds valid emails
+const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+exports.EMAIL_REGEX = EMAIL_REGEX;
 //Method to remove HTML content and whitespace from a string
 const RemoveHtmlTags = (str) => {
     return str.replace(HTML_TAG_REGEX, '').trim();
@@ -76,7 +79,7 @@ const ParseTerms = (source, callback) => {
 };
 exports.ParseTerms = ParseTerms;
 //Convert character encodings to their actual character equivalents
-function FixCharacterEncodings(data) {
+const FixCharacterEncodings = (data) => {
     let text = data
         .replace(/&amp;/g, '&')
         .replace(/&lt;/g, '<')
@@ -84,5 +87,14 @@ function FixCharacterEncodings(data) {
         .replace(/&quot;/g, `"`)
         .replace(/&apos;/g, `'`);
     return text;
-}
+};
 exports.FixCharacterEncodings = FixCharacterEncodings;
+const RandomString = (size) => {
+    let chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    let str = '';
+    for (let i = 0; i < size; i++) {
+        str += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return str;
+};
+exports.RandomString = RandomString;

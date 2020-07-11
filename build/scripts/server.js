@@ -19,6 +19,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const mongodb_1 = require("mongodb");
 const path_1 = __importDefault(require("path"));
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const express_session_1 = __importDefault(require("express-session"));
 const connectDB_1 = __importDefault(require("./database/connectDB"));
 const resources_1 = require("./resources");
 //Constants
@@ -28,6 +30,7 @@ const REACT_BUNDLE_PATH = path_1.default.resolve('./') + '/build/frontend';
 //Store persistent connections to our database collections
 let recipeCollection;
 let indexCollection;
+let usersCollection;
 //Automatically connect to database
 (function connectToMongo() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -37,15 +40,22 @@ let indexCollection;
             //Save connections to the collections we will use later
             recipeCollection = database.db('recipeData').collection('recipes');
             indexCollection = database.db('recipeData').collection('index');
+            usersCollection = database.db('userData').collection('users');
         }
         catch (err) {
             console.log('Error in connectToMongo:', err);
         }
     });
 })();
-//Set up Express app to serve static React pages
+//Set up Express app
 const app = express_1.default();
-app.use(express_1.default.static(REACT_BUNDLE_PATH));
+app.use(express_1.default.static(REACT_BUNDLE_PATH)); //Serve static React pages
+app.use(express_1.default.json()); //Body parser
+app.use(express_session_1.default({
+    secret: resources_1.RandomString(10),
+    resave: true,
+    saveUninitialized: true
+}));
 ////////// PAGES \\\\\\\\\\
 //Load a recipe
 app.get('/api/recipe/:recipeid', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -245,14 +255,105 @@ app.get('*', (req, res) => {
     res.sendFile(REACT_BUNDLE_PATH + '/index.html');
 });
 ////////// FORM HANDLERS \\\\\\\\\\
-//Login requests
-app.post('/login', (req) => __awaiter(void 0, void 0, void 0, function* () {
+//Registration
+app.post('/auth/register', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const username = req.body.username;
-        const password = req.body.password;
+        const { email, password, confirmPassword } = req.body; //Retrieve the form inputs
+        //Check for errors and store any found
+        let errors = [];
+        if (email) {
+            if (!resources_1.EMAIL_REGEX.test(email)) {
+                errors.push('Invalid email. Make sure it is spelled correctly or try another one');
+            }
+            else {
+                const userExists = yield usersCollection.findOne({ email: email });
+                if (userExists) {
+                    errors.push('Email already in use. Please try a different one');
+                }
+            }
+        }
+        else {
+            errors.push('Please enter your email');
+        }
+        if (password) {
+            if (password.length < 8) {
+                errors.push('Your password must contain at least 8 characters');
+            }
+            else {
+                if (!confirmPassword) {
+                    errors.push('Please confirm your password');
+                }
+                else if (password !== confirmPassword) {
+                    errors.push('Both passwords must match');
+                }
+            }
+        }
+        else {
+            errors.push('Please enter a new password');
+        }
+        //If there were errors, send them to the page. Otherwise, register the user
+        if (errors.length) {
+            res.json(errors);
+        }
+        else {
+            //Salt + hash the password
+            const salt = yield bcryptjs_1.default.genSalt();
+            const pwHash = yield bcryptjs_1.default.hash(password, salt);
+            const user = {
+                email,
+                password: pwHash,
+                salt,
+                savedRecipes: []
+            };
+            //Add the user and redirect to home page
+            yield usersCollection.insertOne(user);
+            res.json(errors);
+        }
     }
     catch (err) {
-        console.log('Error in login route:', err);
+        console.log('Error in registration:', err);
+    }
+}));
+//Login requests
+app.post('/auth/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { email, password } = req.body; //Retrieve the form inputs
+        //Check for errors and store any found
+        let errors = [];
+        let userSalt = '';
+        if (email) {
+            const userExists = yield usersCollection.findOne({ email: email });
+            if (userExists) {
+                userSalt = userExists.salt;
+            }
+            else {
+                errors.push('Email not found. Make sure it is spelled correctly or try another one');
+            }
+        }
+        else {
+            errors.push('Please enter your email');
+        }
+        if (!password) {
+            errors.push('Please enter your password');
+        }
+        if (errors.length) {
+            res.json(errors);
+        }
+        else {
+            //Hash the given password
+            const pwHash = yield bcryptjs_1.default.hash(password, userSalt);
+            //Search for the user and redirect if the credentials match
+            const validated = yield usersCollection.findOne({
+                email: email,
+                password: pwHash
+            });
+            if (!validated)
+                errors.push('Incorrect password. Please try again');
+            res.json(errors);
+        }
+    }
+    catch (err) {
+        console.log('Error in login:', err);
     }
 }));
 ////////// ERROR PAGES \\\\\\\\\\
