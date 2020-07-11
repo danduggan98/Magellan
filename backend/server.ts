@@ -34,7 +34,7 @@ let usersCollection:  Collection;
         usersCollection  = database.db('userData').collection('users');
     }
     catch (err) {
-        console.log('Error in connectToMongo:', err)
+        console.log('Error in connectToMongo:', err);
     }
 })();
 
@@ -286,44 +286,56 @@ app.post('/auth/register', async (req: Request, res: Response) => {
         //Check for errors and store any found
         let errors: string[] = [];
 
-        if (!email)           errors.push('Please enter your email');
-        if (!password)        errors.push('Please enter a new password');
-        if (!confirmPassword) errors.push('Please confirm your password');
+        if (email) {
+            if (!EMAIL_REGEX.test(email)) {
+                errors.push('Invalid email. Make sure it is spelled correctly or try another one');
+            }
+            else {
+                const userExists = await usersCollection.findOne({ email: email });
+                if (userExists) {
+                    errors.push('Email already in use. Please try a different one');
+                }
+            }
+        }
+        else {
+            errors.push('Please enter your email');
+        }
 
-        if (password && password.length < 8)   errors.push('Your password must contain at least 8 characters');
-        if (password !== confirmPassword)      errors.push('Both passwords must match');
-        if (email && !EMAIL_REGEX.test(email)) errors.push('Invalid email. Make sure it is spelled correctly or try another one');
+        if (password) {
+            if (password.length < 8) {
+                errors.push('Your password must contain at least 8 characters');
+            }
+            else {
+                if (!confirmPassword) {
+                    errors.push('Please confirm your password');
+                }
+                else if (password !== confirmPassword) {
+                    errors.push('Both passwords must match');
+                }
+            }
+        }
+        else {
+            errors.push('Please enter a new password');
+        }
 
-        //If errors remain, send them to the page to be displayed
+        //If there were errors, send them to the page. Otherwise, register the user
         if (errors.length) {
             res.json(errors);
         }
-
-        //No errors -> try to register the user
         else {
-            //Look for the email in the database
-            const userExists = await usersCollection.findOne({ email: email });
-
-            if (userExists) {
-                errors.push('Email already in use. Please try a different one');
-                res.json(errors);
+            //Salt + hash the password
+            const salt   = await bcrypt.genSalt();
+            const pwHash = await bcrypt.hash(password, salt);
+            
+            const user: User = {
+                email,
+                password: pwHash,
+                savedRecipes: []
             }
 
-            //Email not found - they can be added
-            else {
-                //Salt + hash the password
-                const salt   = await bcrypt.genSalt();
-                const pwHash = await bcrypt.hash(password, salt);
-                
-                const user: User = {
-                    email,
-                    password: pwHash
-                }
-
-                //Add the user and redirect to home page
-                await usersCollection.insertOne(user);
-                res.redirect('/login');
-            }
+            //Add the user and redirect to home page
+            await usersCollection.insertOne(user);
+            res.json(errors);
         }
     }
     catch (err) {
