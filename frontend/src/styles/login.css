@@ -4,44 +4,26 @@
     font-weight: bolder;
 }
 
+.input {
+    width: 100%;
+    height: 40px;
+    font-size: larger;
+    border: 1px solid black;
+    border-radius: 10px;
+    padding-left: 10px;
+    margin-bottom: 20px;
+}
+
+.label {
+    display: inline-block;
+    font-size: large;
+    margin-bottom: 5px;
+}
+
 #inputWrapper {
     max-width: 600px;
     margin: auto;
     margin-top: 15px;
-}
-
-#usernameLabel {
-    display: inline-block;
-    font-size: large;
-    margin-bottom: 5px;
-}
-
-#usernameInput {
-    width: 100%;
-    height: 40px;
-    font-size: larger;
-    border: 1px solid black;
-    border-radius: 10px;
-    padding-left: 10px;
-}
-
-#passwordInputWrapper {
-    margin-top: 15px;
-}
-
-#passwordLabel {
-    display: inline-block;
-    font-size: large;
-    margin-bottom: 5px;
-}
-
-#passwordInput {
-    width: 100%;
-    height: 40px;
-    font-size: larger;
-    border: 1px solid black;
-    border-radius: 10px;
-    padding-left: 10px;
 }
 
 #submitButtonWrapper {
