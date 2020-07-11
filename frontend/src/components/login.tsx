@@ -1,15 +1,20 @@
 import React, { Component } from 'react';
+import { Redirect } from 'react-router-dom';
 import '../styles/login.css';
 
 interface State {
-    usernameInput: string,
-    passwordInput: string
+    email: string,
+    password: string,
+    errors: string[],
+    redirectAfterSumbit: boolean
 };
 
 export default class Login extends Component {
     state: State = {
-        usernameInput: '',
-        passwordInput: ''
+        email: '',
+        password: '',
+        errors: [],
+        redirectAfterSumbit: false
     };
 
     //Store the most recent inputs in state
@@ -19,12 +24,7 @@ export default class Login extends Component {
     }
 
     submitPage = () => {
-        if (!this.state.usernameInput) {
-            console.log('PLEASE ENTER USERNAME');
-        }
-        if (!this.state.passwordInput) {
-            console.log('PLEASE ENTER PASSWORD');
-        }
+        
     }
 
     render() {
@@ -34,35 +34,50 @@ export default class Login extends Component {
 
                 <form
                     name='loginForm'
-                    target='hiddenFrame'
                     onSubmit={this.submitPage}>
 
-                    <div id='inputWrapper'>
-                        <div id='usernameInputWrapper'>
-                            <label id='usernameLabel' htmlFor='usernameInput'>Username:</label>
-                            <input
-                                name='UN'
-                                id='usernameInput'
-                                type='text'
-                                autoComplete='off'
-                                placeholder='Username'
-                                value={this.state.usernameInput}
-                                onChange={this.updateInput}>
-                            </input>
-                        </div>
+                    <div>ERRORS:
+                        {
+                        this.state.errors.length
+                            ? this.state.errors
+                            : ''
+                        }
+                    </div>
 
-                        <div id='passwordInputWrapper'>
-                            <label id='passwordLabel' htmlFor='passwordInput'>Password:</label>
-                            <input
-                                name='PW'
-                                id='passwordInput'
-                                type='password'
-                                autoComplete='off'
-                                placeholder='Password'
-                                value={this.state.passwordInput}
-                                onChange={this.updateInput}>
-                            </input>
-                        </div>
+                    <div id='inputWrapper'>
+                        <label
+                            id='emailLabel'
+                            className='label'
+                            htmlFor='email'>
+                                Email Address:
+                        </label>
+                        <input
+                            className='input'
+                            id='email'
+                            name='email'
+                            type='text'
+                            autoComplete='off'
+                            placeholder='Email Address'
+                            value={this.state.email}
+                            onChange={this.updateInput}>
+                        </input>
+
+                        <label
+                            id='passwordLabel'
+                            className='label'
+                            htmlFor='password'>
+                                Password:
+                        </label>
+                        <input
+                            className='input'
+                            id='password'
+                            name='password'
+                            type='password'
+                            autoComplete='off'
+                            placeholder='Password'
+                            value={this.state.password}
+                            onChange={this.updateInput}>
+                        </input>
                     </div>
 
                     <div id='submitButtonWrapper'>
@@ -73,9 +88,7 @@ export default class Login extends Component {
                         </button>
                     </div>
                 </form>
-
-                {/* Form redirects to this invisible iframe, keeping it on the same page */}
-                <iframe name='hiddenFrame' id='iframe' title='hidden'></iframe>
+                
             </div>
         );
     }
