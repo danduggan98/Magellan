@@ -9,6 +9,7 @@ import { ObjectID, Collection } from 'mongodb';
 import path from 'path';
 import bcrypt from 'bcryptjs';
 import session from 'express-session';
+import jwt from 'jsonwebtoken';
 import client from './database/connectDB';
 import { IGNORED_WORDS, EMAIL_REGEX, SortByProperties, ParseTerms, RandomString } from './resources';
 import { RecipeData, RecipeDataResult, IndexResult, IndexReference, User } from 'magellan';
@@ -390,16 +391,22 @@ app.post('/auth/login', async (req: Request, res: Response) => {
                 password: pwHash
             });
 
-            if (user) { //Create a session
+            //Valid submission - create a session and an authentication token
+            if (user) {
                 if (req.session) {
                     req.session.loggedIn = true;
                     req.session.email = email;
                 }
+                const jwt_token = jwt.sign(
+                    { email: email },
+                    process.env.JWT_SECRET || RandomString(12)
+                );
+                res.header('auth_token', jwt_token).json(errors); //Include the token in our json response
             }
             else {
                 errors.push('Incorrect password. Please try again');
+                res.json(errors);
             }
-            res.json(errors);
         }
     }
     catch (err) {
