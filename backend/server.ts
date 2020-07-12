@@ -8,7 +8,6 @@ import express, { Request, Response } from 'express';
 import { ObjectID, Collection } from 'mongodb';
 import path from 'path';
 import bcrypt from 'bcryptjs';
-import session from 'express-session';
 import jwt from 'jsonwebtoken';
 import client from './database/connectDB';
 import { IGNORED_WORDS, EMAIL_REGEX, SortByProperties, ParseTerms, RandomString } from './resources';
@@ -33,7 +32,7 @@ let usersCollection:  Collection;
         //Save connections to the collections we will use later
         recipeCollection = database.db('recipeData').collection('recipes');
         indexCollection  = database.db('recipeData').collection('index');
-        usersCollection  = database.db('userData').collection('users');
+        usersCollection  = database.db('userData'  ).collection('users');
     }
     catch (err) {
         console.log('Error in connectToMongo:', err);
@@ -44,11 +43,6 @@ let usersCollection:  Collection;
 const app = express();
 app.use(express.static(REACT_BUNDLE_PATH)); //Serve static React pages
 app.use(express.json()); //Body parser
-app.use(session({ //Track sessions
-    secret: RandomString(10),
-    resave: true,
-    saveUninitialized: true
-}));
 
 ////////// PAGES \\\\\\\\\\
 
@@ -393,15 +387,11 @@ app.post('/auth/login', async (req: Request, res: Response) => {
 
             //Valid submission - create a session and an authentication token
             if (user) {
-                if (req.session) {
-                    req.session.loggedIn = true;
-                    req.session.email = email;
-                }
                 const jwt_token = jwt.sign(
                     { email: email },
                     process.env.JWT_SECRET || RandomString(12)
                 );
-                res.header('auth_token', jwt_token).json(errors); //Include the token in our json response
+                res.header('auth-token', jwt_token).json(errors); //Include the token in our json response
             }
             else {
                 errors.push('Incorrect password. Please try again');
