@@ -20,7 +20,7 @@ const express_1 = __importDefault(require("express"));
 const mongodb_1 = require("mongodb");
 const path_1 = __importDefault(require("path"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
-const express_session_1 = __importDefault(require("express-session"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const connectDB_1 = __importDefault(require("./database/connectDB"));
 const resources_1 = require("./resources");
 //Constants
@@ -51,11 +51,6 @@ let usersCollection;
 const app = express_1.default();
 app.use(express_1.default.static(REACT_BUNDLE_PATH)); //Serve static React pages
 app.use(express_1.default.json()); //Body parser
-app.use(express_session_1.default({
-    secret: resources_1.RandomString(10),
-    resave: true,
-    saveUninitialized: true
-}));
 ////////// PAGES \\\\\\\\\\
 //Load a recipe
 app.get('/api/recipe/:recipeid', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -266,8 +261,8 @@ app.post('/auth/register', (req, res) => __awaiter(void 0, void 0, void 0, funct
                 errors.push('Invalid email. Make sure it is spelled correctly or try another one');
             }
             else {
-                const userExists = yield usersCollection.findOne({ email: email });
-                if (userExists) {
+                const user = yield usersCollection.findOne({ email: email });
+                if (user) {
                     errors.push('Email already in use. Please try a different one');
                 }
             }
@@ -299,14 +294,13 @@ app.post('/auth/register', (req, res) => __awaiter(void 0, void 0, void 0, funct
             //Salt + hash the password
             const salt = yield bcryptjs_1.default.genSalt();
             const pwHash = yield bcryptjs_1.default.hash(password, salt);
-            const user = {
+            const newUser = {
                 email,
                 password: pwHash,
-                salt,
                 savedRecipes: []
             };
             //Add the user and redirect to home page
-            yield usersCollection.insertOne(user);
+            yield usersCollection.insertOne(newUser);
             res.json(errors);
         }
     }
@@ -322,9 +316,9 @@ app.post('/auth/login', (req, res) => __awaiter(void 0, void 0, void 0, function
         let errors = [];
         let userSalt = '';
         if (email) {
-            const userExists = yield usersCollection.findOne({ email: email });
-            if (userExists) {
-                userSalt = userExists.salt;
+            const user = yield usersCollection.findOne({ email: email });
+            if (user) {
+                userSalt = bcryptjs_1.default.getSalt(user.password);
             }
             else {
                 errors.push('Email not found. Make sure it is spelled correctly or try another one');
@@ -342,20 +336,37 @@ app.post('/auth/login', (req, res) => __awaiter(void 0, void 0, void 0, function
         else {
             //Hash the given password
             const pwHash = yield bcryptjs_1.default.hash(password, userSalt);
-            //Search for the user and redirect if the credentials match
-            const validated = yield usersCollection.findOne({
+            //Search for the user and create a session if the credentials match
+            const user = yield usersCollection.findOne({
                 email: email,
                 password: pwHash
             });
-            if (!validated)
+            //Valid submission - create a session and an authentication token
+            if (user) {
+                const jwt_token = jsonwebtoken_1.default.sign({ email: email }, process.env.JWT_SECRET || resources_1.RandomString(12));
+                res.header('auth-token', jwt_token).json(errors); //Include the token in our json response
+            }
+            else {
                 errors.push('Incorrect password. Please try again');
-            res.json(errors);
+                res.json(errors);
+            }
         }
     }
     catch (err) {
         console.log('Error in login:', err);
     }
 }));
+//Login requests
+app.get('/auth/logout', (req, res) => {
+    let errors = [];
+    if (req.session && req.session.loggedIn) {
+        req.session.destroy((err) => {
+            if (err)
+                errors.push(err);
+            res.json(errors);
+        });
+    }
+});
 ////////// ERROR PAGES \\\\\\\\\\
 //Handle 404 errors
 app.use((req, res) => {
