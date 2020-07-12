@@ -1,9 +1,9 @@
 import jwt from 'jsonwebtoken';
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 
 //Middleware to validate JSON web tokens in requests
 // Add to any api route to make it private
-export default function verifyJWT(req: Request, res: Response): Response | void {
+export default function verifyJWT(req: Request, res: Response, next: NextFunction): Response | void {
     try {
         const token = req.header('auth-token');
         if (!token) {
@@ -15,7 +15,10 @@ export default function verifyJWT(req: Request, res: Response): Response | void 
         const secret = process.env.JWT_SECRET || '';
         const validToken = jwt.verify(token, secret);
 
-        if (validToken) req.user = validToken; //Store the email from the token in our request
+        if (validToken) {
+            req.user = validToken; //Store the email from the token in our request
+            next();
+        }
         else {
             return res.status(401).json({
                 auth_error: 'Access denied - invalid token'
