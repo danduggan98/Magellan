@@ -414,12 +414,13 @@ app.post('/auth/login', async (req: Request, res: Response) => {
 app.get('/auth/logout', (req: Request, res: Response) => {
     let errors: string[] = [];
 
-    if (req.session && req.session.loggedIn) {
-        req.session.destroy((err) => {
-            if (err) errors.push(err);
-            res.json(errors);
-        });
+    if (req.header('auth-token')) {
+        res.removeHeader('auth-token');
     }
+    else {
+        errors.push('Logout failed - user not yet logged in');
+    }
+    res.json(errors);
 });
 
 ////////// ERROR PAGES \\\\\\\\\\
