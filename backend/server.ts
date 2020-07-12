@@ -6,6 +6,7 @@
 
 import express, { Request, Response } from 'express';
 import { ObjectID, Collection } from 'mongodb';
+import sanitize from 'mongo-sanitize';
 import path from 'path';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -282,7 +283,10 @@ app.get('*', (req: Request, res: Response) => {
 //Registration
 app.post('/auth/register', async (req: Request, res: Response) => {
     try {
-        const { email, password, confirmPassword } = req.body; //Retrieve the form inputs
+        //Retrieve and sanitize the form inputs
+        const email:           string = sanitize(req.body.email);
+        const password:        string = sanitize(req.body.password);
+        const confirmPassword: string = sanitize(req.body.confirmPassword);
 
         //Check for errors and store any found
         let errors: string[] = [];
@@ -348,7 +352,9 @@ app.post('/auth/register', async (req: Request, res: Response) => {
 //Login requests
 app.post('/auth/login', async (req: Request, res: Response) => {
     try {
-        const { email, password } = req.body; //Retrieve the form inputs
+        //Retrieve and sanitize the form inputs
+        const email:    string = sanitize(req.body.email);
+        const password: string = sanitize(req.body.password);
 
         //Check for errors and store any found
         let errors: string[] = [];
