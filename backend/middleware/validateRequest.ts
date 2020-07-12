@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 
 //Middleware to validate JSON web tokens in requests
 // Add to any api route to make it private
-export function verifyJWT(req: Request, res: Response) {
+export default function verifyJWT(req: Request, res: Response) {
     try {
         const token = req.header('auth-token') || '';
         const secret = process.env.JWT_SECRET || '';
