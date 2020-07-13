@@ -4,12 +4,13 @@
 
 ////////// SETUP \\\\\\\\\\
 
-import express, { Request, Response } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import { ObjectID, Collection } from 'mongodb';
 import sanitize from 'mongo-sanitize';
 import path from 'path';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import verify from './middleware/validateToken';
 import client from './database/connectDB';
 import { IGNORED_WORDS, EMAIL_REGEX, SortByProperties, ParseTerms, RandomString } from './resources';
 import { RecipeData, RecipeDataResult, IndexResult, IndexReference, User } from 'magellan';
@@ -273,11 +274,6 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
     }
 });
 
-//Default/home page
-app.get('*', (req: Request, res: Response) => {
-    res.sendFile(REACT_BUNDLE_PATH + '/index.html');
-});
-
 ////////// FORM HANDLERS \\\\\\\\\\
 
 //Registration
@@ -423,15 +419,25 @@ app.get('/auth/logout', (req: Request, res: Response) => {
     res.json(errors);
 });
 
+app.get('/auth/verified', /*verify,*/ (req: Request, res: Response) => {
+    const loggedIn = req.user ? true : false;
+    res.json({ verified: loggedIn });
+});
+
 ////////// ERROR PAGES \\\\\\\\\\
 
+//Default/home page
+app.get('*', (req: Request, res: Response) => {
+    res.sendFile(REACT_BUNDLE_PATH + '/index.html');
+});
+
 //Handle 404 errors
-app.use((req: Request, res: Response) => {
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     res.status(404).send('Error 404 - Page Not Found');
 });
 
 //Handle 500 errors
-app.use((err: Error, req: Request, res: Response) => {
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     console.error(err.stack); //Log error details
     res.status(500).send('Error 500 - Internal Server Error');
 });
