@@ -419,9 +419,14 @@ app.get('/auth/logout', (req: Request, res: Response) => {
     res.json(errors);
 });
 
-app.get('/auth/verified', /*verify,*/ (req: Request, res: Response) => {
-    const loggedIn = req.user ? true : false;
-    res.json({ verified: loggedIn });
+//Check whether the user is logged in yet
+// If verification fails, the middleware sends them a 'false' flag and an error message
+// The rest of the function is only reached after successful verification, so it just handles valid logins
+app.get('/auth/verified', verify, (req: Request, res: Response) => {
+    res.json({
+        verified: true,
+        auth_error: ''
+    });
 });
 
 ////////// ERROR PAGES \\\\\\\\\\
