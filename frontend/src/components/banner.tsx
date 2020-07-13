@@ -11,13 +11,21 @@ export default class Banner extends Component {
         verified: false
     };
 
-    async componentDidMount() {
+    async updateLoginStatus() {
+        console.log('UPDATING LOGIN STATUS!');
         const response = await fetch('/auth/verified');
         const authCheck = await response.json();
+        const verified = authCheck.verified || '';
 
-        this.setState({
-            verified: authCheck.verified
-        });
+        if (verified) {
+            this.setState({
+                verified
+            }); 
+        }
+    }
+
+    componentDidMount() {
+        this.updateLoginStatus();
     }
 
     render() {
