@@ -3,25 +3,25 @@ import { Link } from 'react-router-dom';
 import '../styles/banner.css'
 
 interface State {
-    verified: boolean
+    verified: boolean,
+    auth_error: string
 };
 
 export default class Banner extends Component {
     state: State = {
-        verified: false
+        verified: false,
+        auth_error: ''
     };
 
     async updateLoginStatus() {
         console.log('UPDATING LOGIN STATUS!');
         const response = await fetch('/auth/verified');
         const authCheck = await response.json();
-        const verified = authCheck.verified || '';
 
-        if (verified) {
-            this.setState({
-                verified
-            }); 
-        }
+        this.setState({
+            verified: authCheck.verified,
+            auth_error: authCheck.auth_error
+        }); 
     }
 
     componentDidMount() {
@@ -36,6 +36,10 @@ export default class Banner extends Component {
                 </Link>
 
                 <div>VERIFIED? {this.state.verified.toString()}</div>
+                {
+                    !this.state.verified ? 
+                    <div>Auth failure: {this.state.auth_error}</div> : <div></div>
+                }
 
                 <Link to='/login' className='loginButton'>
                     Log In
