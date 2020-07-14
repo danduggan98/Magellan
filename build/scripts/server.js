@@ -18,9 +18,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 ////////// SETUP \\\\\\\\\\
 const express_1 = __importDefault(require("express"));
 const mongodb_1 = require("mongodb");
+const mongo_sanitize_1 = __importDefault(require("mongo-sanitize"));
 const path_1 = __importDefault(require("path"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const validateToken_1 = __importDefault(require("./middleware/validateToken"));
 const connectDB_1 = __importDefault(require("./database/connectDB"));
 const resources_1 = require("./resources");
 //Constants
@@ -245,15 +247,14 @@ app.get('/api/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0,
         console.log('Error in search route:', err);
     }
 }));
-//Default/home page
-app.get('*', (req, res) => {
-    res.sendFile(REACT_BUNDLE_PATH + '/index.html');
-});
 ////////// FORM HANDLERS \\\\\\\\\\
 //Registration
 app.post('/auth/register', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { email, password, confirmPassword } = req.body; //Retrieve the form inputs
+        //Retrieve and sanitize the form inputs
+        const email = mongo_sanitize_1.default(req.body.email);
+        const password = mongo_sanitize_1.default(req.body.password);
+        const confirmPassword = mongo_sanitize_1.default(req.body.confirmPassword);
         //Check for errors and store any found
         let errors = [];
         if (email) {
@@ -311,7 +312,9 @@ app.post('/auth/register', (req, res) => __awaiter(void 0, void 0, void 0, funct
 //Login requests
 app.post('/auth/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { email, password } = req.body; //Retrieve the form inputs
+        //Retrieve and sanitize the form inputs
+        const email = mongo_sanitize_1.default(req.body.email);
+        const password = mongo_sanitize_1.default(req.body.password);
         //Check for errors and store any found
         let errors = [];
         let userSalt = '';
@@ -359,21 +362,35 @@ app.post('/auth/login', (req, res) => __awaiter(void 0, void 0, void 0, function
 //Login requests
 app.get('/auth/logout', (req, res) => {
     let errors = [];
-    if (req.session && req.session.loggedIn) {
-        req.session.destroy((err) => {
-            if (err)
-                errors.push(err);
-            res.json(errors);
-        });
+    if (req.header('auth-token')) {
+        res.removeHeader('auth-token');
     }
+    else {
+        errors.push('Logout failed - user not yet logged in');
+    }
+    res.json(errors);
+});
+//Check whether the user is logged in yet
+// If verification fails, the middleware sends them a 'false' flag and an error message
+// The rest of the function is only reached after successful verification, so it just handles valid logins
+app.get('/auth/verified', validateToken_1.default, (req, res) => {
+    res.json({
+        verified: true,
+        auth_error: '',
+        user: req.user
+    });
 });
 ////////// ERROR PAGES \\\\\\\\\\
+//Default/home page
+app.get('*', (req, res) => {
+    res.sendFile(REACT_BUNDLE_PATH + '/index.html');
+});
 //Handle 404 errors
-app.use((req, res) => {
+app.use((err, req, res, next) => {
     res.status(404).send('Error 404 - Page Not Found');
 });
 //Handle 500 errors
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
     console.error(err.stack); //Log error details
     res.status(500).send('Error 500 - Internal Server Error');
 });
