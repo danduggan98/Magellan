@@ -78,10 +78,11 @@ export default class App extends Component {
                         <Route
                             path={'/login'}
                             render={(props) => (
-                                <Login {...props}
-                                    updateLoginStatus={this.updateLoginStatus.bind(this)}
-                                />
-                              )}>
+                                <Login
+                                    {...props}
+                                    updateLoginStatus={this.updateLoginStatus.bind(this)}>
+                                </Login>
+                            )}>
                         </Route>
 
                         <Route
