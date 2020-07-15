@@ -47,7 +47,6 @@ export default class App extends Component {
             verified:   logoutStatus.verified,
             auth_error: logoutStatus.auth_error
         });
-        //this.updateLoginStatus();
     }
 
     render() {
