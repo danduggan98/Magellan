@@ -431,7 +431,7 @@ app.get('/auth/logout', (req: Request, res: Response) => {
 // If verification fails, the middleware sends them a 'false' flag and an error message
 // The rest of the function is only reached after successful verification, so it just handles valid logins
 app.get('/auth/verified', verify, (req: Request, res: Response) => {
-    res.json({
+    res.status(200).json({
         verified: true,
         auth_error: ''
     });
