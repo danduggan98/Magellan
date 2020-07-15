@@ -2,48 +2,35 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/banner.css'
 
+interface Props {
+    verified: boolean,
+    auth_error: string,
+    logout: () => Promise<void>
+}
+
 interface State {
     verified: boolean,
-    auth_error: string
+    auth_error: string,
 };
 
-export default class Banner extends Component {
-    state: State = {
-        verified: false,
-        auth_error: ''
-    };
-
-    async updateLoginStatus() {
-        console.log('UPDATING LOGIN STATUS!');
-        const response  = await fetch('/auth/verified');
-        const authCheck = await response.json();
-
-        this.setState({
-            verified:   authCheck.verified,
-            auth_error: authCheck.auth_error
-        }); 
+export default class Banner extends Component<Props, State> {
+    constructor(props: Props) {
+        super(props);
+        this.logout = props.logout;
+        this.state = {
+            verified: props.verified,
+            auth_error: props.auth_error
+        };
     }
 
-    componentDidMount() {
-        this.updateLoginStatus();
-    }
-
-    async logout() {
-        console.log('LOGGING OUT');
-        const response  = await fetch('/auth/logout');
-        const logoutStatus = await response.json();
-        const errors = logoutStatus.errors;
-
+    componentWillReceiveProps(props: Props) {
         this.setState({
-            verified: errors.length
-                ? false
-                : true
-            ,
-            auth_error: errors.length
-                ? errors[0]
-                : ''
+            verified: props.verified,
+            auth_error: props.auth_error
         });
     }
+
+    logout() {};
 
     render() {
         return (

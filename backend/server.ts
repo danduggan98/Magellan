@@ -412,11 +412,19 @@ app.get('/auth/logout', (req: Request, res: Response) => {
 
     if (req.header('auth-token')) {
         res.removeHeader('auth-token');
+        res.json({
+            verified: false,
+            auth_error: '',
+            user: ''
+        });;
     }
     else {
-        errors.push('Logout failed - user not yet logged in');
+        res.json({
+            verified: false,
+            auth_error: 'Logout failed - user not yet logged in',
+            user: ''
+        });;
     }
-    res.json(errors);
 });
 
 //Check whether the user is logged in yet

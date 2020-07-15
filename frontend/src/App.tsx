@@ -1,36 +1,98 @@
-import React from 'react';
+import React, { Component } from 'react';
 import Banner from './components/banner';
 import Recipe from './components/recipe';
 import Home from './components/home';
 import Register from './components/register';
 import Login from './components/login';
 import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Redirect
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Redirect
 } from 'react-router-dom';
 
 import './styles/App.css';
 
-export default function App() {
-  return (
-    <div>
-      <Router>
+interface State {
+    verified: boolean,
+    auth_error: string
+};
 
-        <Banner />
+export default class App extends Component {
+    state: State = {
+        verified: false,
+        auth_error: ''
+    };
 
-        <Switch>
-          <Route path={'/recipe/:recipeid'} component={Recipe} />
-          <Route path={'/home'} component={Home} />
-          <Route path={'/register'} component={Register} />
-          <Route path={'/login'} component={Login} />
-          <Route path={'/'}>
-            <Redirect to={'/home'} />
-          </Route>
-        </Switch>
+    async updateLoginStatus() {
+        console.log('UPDATING LOGIN STATUS!');
+        const response  = await fetch('/auth/verified');
+        const authCheck = await response.json();
 
-      </Router>
-    </div>
-  );
+        this.setState({
+            verified:   authCheck.verified,
+            auth_error: authCheck.auth_error
+        }); 
+    }
+
+    componentDidMount() {
+        this.updateLoginStatus();
+    }
+
+    async logout() {
+        const response  = await fetch('/auth/logout');
+        const logoutStatus = await response.json();
+
+        this.setState({
+            verified:   logoutStatus.verified,
+            auth_error: logoutStatus.auth_error
+        });
+        //this.updateLoginStatus();
+    }
+
+    render() {
+        return (
+            <div>
+                <Router>
+                    <Banner
+                        verified={this.state.verified}
+                        auth_error={this.state.auth_error}
+                        logout={this.logout.bind(this)}>
+                    </Banner>
+
+                    <Switch>
+                        <Route
+                            path={'/home'}
+                            component={Home}>
+                        </Route>
+
+                        <Route
+                            path={'/recipe/:recipeid'}
+                            component={Recipe}>
+                        </Route>
+
+                        <Route
+                            path={'/register'}
+                            component={Register}>
+                        </Route>
+
+                        <Route
+                            path={'/login'}
+                            render={(props) => (
+                                <Login {...props}
+                                    updateLoginStatus={this.updateLoginStatus.bind(this)}
+                                />
+                              )}>
+                        </Route>
+
+                        <Route
+                            path={'/'}>
+                            <Redirect to={'/home'} />
+                        </Route>
+                    </Switch>
+
+                </Router>
+            </div>
+        );
+    }
 }

@@ -2,6 +2,10 @@ import React, { Component } from 'react';
 import { Redirect, Link } from 'react-router-dom';
 import '../styles/login.css';
 
+interface Props {
+    updateLoginStatus: () => Promise<void>
+}
+
 interface State {
     email: string,
     password: string,
@@ -9,18 +13,35 @@ interface State {
     redirectAfterSumbit: boolean
 };
 
-export default class Login extends Component {
-    state: State = {
-        email: '',
-        password: '',
-        errors: [],
-        redirectAfterSumbit: false
-    };
+export default class Login extends Component<Props, State> {
+    constructor(props: Props) {
+        super(props);
+        this.updateLoginStatus = props.updateLoginStatus;
+        this.state = {
+            email: '',
+            password: '',
+            errors: [],
+            redirectAfterSumbit: false
+        };
+    }
+
+    updateLoginStatus() {}
 
     //Store the most recent inputs in state
     updateInput = (event: React.ChangeEvent<HTMLInputElement>): void => {
         let { id, value } = event.currentTarget;
-        this.setState({ [id]: value });
+
+        id === 'email'
+            ?
+            this.setState({
+                email: value
+            })
+
+            :
+            this.setState({
+                password: value
+            })
+        ;
     }
 
     //Submit the form and save any errors that might have returned
@@ -47,6 +68,7 @@ export default class Login extends Component {
                 const errors: string[] = await response.json();
                 
                 if (!errors.length) {
+                    this.updateLoginStatus();
                     this.setState({
                         redirectAfterSumbit: true
                     });
