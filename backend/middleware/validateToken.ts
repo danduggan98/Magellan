@@ -24,10 +24,8 @@ export default function verifyJWT(req: Request, res: Response, next: NextFunctio
                 verified: false,
                 auth_error: 'Access denied - invalid token'
             });
-            
         }
         else {
-            req.user = validToken; //Store the email from the token in our request
             next();
         }
     }

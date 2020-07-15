@@ -433,8 +433,7 @@ app.get('/auth/logout', (req: Request, res: Response) => {
 app.get('/auth/verified', verify, (req: Request, res: Response) => {
     res.json({
         verified: true,
-        auth_error: '',
-        user: req.user
+        auth_error: ''
     });
 });
 
