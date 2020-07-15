@@ -364,11 +364,21 @@ app.get('/auth/logout', (req, res) => {
     let errors = [];
     if (req.header('auth-token')) {
         res.removeHeader('auth-token');
+        res.json({
+            verified: false,
+            auth_error: '',
+            user: ''
+        });
+        ;
     }
     else {
-        errors.push('Logout failed - user not yet logged in');
+        res.json({
+            verified: false,
+            auth_error: 'Logout failed - user not yet logged in',
+            user: ''
+        });
+        ;
     }
-    res.json(errors);
 });
 //Check whether the user is logged in yet
 // If verification fails, the middleware sends them a 'false' flag and an error message
@@ -376,8 +386,7 @@ app.get('/auth/logout', (req, res) => {
 app.get('/auth/verified', validateToken_1.default, (req, res) => {
     res.json({
         verified: true,
-        auth_error: '',
-        user: req.user
+        auth_error: ''
     });
 });
 ////////// ERROR PAGES \\\\\\\\\\

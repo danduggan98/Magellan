@@ -26,7 +26,6 @@ function verifyJWT(req, res, next) {
             });
         }
         else {
-            req.user = validToken; //Store the email from the token in our request
             next();
         }
     }
