@@ -8,8 +8,8 @@ import { Request, Response, NextFunction } from 'express';
 
 export default function verifyJWT(req: Request, res: Response, next: NextFunction): Response | void {
 
-    //Check the token exists
-    const token = <string>req.headers['auth-token'];
+    //Check if the token exists
+    const token = req.cookies['auth-token'];
 
     if (!token) {
         return res.status(401).json({
@@ -18,22 +18,14 @@ export default function verifyJWT(req: Request, res: Response, next: NextFunctio
         });
     }
 
-    //Decode the token and store its user data in the request
+    //Verify the token is valid before moving on
     try {
         const secret = <string>process.env.JWT_SECRET;
-        const tokenData = jwt.verify(token, secret);
-
-        //Recreate the token, then pass it along with the user in our response
-        const jwt_token = jwt.sign(
-            { email: tokenData },
-            <string>process.env.JWT_SECRET, 
-            { expiresIn: '4h'}
-        );
-
-        res.setHeader('auth-token', jwt_token);
-        res.locals.user = tokenData;
+        jwt.verify(token, secret);
         next();
     }
+
+    //If token verification fails, catch the error and send back an error message
     catch (err) {
         return res.status(400).json({
             verified: false,
