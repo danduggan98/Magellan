@@ -10,6 +10,7 @@ import sanitize from 'mongo-sanitize';
 import path from 'path';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import cookieParser from 'cookie-parser';
 import verify from './middleware/validateToken';
 import client from './database/connectDB';
 import { IGNORED_WORDS, EMAIL_REGEX, SortByProperties, ParseTerms, RandomString } from './resources';
@@ -45,6 +46,7 @@ let usersCollection:  Collection;
 const app = express();
 app.use(express.static(REACT_BUNDLE_PATH)); //Serve static React pages
 app.use(express.json()); //Body parser
+app.use(cookieParser());
 
 ////////// PAGES \\\\\\\\\\
 
