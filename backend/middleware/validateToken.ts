@@ -7,29 +7,37 @@ import { Request, Response, NextFunction } from 'express';
 // On success, stores the user email in the request and moves to the next function
 
 export default function verifyJWT(req: Request, res: Response, next: NextFunction): Response | void {
+
+    //Check the token exists
+    const token = <string>req.headers['auth-token'];
+
+    if (!token) {
+        return res.status(401).json({
+            verified: false,
+            auth_error: 'Access denied - You must log in to reach this page'
+        });
+    }
+
+    //Decode the token and store its user data in the request
     try {
-        const token = req.header('auth-token');
-        if (!token) {
-            return res.status(401).json({
-                verified: false,
-                auth_error: 'Access denied - You must log in to reach this page'
-            });
-        }
+        const secret = <string>process.env.JWT_SECRET;
+        const tokenData = jwt.verify(token, secret);
 
-        const secret = process.env.JWT_SECRET || '';
-        const validToken = jwt.verify(token, secret);
+        //Recreate the token, then pass it along with the user in our response
+        const jwt_token = jwt.sign(
+            { email: tokenData },
+            <string>process.env.JWT_SECRET, 
+            { expiresIn: '4h'}
+        );
 
-        if (!validToken) {
-            return res.status(401).json({
-                verified: false,
-                auth_error: 'Access denied - invalid token'
-            });
-        }
-        else {
-            next();
-        }
+        res.setHeader('auth-token', jwt_token);
+        res.locals.user = tokenData;
+        next();
     }
     catch (err) {
-        console.log('Error verifying JWT:', err);
+        return res.status(400).json({
+            verified: false,
+            auth_error: 'Access denied - invalid token'
+        });
     }
 }
