@@ -391,11 +391,16 @@ app.post('/auth/login', async (req: Request, res: Response) => {
             if (user) {
                 const jwt_token = jwt.sign(
                     { email: email },
-                    <string>process.env.JWT_SECRET, 
+                    <string>process.env.JWT_SECRET,
                     { expiresIn: '4h'}
                 );
 
-                res.header('auth-token', jwt_token).json(errors); //Include the token in our json response
+                //Include the token in our json response
+                res.cookie('auth-token', jwt_token, {
+                    httpOnly: true,
+                    secure: true
+                });
+                res.status(200).json(errors);
             }
             else {
                 errors.push('Incorrect password. Please try again');
@@ -410,10 +415,9 @@ app.post('/auth/login', async (req: Request, res: Response) => {
 
 //Login requests
 app.get('/auth/logout', (req: Request, res: Response) => {
-    let errors: string[] = [];
 
-    res.cookie('auth-token', '', { expires: new Date() });
-    res.json({
+    res.clearCookie('auth-token');
+    res.status(200).json({
         verified: false,
         auth_error: ''
     });
@@ -438,7 +442,7 @@ app.get('/auth/logout', (req: Request, res: Response) => {
 //Check whether the user is logged in yet
 // If verification fails, the middleware sends them a 'false' flag and an error message
 // The rest of the function is only reached after successful verification, so it just handles valid logins
-app.get('/auth/verified', /*verify,*/ (req: Request, res: Response) => {
+app.get('/auth/verified', verify, (req: Request, res: Response) => {
     res.status(200).json({
         verified: true,
         auth_error: ''
