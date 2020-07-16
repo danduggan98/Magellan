@@ -17,9 +17,11 @@
         "rebuild_database": "cd build/scripts/database && node populateDB.js && node indexDB.js"
     },
     "dependencies": {
+        "@types/cookie-parser": "^1.4.2",
         "app-root-path": "^3.0.0",
         "bcryptjs": "^2.4.3",
         "concurrently": "^5.1.0",
+        "cookie-parser": "^1.4.5",
         "dotenv": "^8.2.0",
         "express": "^4.17.1",
         "jsonwebtoken": "^8.5.1",
