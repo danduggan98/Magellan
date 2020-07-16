@@ -418,27 +418,21 @@ app.post('/auth/login', async (req: Request, res: Response) => {
 //Login requests
 app.get('/auth/logout', (req: Request, res: Response) => {
 
-    res.clearCookie('auth-token');
-    res.status(200).json({
-        verified: false,
-        auth_error: ''
-    });
+    let err_msg = '';
+    let err_code = 400;
 
-    /*if (req.header('auth-token')) {
-        res.removeHeader('auth-token');
-        res.json({
-            verified: false,
-            auth_error: '',
-            user: ''
-        });;
+    if (req.cookies['auth-token']) {
+        res.clearCookie('auth-token');
+        err_code = 200;
     }
     else {
-        res.json({
-            verified: false,
-            auth_error: 'Logout failed - user not yet logged in',
-            user: ''
-        });;
-    }*/
+        err_msg = 'Logout failed - user not yet logged in';
+    }
+
+    res.status(err_code).json({
+        verified: false,
+        auth_error: err_msg
+    });
 });
 
 //Check whether the user is logged in yet
