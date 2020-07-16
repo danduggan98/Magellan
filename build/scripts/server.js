@@ -22,6 +22,7 @@ const mongo_sanitize_1 = __importDefault(require("mongo-sanitize"));
 const path_1 = __importDefault(require("path"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const validateToken_1 = __importDefault(require("./middleware/validateToken"));
 const connectDB_1 = __importDefault(require("./database/connectDB"));
 const resources_1 = require("./resources");
@@ -53,6 +54,7 @@ let usersCollection;
 const app = express_1.default();
 app.use(express_1.default.static(REACT_BUNDLE_PATH)); //Serve static React pages
 app.use(express_1.default.json()); //Body parser
+app.use(cookie_parser_1.default());
 ////////// PAGES \\\\\\\\\\
 //Load a recipe
 app.get('/api/recipe/:recipeid', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -334,7 +336,7 @@ app.post('/auth/login', (req, res) => __awaiter(void 0, void 0, void 0, function
             errors.push('Please enter your password');
         }
         if (errors.length) {
-            res.json(errors);
+            res.status(401).json(errors);
         }
         else {
             //Hash the given password
@@ -346,12 +348,17 @@ app.post('/auth/login', (req, res) => __awaiter(void 0, void 0, void 0, function
             });
             //Valid submission - create a session and an authentication token
             if (user) {
-                const jwt_token = jsonwebtoken_1.default.sign({ email: email }, process.env.JWT_SECRET || resources_1.RandomString(12));
-                res.header('auth-token', jwt_token).json(errors); //Include the token in our json response
+                const jwt_token = jsonwebtoken_1.default.sign({ email: email }, process.env.JWT_SECRET, { expiresIn: '4h' });
+                //Include the token in our json response
+                res.cookie('auth-token', jwt_token, {
+                    httpOnly: true,
+                    secure: true
+                });
+                res.status(200).json(errors);
             }
             else {
                 errors.push('Incorrect password. Please try again');
-                res.json(errors);
+                res.status(401).json(errors);
             }
         }
     }
@@ -361,30 +368,32 @@ app.post('/auth/login', (req, res) => __awaiter(void 0, void 0, void 0, function
 }));
 //Login requests
 app.get('/auth/logout', (req, res) => {
-    let errors = [];
-    if (req.header('auth-token')) {
+    res.clearCookie('auth-token');
+    res.status(200).json({
+        verified: false,
+        auth_error: ''
+    });
+    /*if (req.header('auth-token')) {
         res.removeHeader('auth-token');
         res.json({
             verified: false,
             auth_error: '',
             user: ''
-        });
-        ;
+        });;
     }
     else {
         res.json({
             verified: false,
             auth_error: 'Logout failed - user not yet logged in',
             user: ''
-        });
-        ;
-    }
+        });;
+    }*/
 });
 //Check whether the user is logged in yet
 // If verification fails, the middleware sends them a 'false' flag and an error message
 // The rest of the function is only reached after successful verification, so it just handles valid logins
 app.get('/auth/verified', validateToken_1.default, (req, res) => {
-    res.json({
+    res.status(200).json({
         verified: true,
         auth_error: ''
     });
