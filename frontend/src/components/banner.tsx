@@ -15,10 +15,10 @@ const Banner: FunctionComponent<Props> = (props) => {
                 MAGELLAN
             </Link>
 
-            <div>VERIFIED? {props.verified.toString()}</div>
             {
-                !props.verified ? 
-                <div>Auth failure: {props.auth_error}</div> : <div></div>
+                props.verified
+                    ? <Link to='/user' className='loginButton'>View Your Saved Recipes</Link>
+                    : <div></div>
             }
 
             { props.verified
