@@ -10,7 +10,8 @@ interface State {
     email: string,
     password: string,
     errors: string[],
-    redirectAfterSumbit: boolean
+    redirectAfterSumbit: boolean,
+    visible: boolean
 };
 
 export default class Login extends Component<Props, State> {
@@ -21,8 +22,20 @@ export default class Login extends Component<Props, State> {
             email: '',
             password: '',
             errors: [],
-            redirectAfterSumbit: false
+            redirectAfterSumbit: false,
+            visible: true
         };
+    }
+
+    //If they have already logged in
+    async componentDidMount() {
+        const response  = await fetch('/auth/verified');
+        const authCheck = await response.json();
+        if (authCheck.verified === true) {
+            this.setState({
+                visible: false
+            })
+        }
     }
 
     updateLoginStatus() {}
@@ -88,6 +101,18 @@ export default class Login extends Component<Props, State> {
     render() {
         if (this.state.redirectAfterSumbit) {
             return (<Redirect to='/home' />);
+        }
+
+        if (!this.state.visible) {
+            return (
+                <div>
+                    <h3>You are already logged in</h3>
+                    <h4>Click 
+                        <a href={'/home'}> here </a>
+                        to return to the home page
+                    </h4>
+                </div>
+            )
         }
 
         return (
