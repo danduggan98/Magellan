@@ -81,6 +81,7 @@ export default class App extends Component {
                             render={(props) => (
                                 <Login
                                     {...props}
+                                    verified={this.state.verified}
                                     updateLoginStatus={this.updateLoginStatus.bind(this)}>
                                 </Login>
                             )}>
