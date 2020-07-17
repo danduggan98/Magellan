@@ -120,8 +120,8 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
         const numTerms = parsedTerms.length;
 
         if (!numTerms) {
-            res.json({ error: 'No search results' });
             console.timeEnd('  > Search execution time');
+            res.json({ error: 'No search results' });
         }
         else {
             //Place each term in a mongo expression
@@ -137,8 +137,8 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
 
             //No results
             if (!results.length) {
-                res.json({ error: 'No search results' });
                 console.timeEnd('  > Search execution time');
+                res.json({ error: 'No search results' });
             }
             //Matches found
             else {
@@ -266,8 +266,8 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
                 });
 
                 //Send back the top results as JSON
-                res.json({ searchResults: finalResults });
                 console.timeEnd('  > Search execution time');
+                res.json({ searchResults: finalResults });
             }
         }
     }
