@@ -4,6 +4,7 @@ import Recipe from './components/recipe';
 import Home from './components/home';
 import Register from './components/register';
 import Login from './components/login';
+import User from './components/user';
 import {
     BrowserRouter as Router,
     Switch,
@@ -32,7 +33,7 @@ export default class App extends Component {
         this.setState({
             verified:   authCheck.verified,
             auth_error: authCheck.auth_error
-        }); 
+        });
     }
 
     componentDidMount() {
@@ -82,6 +83,16 @@ export default class App extends Component {
                                     {...props}
                                     updateLoginStatus={this.updateLoginStatus.bind(this)}>
                                 </Login>
+                            )}>
+                        </Route>
+
+                        <Route
+                            path={'/user'}
+                            render={(props) => (
+                                <User
+                                    {...props}
+                                    verified={this.state.verified}>
+                                </User>
                             )}>
                         </Route>
 
