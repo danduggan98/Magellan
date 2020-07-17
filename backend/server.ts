@@ -350,6 +350,13 @@ app.post('/auth/register', async (req: Request, res: Response) => {
 //Login requests
 app.post('/auth/login', async (req: Request, res: Response) => {
     try {
+        //Reject the request if they are already logged in
+        if (req.cookies['auth-token']) {
+            res.status(401).json({
+                errors: ['User already logged in']
+            });
+        }
+
         //Retrieve and sanitize the form inputs
         const email:    string = sanitize(req.body.email);
         const password: string = sanitize(req.body.password);
@@ -400,7 +407,8 @@ app.post('/auth/login', async (req: Request, res: Response) => {
                 //Include the token in our json response
                 res.cookie('auth-token', jwt_token, {
                     httpOnly: true,
-                    secure: true
+                    secure: true,
+                    sameSite: 'strict'
                 });
                 res.status(200).json(errors);
             }
