@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 
 interface Props {
     verified: boolean
@@ -22,7 +23,11 @@ export default class User extends Component<Props, State> {
                 <div>
                     <h3>You are not yet logged in</h3>
                     <h4>Click 
-                        <a href={'/login'}> here </a>
+                        <span>
+                            <Link to='/login'>
+                                here
+                            </Link>
+                        </span>
                         to log in
                     </h4>
                 </div>
