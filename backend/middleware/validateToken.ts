@@ -21,7 +21,8 @@ export default function verifyJWT(req: Request, res: Response, next: NextFunctio
     //Verify the token is valid before moving on
     try {
         const secret = <string>process.env.JWT_SECRET;
-        jwt.verify(token, secret);
+        const user: any = jwt.verify(token, secret);
+        res.locals.user = user.email; //Store the email in our response
         next();
     }
 
