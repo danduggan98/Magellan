@@ -442,28 +442,27 @@ app.get('/auth/logout', (req: Request, res: Response) => {
     });
 });
 
+//Retrieve the email and saved recipes for the current user
 app.get('/auth/userData', verify, async (req: Request, res: Response) => {
 
-    /*const token = req.cookies['auth-token'];
-    const errors: string[] = [];
-    const email = '';
-    //Get cookie
-
     //Look up user in the database
-    const user: User | null = await usersCollection.findOne({
-        email: email
-    });
+    const errors: string[] = [];
+    const email = res.locals.user;
+
+    const user: User | null = await usersCollection.findOne({ email });
 
     if (user) {
         const savedRecipes = user.savedRecipes;
+
+        res.status(200).json({
+            email,
+            savedRecipes
+        });
     }
     else {
         errors.push('Can not retrieve recipes - user not registered');
         res.status(401).json(errors);
-    }*/
-    res.status(200).json({
-        email: res.locals.user
-    });
+    }
 })
 
 //Check whether the user is logged in yet
