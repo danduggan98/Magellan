@@ -17,6 +17,24 @@ export default class User extends Component<Props, State> {
         };
     }
 
+    componentDidMount() {
+        this.getSavedRecipes()
+    }
+
+    getSavedRecipes = async () => {
+        try {
+            const response = await fetch('/auth/userData');
+            const userData = await response.json();
+    
+            this.setState({
+                email: userData.email
+            })
+        }
+        catch (err) {
+            console.log('Error retrieving saved recipes:', err);
+        }
+    }
+
     render() {
         if (!this.props.verified) {
             return (
@@ -35,7 +53,10 @@ export default class User extends Component<Props, State> {
         }
     
         return (
-            <div>GREAT SUCCESS!</div>
+            <div>
+                <div>GREAT SUCCESS!</div>
+                <div>You are logged in as {this.state.email}</div>
+            </div>
         );
     }
 }
