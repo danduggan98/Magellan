@@ -26,7 +26,6 @@ export default class App extends Component {
     };
 
     async updateLoginStatus() {
-        console.log('UPDATING LOGIN STATUS!');
         const response  = await fetch('/auth/verified');
         const authCheck = await response.json();
 
