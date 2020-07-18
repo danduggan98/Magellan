@@ -90,5 +90,5 @@ export interface User {
     [key: string]: string | string[] | undefined,
     email:         string,
     password:      string,
-    savedRecipes?: string[]
+    savedRecipes:  string[]
 }
