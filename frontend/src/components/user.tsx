@@ -6,32 +6,36 @@ interface Props {
 }
 
 interface State {
-    email: string
+    email: string,
+    savedRecipes: string[]
 };
 
 export default class User extends Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
-            email: ''
+            email: '',
+            savedRecipes: []
         };
     }
 
-    componentDidMount() {
-        this.getSavedRecipes()
+    async componentDidMount() {
+        await this.getUserData()
     }
 
-    getSavedRecipes = async () => {
+    //Get the email and saved recipes for the current user
+    getUserData = async() => {
         try {
             const response = await fetch('/auth/userData');
             const userData = await response.json();
     
             this.setState({
-                email: userData.email
+                email: userData.email,
+                savedRecipes: userData.savedRecipes
             })
         }
         catch (err) {
-            console.log('Error retrieving saved recipes:', err);
+            console.log('Error retrieving user data:', err);
         }
     }
 
@@ -56,6 +60,7 @@ export default class User extends Component<Props, State> {
             <div>
                 <div>GREAT SUCCESS!</div>
                 <div>You are logged in as {this.state.email}</div>
+                <div>Here are your saved recipes:{this.state.savedRecipes.toString()}</div>
             </div>
         );
     }
