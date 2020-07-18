@@ -387,16 +387,15 @@ app.post('/auth/login', async (req: Request, res: Response) => {
             res.status(401).json(errors);
         }
         else {
-            //Hash the given password
+            //Hash the given password and search for the user
             const pwHash = await bcrypt.hash(password, userSalt);
 
-            //Search for the user and create a session if the credentials match
             const user: User | null = await usersCollection.findOne({
                 email: email,
                 password: pwHash
             });
 
-            //Valid submission - create a session and an authentication token
+            //Valid submission - store a cookie with an authentication token
             if (user) {
                 const jwt_token = jwt.sign(
                     { email: email },
@@ -442,6 +441,30 @@ app.get('/auth/logout', (req: Request, res: Response) => {
         auth_error: err_msg
     });
 });
+
+app.get('/auth/userData', verify, async (req: Request, res: Response) => {
+
+    /*const token = req.cookies['auth-token'];
+    const errors: string[] = [];
+    const email = '';
+    //Get cookie
+
+    //Look up user in the database
+    const user: User | null = await usersCollection.findOne({
+        email: email
+    });
+
+    if (user) {
+        const savedRecipes = user.savedRecipes;
+    }
+    else {
+        errors.push('Can not retrieve recipes - user not registered');
+        res.status(401).json(errors);
+    }*/
+    res.status(200).json({
+        email: res.locals.user
+    });
+})
 
 //Check whether the user is logged in yet
 // If verification fails, the middleware sends them a 'false' flag and an error message
