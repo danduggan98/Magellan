@@ -13,7 +13,7 @@ import jwt from 'jsonwebtoken';
 import cookieParser from 'cookie-parser';
 import verify from './middleware/validateToken';
 import client from './database/connectDB';
-import { IGNORED_WORDS, EMAIL_REGEX, SortByProperties, ParseTerms, RandomString } from './resources';
+import { IGNORED_WORDS, EMAIL_REGEX, SortByProperties, ParseTerms } from './resources';
 import { RecipeData, RecipeDataResult, IndexResult, IndexReference, User } from 'magellan';
 
 //Constants
@@ -452,7 +452,25 @@ app.get('/auth/userData', verify, async (req: Request, res: Response) => {
     const user: User | null = await usersCollection.findOne({ email });
 
     if (user) {
-        const savedRecipes = user.savedRecipes;
+        const recipeList = user.savedRecipes;
+
+        //Retrieve each saved recipe
+        const recipeIDs = recipeList.map(
+            recipe => new ObjectID(recipe)
+        );
+        const recipeQuery = { _id: { $in: recipeIDs } };
+        const dbResults: RecipeDataResult[] = await recipeCollection.find(recipeQuery).toArray();
+
+        //Get basic data about each recipe
+        const savedRecipes = dbResults.map(
+            recipe => {
+                return {
+                    _id: recipe._id,
+                    name: recipe.recipeName,
+                    author: recipe.author
+                }
+            })
+        ;
 
         res.status(200).json({
             email,
