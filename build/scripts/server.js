@@ -118,8 +118,8 @@ app.get('/api/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0,
         console.log(`- Executing search with type '${type}' and terms '${parsedTerms}'`);
         const numTerms = parsedTerms.length;
         if (!numTerms) {
-            res.json({ error: 'No search results' });
             console.timeEnd('  > Search execution time');
+            res.json({ error: 'No search results' });
         }
         else {
             //Place each term in a mongo expression
@@ -133,8 +133,8 @@ app.get('/api/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0,
             let initialResults = []; //Will hold our initial sorted results
             //No results
             if (!results.length) {
-                res.json({ error: 'No search results' });
                 console.timeEnd('  > Search execution time');
+                res.json({ error: 'No search results' });
             }
             //Matches found
             else {
@@ -240,8 +240,8 @@ app.get('/api/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0,
                     console.log('Accuracy:', element.accuracy, ', Brevity:', element.brevity || 'N/A', ', Adjacency:', element.adjacency || 'N/A', ', Rand:', element.rand, '\n');
                 });
                 //Send back the top results as JSON
-                res.json({ searchResults: finalResults });
                 console.timeEnd('  > Search execution time');
+                res.json({ searchResults: finalResults });
             }
         }
     }
@@ -314,6 +314,12 @@ app.post('/auth/register', (req, res) => __awaiter(void 0, void 0, void 0, funct
 //Login requests
 app.post('/auth/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        //Reject the request if they are already logged in
+        if (req.cookies['auth-token']) {
+            res.status(401).json({
+                errors: ['User already logged in']
+            });
+        }
         //Retrieve and sanitize the form inputs
         const email = mongo_sanitize_1.default(req.body.email);
         const password = mongo_sanitize_1.default(req.body.password);
@@ -339,20 +345,21 @@ app.post('/auth/login', (req, res) => __awaiter(void 0, void 0, void 0, function
             res.status(401).json(errors);
         }
         else {
-            //Hash the given password
+            //Hash the given password and search for the user
             const pwHash = yield bcryptjs_1.default.hash(password, userSalt);
-            //Search for the user and create a session if the credentials match
             const user = yield usersCollection.findOne({
                 email: email,
                 password: pwHash
             });
-            //Valid submission - create a session and an authentication token
+            //Valid submission - store a cookie with an authentication token
+            res.clearCookie('auth-token');
             if (user) {
                 const jwt_token = jsonwebtoken_1.default.sign({ email: email }, process.env.JWT_SECRET, { expiresIn: '4h' });
                 //Include the token in our json response
                 res.cookie('auth-token', jwt_token, {
                     httpOnly: true,
-                    secure: true
+                    secure: true,
+                    sameSite: 'strict'
                 });
                 res.status(200).json(errors);
             }
@@ -368,27 +375,38 @@ app.post('/auth/login', (req, res) => __awaiter(void 0, void 0, void 0, function
 }));
 //Login requests
 app.get('/auth/logout', (req, res) => {
-    res.clearCookie('auth-token');
-    res.status(200).json({
-        verified: false,
-        auth_error: ''
-    });
-    /*if (req.header('auth-token')) {
-        res.removeHeader('auth-token');
-        res.json({
-            verified: false,
-            auth_error: '',
-            user: ''
-        });;
+    let err_msg = '';
+    let err_code = 400;
+    if (req.cookies['auth-token']) {
+        res.clearCookie('auth-token');
+        err_code = 200;
     }
     else {
-        res.json({
-            verified: false,
-            auth_error: 'Logout failed - user not yet logged in',
-            user: ''
-        });;
-    }*/
+        err_msg = 'Logout failed - user not yet logged in';
+    }
+    res.status(err_code).json({
+        verified: false,
+        auth_error: err_msg
+    });
 });
+//Retrieve the email and saved recipes for the current user
+app.get('/auth/userData', validateToken_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    //Look up user in the database
+    const errors = [];
+    const email = res.locals.user;
+    const user = yield usersCollection.findOne({ email });
+    if (user) {
+        const savedRecipes = user.savedRecipes;
+        res.status(200).json({
+            email,
+            savedRecipes
+        });
+    }
+    else {
+        errors.push('Can not retrieve recipes - user not registered');
+        res.status(401).json(errors);
+    }
+}));
 //Check whether the user is logged in yet
 // If verification fails, the middleware sends them a 'false' flag and an error message
 // The rest of the function is only reached after successful verification, so it just handles valid logins

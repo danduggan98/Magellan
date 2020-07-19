@@ -20,7 +20,8 @@ function verifyJWT(req, res, next) {
     //Verify the token is valid before moving on
     try {
         const secret = process.env.JWT_SECRET;
-        jsonwebtoken_1.default.verify(token, secret);
+        const user = jsonwebtoken_1.default.verify(token, secret);
+        res.locals.user = user.email; //Store the email in our response
         next();
     }
     //If token verification fails, catch the error and send back an error message
