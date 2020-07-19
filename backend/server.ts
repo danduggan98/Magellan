@@ -399,12 +399,12 @@ app.post('/auth/login', async (req: Request, res: Response) => {
             if (user) {
                 const jwt_token = jwt.sign(
                     { email: email },
-                    <string>process.env.JWT_SECRET,
-                    { expiresIn: '4h'}
+                    <string>process.env.JWT_SECRET
                 );
 
                 //Include the token in our json response
                 res.cookie('auth-token', jwt_token, {
+                    maxAge: 14400000, //Expires in 4 hours
                     httpOnly: true,
                     secure: true,
                     sameSite: 'strict'
