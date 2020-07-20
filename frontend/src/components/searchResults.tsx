@@ -111,11 +111,12 @@ export default class SearchResults extends Component<Props, State> {
                 <div id='resultsContainer'>
                     <div id='scrollLeftButton'>
                         { this.state.currentPage > 1
-                            ? <button
+                          ? <button
                                 className='scrollButton'
-                                onClick={this.goToPreviousPage}
-                              >◀</button>
-                            : <div className='scrollPlaceholder'> </div>
+                                onClick={this.goToPreviousPage}>
+                                    ◀
+                            </button>
+                          : <div className='scrollPlaceholder'> </div>
                         }
                     </div>
 
@@ -125,11 +126,12 @@ export default class SearchResults extends Component<Props, State> {
 
                     <div id='scrollRightButton'>
                         { this.state.currentPage < this.state.lastPage
-                            ? <button
+                          ? <button
                                 className='scrollButton'
-                                onClick={this.goToNextPage}
-                              >▶</button>
-                            : <div className='scrollPlaceholder'> </div>
+                                onClick={this.goToNextPage}>
+                                    ▶
+                            </button>
+                          : <div className='scrollPlaceholder'> </div>
                         }
                     </div>
                 </div>

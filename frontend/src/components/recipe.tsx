@@ -188,12 +188,12 @@ export default class Recipe extends Component<Props, State> {
                         <div id='recipeName'>
                             {this.state.recipeName}
                         </div>
-                        
+
                         { this.state.author
-                            ? <div id='author'>
+                          ? <div id='author'>
                                 by {this.state.author}
-                              </div>
-                            : <p className='invisibleElement'></p>
+                            </div>
+                          : <p className='invisibleElement'></p>
                         }
 
                         <div id='source'>

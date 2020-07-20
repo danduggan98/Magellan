@@ -16,13 +16,13 @@ const Banner: FunctionComponent<Props> = (props) => {
             </Link>
 
             { props.verified
-                ? <Link to='/user' className='loginButton'>View Your Saved Recipes</Link>
-                : <div></div>
+              ? <Link to='/user' className='loginButton'>View Your Saved Recipes</Link>
+              : <div></div>
             }
 
             { props.verified
-                ? <button className='logoutButton' onClick={props.logout}>Log Out</button>
-                : <Link to='/login' className='loginButton'>Log In</Link>
+              ? <button className='logoutButton' onClick={props.logout}>Log Out</button>
+              : <Link to='/login' className='loginButton'>Log In</Link>
             }
         </div>
     );

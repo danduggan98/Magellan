@@ -72,7 +72,7 @@ export default class User extends Component<Props, State> {
                 </div>
 
                 { formattedRecipes.length
-                    ? <div id='savedRecipes'>
+                  ? <div id='savedRecipes'>
                         <div id='recipeNotice'>
                             Here are your saved recipes:
                         </div>
@@ -80,11 +80,11 @@ export default class User extends Component<Props, State> {
                         <div id='recipeList'>
                             {formattedRecipes}
                         </div>
-                      </div>
+                    </div>
 
-                    : <div id='recipeNotice'>
+                  : <div id='recipeNotice'>
                         You do not have any saved recipes
-                      </div>
+                    </div>
                 }
             </div>
         );

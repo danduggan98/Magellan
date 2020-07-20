@@ -34,16 +34,16 @@ const SearchCard: FunctionComponent<Props> = (props) => {
                         <div id='cardRecipeName'>{data.recipeName}</div>
                         <div id='secondaryDetails'>
                             { data.author
-                                ? <div id='cardAuthor'>by {data.author}</div>
-                                : <p></p>
+                              ? <div id='cardAuthor'>by {data.author}</div>
+                              : <p></p>
                             }
 
                             <div id='tertiaryDetails'>
                                 { data.source
-                                    ? <div id='cardSource' className={src}>
+                                  ? <div id='cardSource' className={src}>
                                         from {data.source}
-                                      </div>
-                                    : <p></p>
+                                    </div>
+                                  : <p></p>
                                 }
 
                                 { data.totalTime
@@ -55,8 +55,8 @@ const SearchCard: FunctionComponent<Props> = (props) => {
                         </div>
                     </div>
                     { data.imageURL
-                        ? <img id='cardPhoto' src={data.imageURL} alt=''></img>
-                        : <p></p>
+                      ? <img id='cardPhoto' src={data.imageURL} alt=''></img>
+                      : <p></p>
                     }
                 </div>
             </a>

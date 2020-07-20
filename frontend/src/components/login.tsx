@@ -33,13 +33,11 @@ export default class Login extends Component<Props, State> {
         let { id, value } = event.currentTarget;
 
         id === 'email'
-            ?
-            this.setState({
+          ? this.setState({
                 email: value
             })
 
-            :
-            this.setState({
+          : this.setState({
                 password: value
             })
         ;
@@ -116,10 +114,9 @@ export default class Login extends Component<Props, State> {
                     onSubmit={this.submitPage}>
 
                     <div>ERRORS:
-                        {
-                        this.state.errors.length
-                            ? this.state.errors
-                            : ''
+                        { this.state.errors.length
+                          ? this.state.errors
+                          : ''
                         }
                     </div>
 

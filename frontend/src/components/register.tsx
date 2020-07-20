@@ -80,10 +80,9 @@ export default class Register extends Component {
                     onSubmit={this.submitPage}>
 
                     <div>ERRORS:
-                        {
-                        this.state.errors.length
-                            ? this.state.errors
-                            : ''
+                        { this.state.errors.length
+                          ? this.state.errors
+                          : ''
                         }
                     </div>
 

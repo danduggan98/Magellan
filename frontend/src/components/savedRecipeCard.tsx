@@ -22,8 +22,8 @@ const SavedRecipeCard: FunctionComponent<Props> = (props) => {
                         {data.recipeName}
                     </div>
                     { data.author
-                        ? <div id='savedRecipeCardAuthor'>by {data.author}</div>
-                        : <p></p>
+                      ? <div id='savedRecipeCardAuthor'>by {data.author}</div>
+                      : <p></p>
                     }
                 </div>
             </a>
