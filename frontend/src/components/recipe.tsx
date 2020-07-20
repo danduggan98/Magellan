@@ -15,25 +15,27 @@ interface RecipeParams {
     recipeid: string
 }
 
-interface Props extends RouteComponentProps<RecipeParams> {}
+interface Props extends RouteComponentProps<RecipeParams> {
+    verified: boolean
+}
 
 interface State {
-    recipeFound:  boolean,
-    recipeID:     string,
-    URL:          string,
-    imageURL:     string,
-    author:       string,
-    recipeName:   string,
-    difficulty:   string | undefined,
-    totalTime:    string | undefined,
-    prepTime:     string | undefined,
-    inactiveTime: string | undefined,
-    activeTime:   string | undefined,
-    cookTime:     string | undefined,
-    yield:        string | undefined,
-    ingredients:  string[][],
-    directions:   string[][],
-    source:       string | undefined
+    recipeFound:    boolean,
+    recipeID:       string,
+    URL:            string,
+    imageURL:       string,
+    author:         string,
+    recipeName:     string,
+    difficulty:     string | undefined,
+    totalTime:      string | undefined,
+    prepTime:       string | undefined,
+    inactiveTime:   string | undefined,
+    activeTime:     string | undefined,
+    cookTime:       string | undefined,
+    yield:          string | undefined,
+    ingredients:    string[][],
+    directions:     string[][],
+    source:         string | undefined
 }
 
 //Parse an array of ingredients or directions into a JSX list
@@ -92,22 +94,22 @@ export default class Recipe extends Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
-            recipeFound:  true,
-            recipeID:     this.props.match.params.recipeid, //URL parameter
-            URL:          '',
-            imageURL:     '',
-            author:       '',
-            recipeName:   '',
-            difficulty:   '',
-            totalTime:    '',
-            prepTime:     '',
-            inactiveTime: '',
-            activeTime:   '',
-            cookTime:     '',
-            yield:        '',
-            ingredients:  [],
-            directions:   [],
-            source:       ''
+            recipeFound:    true,
+            recipeID:       this.props.match.params.recipeid, //URL parameter
+            URL:            '',
+            imageURL:       '',
+            author:         '',
+            recipeName:     '',
+            difficulty:     '',
+            totalTime:      '',
+            prepTime:       '',
+            inactiveTime:   '',
+            activeTime:     '',
+            cookTime:       '',
+            yield:          '',
+            ingredients:    [],
+            directions:     [],
+            source:         ''
         };
     }
 
@@ -145,20 +147,26 @@ export default class Recipe extends Component<Props, State> {
 
     //Add this recipe to the user's account
     saveRecipe = async () => {
-        const response = await fetch(`/auth/saveRecipe/${this.state.recipeID}`);
+
+        /*const response = await fetch(`/auth/saveRecipe/${this.state.recipeID}`);
         const userData = await response.json();
 
         // !! Change these console logs into user-readable err messages !!
         if (!userData.verified) {
-            console.log(userData.auth_error);
+            this.setState({
+                saveButtonText: 'Log in to save this recipe'
+            })
         }
-
-        if (userData.errors && !userData.errors.length) {
-            console.log('Recipe successfully added!');
+        else if (userData.errors.length) {
+            this.setState({
+                saveButtonText: 'Error adding recipe - try again later'
+            })
         }
         else {
-            console.log(userData.errors[0]);
-        }
+            this.setState({
+                saveButtonText: 'Save Recipe'
+            })
+        }*/
     }
 
     render() {
@@ -217,7 +225,10 @@ export default class Recipe extends Component<Props, State> {
 
                     <div id='saveRecipeButton'>
                         <button onClick={this.saveRecipe}>
-                            Save this recipe
+                            { this.props.verified
+                              ? 'Save Recipe'
+                              : 'Log in to save this recipe'
+                            }
                         </button>
                     </div>
                     
