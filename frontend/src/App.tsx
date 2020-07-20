@@ -67,7 +67,12 @@ export default class App extends Component {
 
                         <Route
                             path={'/recipe/:recipeid'}
-                            component={Recipe}>
+                            render={(props) => (
+                                <Recipe
+                                    {...props}
+                                    verified={this.state.verified}>
+                                </Recipe>
+                            )}>
                         </Route>
 
                         <Route
