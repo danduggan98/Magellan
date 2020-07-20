@@ -71,14 +71,21 @@ export default class User extends Component<Props, State> {
                     You are logged in as {this.state.email}
                 </div>
 
-                <div id='savedRecipes'>
-                    <div id='recipeNotice'>
-                        Here are your saved recipes:
-                    </div>
-                    <div id='recipeList'>
-                        {formattedRecipes}
-                    </div>
-                </div>
+                { formattedRecipes.length
+                    ? <div id='savedRecipes'>
+                        <div id='recipeNotice'>
+                            Here are your saved recipes:
+                        </div>
+
+                        <div id='recipeList'>
+                            {formattedRecipes}
+                        </div>
+                      </div>
+
+                    : <div id='recipeNotice'>
+                        You do not have any saved recipes
+                      </div>
+                }
             </div>
         );
     }
