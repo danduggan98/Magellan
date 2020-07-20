@@ -494,6 +494,39 @@ app.get('/auth/verified', verify, (req: Request, res: Response) => {
     });
 });
 
+//Add a recipe to a user's account
+app.get('/auth/saveRecipe/:recipeID', verify, async (req: Request, res: Response) => {
+    const errors: string[] = [];
+    const email = res.locals.user;
+
+    //Look them up in the database
+    const user: User | null = await usersCollection.findOne({ email });
+
+    //Add the recipe if they were found
+    if (user) {
+        try {
+            await usersCollection.updateOne(
+                { email },
+                { $push: { savedRecipes: req.params.recipeID } }
+            );
+        }
+        catch (err) {
+            errors.push('Unable to save recipe - database error');
+        }
+    }
+    else {
+        errors.push('Unable to save recipe - could not find user');
+    }
+
+    let err_code = errors.length ? 500 : 200;
+
+    res.status(err_code).json({
+        verified: true,
+        auth_error: '',
+        errors
+    });
+})
+
 ////////// ERROR PAGES \\\\\\\\\\
 
 //Default/home page
