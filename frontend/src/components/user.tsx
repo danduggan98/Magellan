@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import SavedRecipeCard from './savedRecipeCard';
+import { SavedRecipe } from '../../../magellan';
 
 interface Props {
     verified: boolean
@@ -7,7 +9,7 @@ interface Props {
 
 interface State {
     email: string,
-    savedRecipes: string[]
+    savedRecipes: SavedRecipe[]
 };
 
 export default class User extends Component<Props, State> {
@@ -40,6 +42,12 @@ export default class User extends Component<Props, State> {
     }
 
     render() {
+        const formattedRecipes = this.state.savedRecipes
+            .map(recipe => (
+                <SavedRecipeCard info={recipe} />
+            )
+        );
+        
         if (!this.props.verified) {
             return (
                 <div>
@@ -60,7 +68,7 @@ export default class User extends Component<Props, State> {
             <div>
                 <div>GREAT SUCCESS!</div>
                 <div>You are logged in as {this.state.email}</div>
-                <div>Here are your saved recipes:{this.state.savedRecipes.toString()}</div>
+                <div>Here are your saved recipes:{formattedRecipes}</div>
             </div>
         );
     }
