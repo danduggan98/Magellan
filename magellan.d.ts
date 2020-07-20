@@ -46,6 +46,13 @@ export interface RecipeDataCondensed {
     threshold:     number
 }
 
+export interface SavedRecipe {
+    [key: string]: string
+    _id:           string,
+    recipeName:    string,
+    author:        string
+}
+
 //Format for indexes held by database
 export interface Index {
     [key: string]: string | IndexReference[] | number,
