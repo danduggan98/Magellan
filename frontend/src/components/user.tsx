@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import SavedRecipeCard from './savedRecipeCard';
 import { SavedRecipe } from '../../../magellan';
+import '../styles/user.css';
 
 interface Props {
     verified: boolean
@@ -65,10 +66,19 @@ export default class User extends Component<Props, State> {
         }
     
         return (
-            <div>
-                <div>GREAT SUCCESS!</div>
-                <div>You are logged in as {this.state.email}</div>
-                <div>Here are your saved recipes:{formattedRecipes}</div>
+            <div id='userDetails'>
+                <div id='emailNotice'>
+                    You are logged in as {this.state.email}
+                </div>
+
+                <div id='savedRecipes'>
+                    <div id='recipeNotice'>
+                        Here are your saved recipes:
+                    </div>
+                    <div id='recipeList'>
+                        {formattedRecipes}
+                    </div>
+                </div>
             </div>
         );
     }
