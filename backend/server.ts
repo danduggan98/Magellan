@@ -14,7 +14,7 @@ import cookieParser from 'cookie-parser';
 import verify from './middleware/validateToken';
 import client from './database/connectDB';
 import { IGNORED_WORDS, EMAIL_REGEX, SortByProperties, ParseTerms } from './resources';
-import { RecipeData, RecipeDataResult, IndexResult, IndexReference, User } from 'magellan';
+import { RecipeData, RecipeDataResult, IndexResult, IndexReference, User, SavedRecipe } from 'magellan';
 
 //Constants
 const PORT = Number(process.env.PORT) || 5000;
@@ -464,11 +464,12 @@ app.get('/auth/userData', verify, async (req: Request, res: Response) => {
         //Get basic data about each recipe
         const savedRecipes = dbResults.map(
             recipe => {
-                return {
+                const nextRecipe: SavedRecipe = {
                     _id: recipe._id,
-                    name: recipe.recipeName,
+                    recipeName: recipe.recipeName,
                     author: recipe.author
                 }
+                return nextRecipe;
             })
         ;
 
