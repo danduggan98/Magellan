@@ -143,11 +143,12 @@ export default class Recipe extends Component<Props, State> {
         }
     }
 
+    //Add this recipe to the user's account
     saveRecipe = async () => {
         const response = await fetch(`/auth/saveRecipe/${this.state.recipeID}`);
         const userData = await response.json();
 
-        //CHange these console logs into user-readable err messages
+        // !! Change these console logs into user-readable err messages !!
         if (!userData.verified) {
             console.log(userData.auth_error);
         }
@@ -187,10 +188,13 @@ export default class Recipe extends Component<Props, State> {
                         <div id='recipeName'>
                             {this.state.recipeName}
                         </div>
-
-                        <div id='author'>
-                            by {this.state.author}
-                        </div>
+                        
+                        { this.state.author
+                            ? <div id='author'>
+                                by {this.state.author}
+                              </div>
+                            : <p className='invisibleElement'></p>
+                        }
 
                         <div id='source'>
                             Courtesy of
