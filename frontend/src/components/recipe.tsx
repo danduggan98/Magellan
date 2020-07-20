@@ -118,7 +118,9 @@ export default class Recipe extends Component<Props, State> {
 
         //Recipe not found
         if (data.error) {
-            this.setState({ recipeFound: false });
+            this.setState({
+                recipeFound: false
+            });
         }
         //Recipe found
         else {
@@ -138,6 +140,23 @@ export default class Recipe extends Component<Props, State> {
                 directions:   data.directions,
                 source:       data.source
             });
+        }
+    }
+
+    saveRecipe = async () => {
+        const response = await fetch(`/auth/saveRecipe/${this.state.recipeID}`);
+        const userData = await response.json();
+
+        //CHange these console logs into user-readable err messages
+        if (!userData.verified) {
+            console.log(userData.auth_error);
+        }
+
+        if (userData.errors && !userData.errors.length) {
+            console.log('Recipe successfully added!');
+        }
+        else {
+            console.log(userData.errors[0]);
         }
     }
 
@@ -190,6 +209,12 @@ export default class Recipe extends Component<Props, State> {
                         <div id='sourceLink'>
                             <a target='_blank' rel='noopener noreferrer' href={this.state.URL}>Original Recipe</a>
                         </div>
+                    </div>
+
+                    <div id='saveRecipeButton'>
+                        <button onClick={this.saveRecipe}>
+                            Save this recipe
+                        </button>
                     </div>
                     
                     <div id='details'>
