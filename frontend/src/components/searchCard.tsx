@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import { RecipeDataResult } from '../../../magellan';
 import '../styles/searchCard.css';
 
@@ -40,6 +40,7 @@ export default class SearchCard extends Component<Props, State> {
                     target='_blank'
                     rel='noopener noreferrer'
                     href={link}>
+
                     <div id='cardContents'>
                         <div id='cardInfo'>
                             <div id='cardRecipeName'>{data.recipeName}</div>

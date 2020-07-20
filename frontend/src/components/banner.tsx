@@ -15,10 +15,9 @@ const Banner: FunctionComponent<Props> = (props) => {
                 MAGELLAN
             </Link>
 
-            {
-                props.verified
-                    ? <Link to='/user' className='loginButton'>View Your Saved Recipes</Link>
-                    : <div></div>
+            { props.verified
+                ? <Link to='/user' className='loginButton'>View Your Saved Recipes</Link>
+                : <div></div>
             }
 
             { props.verified
