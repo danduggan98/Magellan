@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
-import { Redirect, Link } from 'react-router-dom';
+import { Redirect, Link, RouteComponentProps } from 'react-router-dom';
 import '../styles/register.css';
+
+interface Props extends RouteComponentProps {
+    source: string
+}
 
 interface State {
     email: string,
@@ -10,19 +14,39 @@ interface State {
     redirectAfterSumbit: boolean
 };
 
-export default class Register extends Component {
-    state: State = {
-        email: '',
-        password: '',
-        confirmPassword: '',
-        errors: [],
-        redirectAfterSumbit: false
-    };
+export default class Register extends Component<Props, State> {
+    constructor(props: Props) {
+        super(props);
+        this.state = {
+            email: '',
+            password: '',
+            confirmPassword: '',
+            errors: [],
+            redirectAfterSumbit: false
+        };
+    }
 
     //Store the most recent inputs in state
     updateInput = (event: React.ChangeEvent<HTMLInputElement>): void => {
         let { id, value } = event.currentTarget;
-        this.setState({ [id]: value });
+
+        switch(id) {
+            case 'email':
+                this.setState({
+                    email: value
+                });
+                break;
+            case 'password':
+                this.setState({
+                    password: value
+                });
+                break;
+            case 'confirmPassword':
+                this.setState({
+                    confirmPassword: value
+                });
+                break;
+        }
     }
 
     //Submit the form and save any errors that might have returned
@@ -67,8 +91,20 @@ export default class Register extends Component {
     }
 
     render() {
+        ////Determine where to redirect after submission
+        const location = this.props.location.state as any;
+        const destination = location ? location.source : '/home';
+
+        //Successful submission - move on
         if (this.state.redirectAfterSumbit) {
-            return (<Redirect to='/login' />);
+            return (
+                <Redirect
+                    to={{
+                        pathname: '/login',
+                        state: { source: destination }
+                    }}>
+                </Redirect>
+            );
         }
 
         return (
@@ -141,8 +177,12 @@ export default class Register extends Component {
 
                     <div id='registerLink'>
                         Already have an account?
-                        <Link to='/login'>
-                            Log in here
+                        <Link
+                            to={{
+                                pathname: '/login',
+                                state: { source: destination }
+                            }}>
+                                Log in here
                         </Link>
                     </div>
 
