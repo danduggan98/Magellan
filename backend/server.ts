@@ -443,7 +443,7 @@ app.get('/auth/logout', (req: Request, res: Response) => {
 });
 
 //Retrieve the email and saved recipes for the current user
-app.get('/auth/userData', verify, async (req: Request, res: Response) => {
+app.get('/user/userData', verify, async (req: Request, res: Response) => {
 
     //Look up user in the database
     const errors: string[] = [];
@@ -496,7 +496,7 @@ app.get('/auth/verified', verify, (req: Request, res: Response) => {
 });
 
 //Add a recipe to a user's account
-app.get('/auth/saveRecipe/:recipeID', verify, async (req: Request, res: Response) => {
+app.get('/user/saveRecipe/:recipeID', verify, async (req: Request, res: Response) => {
     const errors: string[] = [];
     const email: string = res.locals.user;
 
@@ -529,7 +529,7 @@ app.get('/auth/saveRecipe/:recipeID', verify, async (req: Request, res: Response
 })
 
 //Remove a recipe from a user's account
-app.get('/auth/removeRecipe/:recipeID', verify, async (req: Request, res: Response) => {
+app.get('/user/removeRecipe/:recipeID', verify, async (req: Request, res: Response) => {
     const errors: string[] = [];
     const email: string = res.locals.user;
 
@@ -562,7 +562,7 @@ app.get('/auth/removeRecipe/:recipeID', verify, async (req: Request, res: Respon
 })
 
 //Check whether the user has a given recipe saved
-app.get('/auth/recipeSaved/:recipeID', verify, async (req: Request, res: Response) => {
+app.get('/user/recipeSaved/:recipeID', verify, async (req: Request, res: Response) => {
     const errors: string[] = [];
     const email: string = res.locals.user;
     let recipeSaved: boolean = false;
