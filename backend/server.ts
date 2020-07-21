@@ -447,7 +447,7 @@ app.get('/auth/userData', verify, async (req: Request, res: Response) => {
 
     //Look up user in the database
     const errors: string[] = [];
-    const email = res.locals.user;
+    const email: string = res.locals.user;
 
     const user: User | null = await usersCollection.findOne({ email });
 
@@ -475,7 +475,8 @@ app.get('/auth/userData', verify, async (req: Request, res: Response) => {
 
         res.status(200).json({
             email,
-            savedRecipes
+            savedRecipes,
+            errors
         });
     }
     else {
@@ -497,7 +498,7 @@ app.get('/auth/verified', verify, (req: Request, res: Response) => {
 //Add a recipe to a user's account
 app.get('/auth/saveRecipe/:recipeID', verify, async (req: Request, res: Response) => {
     const errors: string[] = [];
-    const email = res.locals.user;
+    const email: string = res.locals.user;
 
     //Look them up in the database
     const user: User | null = await usersCollection.findOne({ email });
@@ -524,6 +525,65 @@ app.get('/auth/saveRecipe/:recipeID', verify, async (req: Request, res: Response
         verified: true,
         auth_error: '',
         errors
+    });
+})
+
+//Remove a recipe from a user's account
+app.get('/auth/removeRecipe/:recipeID', verify, async (req: Request, res: Response) => {
+    const errors: string[] = [];
+    const email: string = res.locals.user;
+
+    //Look them up in the database
+    const user: User | null = await usersCollection.findOne({ email });
+
+    //Remove the recipe if they were found
+    if (user) {
+        try {
+            await usersCollection.updateOne(
+                { email },
+                { $pull: { savedRecipes: req.params.recipeID } }
+            );
+        }
+        catch (err) {
+            errors.push('Unable to remove recipe - database error');
+        }
+    }
+    else {
+        errors.push('Unable to remove recipe - could not find user');
+    }
+
+    let err_code = errors.length ? 500 : 200;
+
+    res.status(err_code).json({
+        verified: true,
+        auth_error: '',
+        errors
+    });
+})
+
+//Check whether the user has a given recipe saved
+app.get('/auth/recipeSaved/:recipeID', verify, async (req: Request, res: Response) => {
+    const errors: string[] = [];
+    const email: string = res.locals.user;
+    let recipeSaved: boolean = false;
+
+    //Look them up in the database, then check if the recipeID is stored
+    const user: User | null = await usersCollection.findOne({ email });
+
+    if (user) {
+        recipeSaved = user.savedRecipes.includes(req.params.recipeID);
+    }
+    else {
+        errors.push('Unable to remove recipe - could not find user');
+    }
+
+    let err_code = errors.length ? 500 : 200;
+
+    res.status(err_code).json({
+        verified: true,
+        auth_error: '',
+        errors,
+        recipeSaved
     });
 })
 
