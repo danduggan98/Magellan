@@ -1,7 +1,7 @@
 import React, { Component, FunctionComponent } from 'react';
 import { Helmet } from 'react-helmet';
 import '../styles/recipe.css';
-import { RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, Redirect } from 'react-router-dom';
 import { RecipeData } from '../../../magellan';
 
 //Define local types
@@ -11,31 +11,32 @@ interface ArrayToListProps {
     ordered: boolean
 }
 
-interface RecipeParams {
+interface RecipeRouterProps {
     recipeid: string
 }
 
-interface Props extends RouteComponentProps<RecipeParams> {
+interface Props extends RouteComponentProps<RecipeRouterProps> {
     verified: boolean
 }
 
 interface State {
-    recipeFound:    boolean,
-    recipeID:       string,
-    URL:            string,
-    imageURL:       string,
-    author:         string,
-    recipeName:     string,
-    difficulty:     string | undefined,
-    totalTime:      string | undefined,
-    prepTime:       string | undefined,
-    inactiveTime:   string | undefined,
-    activeTime:     string | undefined,
-    cookTime:       string | undefined,
-    yield:          string | undefined,
-    ingredients:    string[][],
-    directions:     string[][],
-    source:         string | undefined
+    recipeFound:  boolean,
+    redirect:     boolean,
+    recipeID:     string,
+    URL:          string,
+    imageURL:     string,
+    author:       string,
+    recipeName:   string,
+    difficulty:   string | undefined,
+    totalTime:    string | undefined,
+    prepTime:     string | undefined,
+    inactiveTime: string | undefined,
+    activeTime:   string | undefined,
+    cookTime:     string | undefined,
+    yield:        string | undefined,
+    ingredients:  string[][],
+    directions:   string[][],
+    source:       string | undefined
 }
 
 //Parse an array of ingredients or directions into a JSX list
@@ -94,22 +95,23 @@ export default class Recipe extends Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
-            recipeFound:    true,
-            recipeID:       this.props.match.params.recipeid, //URL parameter
-            URL:            '',
-            imageURL:       '',
-            author:         '',
-            recipeName:     '',
-            difficulty:     '',
-            totalTime:      '',
-            prepTime:       '',
-            inactiveTime:   '',
-            activeTime:     '',
-            cookTime:       '',
-            yield:          '',
-            ingredients:    [],
-            directions:     [],
-            source:         ''
+            recipeFound:  true,
+            redirect:     false,
+            recipeID:     this.props.match.params.recipeid, //URL parameter
+            URL:          '',
+            imageURL:     '',
+            author:       '',
+            recipeName:   '',
+            difficulty:   '',
+            totalTime:    '',
+            prepTime:     '',
+            inactiveTime: '',
+            activeTime:   '',
+            cookTime:     '',
+            yield:        '',
+            ingredients:  [],
+            directions:   [],
+            source:       ''
         };
     }
 
@@ -148,28 +150,36 @@ export default class Recipe extends Component<Props, State> {
     //Add this recipe to the user's account
     saveRecipe = async () => {
 
-        /*const response = await fetch(`/auth/saveRecipe/${this.state.recipeID}`);
-        const userData = await response.json();
+        //If they are not logged in, redirect to the login page and then bring them back
+        if (!this.props.verified) {
+            this.setState({
+                redirect: true
+            })
+        }
 
-        // !! Change these console logs into user-readable err messages !!
-        if (!userData.verified) {
-            this.setState({
-                saveButtonText: 'Log in to save this recipe'
-            })
-        }
-        else if (userData.errors.length) {
-            this.setState({
-                saveButtonText: 'Error adding recipe - try again later'
-            })
-        }
+        //If they are logged in, save the recipe to their account
         else {
-            this.setState({
-                saveButtonText: 'Save Recipe'
-            })
-        }*/
+
+            //Check if it is already saved
+
+            //Add it if it's new
+            const response = await fetch(`/auth/saveRecipe/${this.state.recipeID}`);
+            const userData = await response.json();
+        }
     }
 
     render() {
+        //If the login redirect came from a recipe page, return to that page
+        if (this.state.redirect) {
+            return (
+                <Redirect
+                    to={{
+                        pathname: '/login',
+                        state: { source: `/recipe/${this.state.recipeID}` }
+                    }}>
+                </Redirect>
+            );
+        }
         //Recipe not found
         if (!this.state.recipeFound) {
             return (
