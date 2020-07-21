@@ -16,7 +16,9 @@ const Banner: FunctionComponent<Props> = (props) => {
             </Link>
 
             { props.verified
-              ? <Link to='/user' className='loginButton'>View Your Saved Recipes</Link>
+              ? props.location.pathname === '/user'
+                ? <Link to='/home' className='loginButton'>Back to the home page</Link>
+                : <Link to='/user' className='loginButton'>View Your Saved Recipes</Link>
               : <div></div>
             }
 
