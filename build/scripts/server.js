@@ -390,7 +390,7 @@ app.get('/auth/logout', (req, res) => {
     });
 });
 //Retrieve the email and saved recipes for the current user
-app.get('/auth/userData', validateToken_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.get('/user/userData', validateToken_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //Look up user in the database
     const errors = [];
     const email = res.locals.user;
@@ -431,7 +431,7 @@ app.get('/auth/verified', validateToken_1.default, (req, res) => {
     });
 });
 //Add a recipe to a user's account
-app.get('/auth/saveRecipe/:recipeID', validateToken_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.get('/user/saveRecipe/:recipeID', validateToken_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const errors = [];
     const email = res.locals.user;
     //Look them up in the database
@@ -456,7 +456,7 @@ app.get('/auth/saveRecipe/:recipeID', validateToken_1.default, (req, res) => __a
     });
 }));
 //Remove a recipe from a user's account
-app.get('/auth/removeRecipe/:recipeID', validateToken_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.get('/user/removeRecipe/:recipeID', validateToken_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const errors = [];
     const email = res.locals.user;
     //Look them up in the database
@@ -481,7 +481,7 @@ app.get('/auth/removeRecipe/:recipeID', validateToken_1.default, (req, res) => _
     });
 }));
 //Check whether the user has a given recipe saved
-app.get('/auth/recipeSaved/:recipeID', validateToken_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.get('/user/recipeSaved/:recipeID', validateToken_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const errors = [];
     const email = res.locals.user;
     let recipeSaved = false;
