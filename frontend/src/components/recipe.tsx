@@ -166,23 +166,43 @@ export default class Recipe extends Component<Props, State> {
         }
 
         //If they are logged in, save the recipe to their account
-        /*else {
-
-            //Check if it is already saved
-
-            //Add it if it's new
+        else {
             const response = await fetch(`/auth/saveRecipe/${this.state.recipeID}`);
             const userData = await response.json();
-        }*/
+
+            if (userData.errors.length) {
+                console.log(userData.errors[0]);
+            }
+            else {
+                this.setState({
+                    recipeSaved: true
+                })
+            }
+        }
     }
 
     removeRecipe = async () => {
-        
+
         //If they are not logged in, redirect to the login page and then bring them back
         if (!this.props.verified) {
             this.setState({
                 redirect: true
             })
+        }
+
+        //If they are logged in, remove the recipe from their account
+        else {
+            const response = await fetch(`/auth/removeRecipe/${this.state.recipeID}`);
+            const userData = await response.json();
+
+            if (userData.errors.length) {
+                console.log(userData.errors[0]);
+            }
+            else {
+                this.setState({
+                    recipeSaved: false
+                })
+            }
         }
     }
 
