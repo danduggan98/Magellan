@@ -352,11 +352,11 @@ app.post('/auth/login', (req, res) => __awaiter(void 0, void 0, void 0, function
                 password: pwHash
             });
             //Valid submission - store a cookie with an authentication token
-            res.clearCookie('auth-token');
             if (user) {
-                const jwt_token = jsonwebtoken_1.default.sign({ email: email }, process.env.JWT_SECRET, { expiresIn: '4h' });
+                const jwt_token = jsonwebtoken_1.default.sign({ email: email }, process.env.JWT_SECRET);
                 //Include the token in our json response
                 res.cookie('auth-token', jwt_token, {
+                    maxAge: 14400000,
                     httpOnly: true,
                     secure: true,
                     sameSite: 'strict'
@@ -396,10 +396,24 @@ app.get('/auth/userData', validateToken_1.default, (req, res) => __awaiter(void 
     const email = res.locals.user;
     const user = yield usersCollection.findOne({ email });
     if (user) {
-        const savedRecipes = user.savedRecipes;
+        const recipeList = user.savedRecipes;
+        //Retrieve each saved recipe
+        const recipeIDs = recipeList.map(recipe => new mongodb_1.ObjectID(recipe));
+        const recipeQuery = { _id: { $in: recipeIDs } };
+        const dbResults = yield recipeCollection.find(recipeQuery).toArray();
+        //Get basic data about each recipe
+        const savedRecipes = dbResults.map(recipe => {
+            const nextRecipe = {
+                _id: recipe._id,
+                recipeName: recipe.recipeName,
+                author: recipe.author
+            };
+            return nextRecipe;
+        });
         res.status(200).json({
             email,
-            savedRecipes
+            savedRecipes,
+            errors
         });
     }
     else {
@@ -416,6 +430,77 @@ app.get('/auth/verified', validateToken_1.default, (req, res) => {
         auth_error: ''
     });
 });
+//Add a recipe to a user's account
+app.get('/auth/saveRecipe/:recipeID', validateToken_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const errors = [];
+    const email = res.locals.user;
+    //Look them up in the database
+    const user = yield usersCollection.findOne({ email });
+    //Add the recipe if they were found
+    if (user) {
+        try {
+            yield usersCollection.updateOne({ email }, { $push: { savedRecipes: req.params.recipeID } });
+        }
+        catch (err) {
+            errors.push('Unable to save recipe - database error');
+        }
+    }
+    else {
+        errors.push('Unable to save recipe - could not find user');
+    }
+    let err_code = errors.length ? 500 : 200;
+    res.status(err_code).json({
+        verified: true,
+        auth_error: '',
+        errors
+    });
+}));
+//Remove a recipe from a user's account
+app.get('/auth/removeRecipe/:recipeID', validateToken_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const errors = [];
+    const email = res.locals.user;
+    //Look them up in the database
+    const user = yield usersCollection.findOne({ email });
+    //Remove the recipe if they were found
+    if (user) {
+        try {
+            yield usersCollection.updateOne({ email }, { $pull: { savedRecipes: req.params.recipeID } });
+        }
+        catch (err) {
+            errors.push('Unable to remove recipe - database error');
+        }
+    }
+    else {
+        errors.push('Unable to remove recipe - could not find user');
+    }
+    let err_code = errors.length ? 500 : 200;
+    res.status(err_code).json({
+        verified: true,
+        auth_error: '',
+        errors
+    });
+}));
+//Check whether the user has a given recipe saved
+app.get('/auth/recipeSaved/:recipeID', validateToken_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const errors = [];
+    const email = res.locals.user;
+    let recipeSaved = false;
+    //Look them up in the database, then check if the recipeID is stored
+    const user = yield usersCollection.findOne({ email });
+    if (user) {
+        recipeSaved = user.savedRecipes.includes(req.params.recipeID);
+    }
+    else {
+        errors.push('Unable to remove recipe - could not find user');
+    }
+    let err_code = errors.length ? 500 : 200;
+    res.status(err_code).json({
+        verified: true,
+        auth_error: '',
+        errors,
+        recipeSaved
+    });
+}));
 ////////// ERROR PAGES \\\\\\\\\\
 //Default/home page
 app.get('*', (req, res) => {
