@@ -89,6 +89,7 @@ export default class Login extends Component<Props, State> {
     }
 
     render() {
+        //Already logged in
         if (this.props.verified) {
             return (
                 <div>
@@ -104,11 +105,13 @@ export default class Login extends Component<Props, State> {
                 </div>
             )
         }
+
+        //Determine where to redirect after submission
+        const location = this.props.location.state as any;
+        const destination = location ? location.source : '/home';
         
+        //Successful submission - move on
         if (this.state.redirectAfterSumbit) {
-            const location = this.props.location.state as any;
-            const destination = location ? location.source : '/home';
-            
             return (<Redirect to={destination} />);
         }
 
@@ -165,8 +168,12 @@ export default class Login extends Component<Props, State> {
 
                     <div id='registerLink'>
                         Don't have an account yet?
-                        <Link to='/register'>
-                            Register here
+                        <Link
+                            to={{
+                                pathname: '/register',
+                                state: { source: destination }
+                            }}>
+                                Register here
                         </Link>
                     </div>
 
