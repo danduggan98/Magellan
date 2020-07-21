@@ -1,8 +1,12 @@
 import React, { Component } from 'react';
-import { Redirect, Link } from 'react-router-dom';
+import { Redirect, Link, RouteComponentProps } from 'react-router-dom';
 import '../styles/login.css';
 
-interface Props {
+interface LoginRouterProps {
+    source: string
+}
+
+interface Props extends RouteComponentProps<LoginRouterProps>{
     verified: boolean,
     updateLoginStatus: () => Promise<void>
 }
@@ -102,7 +106,10 @@ export default class Login extends Component<Props, State> {
         }
         
         if (this.state.redirectAfterSumbit) {
-            return (<Redirect to='/home' />);
+            const location = this.props.location.state as any;
+            const destination = location ? location.source : '/home';
+            
+            return (<Redirect to={destination} />);
         }
 
         return (
