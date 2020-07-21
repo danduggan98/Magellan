@@ -17,7 +17,6 @@
         "rebuild_database": "cd build/scripts/database && node populateDB.js && node indexDB.js"
     },
     "dependencies": {
-        "@types/cookie-parser": "^1.4.2",
         "app-root-path": "^3.0.0",
         "bcryptjs": "^2.4.3",
         "concurrently": "^5.1.0",
@@ -58,7 +57,9 @@
         "@types/app-root-path": "^1.2.4",
         "@types/bcryptjs": "^2.4.2",
         "@types/concurrently": "^5.2.1",
+        "@types/cookie-parser": "^1.4.2",
         "@types/express": "^4.17.7",
+        "@types/history": "^4.7.6",
         "@types/jest": "^26.0.4",
         "@types/jsonwebtoken": "^8.5.0",
         "@types/mongo-sanitize": "^1.0.1",
