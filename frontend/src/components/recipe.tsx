@@ -21,6 +21,7 @@ interface Props extends RouteComponentProps<RecipeRouterProps> {
 
 interface State {
     recipeFound:  boolean,
+    recipeSaved:  boolean,
     redirect:     boolean,
     recipeID:     string,
     URL:          string,
@@ -96,6 +97,7 @@ export default class Recipe extends Component<Props, State> {
         super(props);
         this.state = {
             recipeFound:  true,
+            recipeSaved:  false,
             redirect:     false,
             recipeID:     this.props.match.params.recipeid, //URL parameter
             URL:          '',
@@ -117,32 +119,38 @@ export default class Recipe extends Component<Props, State> {
 
     //Gather data from server JSON response
     async componentDidMount() {
-        const res = await fetch(`/api/recipe/${this.state.recipeID}`);
-        const data: RecipeData = await res.json();
+        const recipeDataResponse = await fetch(`/api/recipe/${this.state.recipeID}`);
+        const recipeData: RecipeData = await recipeDataResponse.json();
+
+        const recipeSavedResponse = await fetch(`/auth/recipeSaved/${this.state.recipeID}`);
+        const recipeSavedData = await recipeSavedResponse.json();
+        const recipeSaved: boolean = recipeSavedData.recipeSaved || false;
 
         //Recipe not found
-        if (data.error) {
+        if (recipeData.error) {
             this.setState({
-                recipeFound: false
+                recipeFound: false,
+                recipeSaved
             });
         }
         //Recipe found
         else {
             this.setState({
-                URL:          data.URL,
-                imageURL:     data.imageURL,
-                author:       data.author,
-                recipeName:   data.recipeName,
-                difficulty:   data.difficulty,
-                totalTime:    data.totalTime,
-                prepTime:     data.prepTime,
-                inactiveTime: data.inactiveTime,
-                activeTime:   data.activeTime,
-                cookTime:     data.cookTime,
-                yield:        data.yield,
-                ingredients:  data.ingredients,
-                directions:   data.directions,
-                source:       data.source
+                URL:          recipeData.URL,
+                imageURL:     recipeData.imageURL,
+                author:       recipeData.author,
+                recipeName:   recipeData.recipeName,
+                difficulty:   recipeData.difficulty,
+                totalTime:    recipeData.totalTime,
+                prepTime:     recipeData.prepTime,
+                inactiveTime: recipeData.inactiveTime,
+                activeTime:   recipeData.activeTime,
+                cookTime:     recipeData.cookTime,
+                yield:        recipeData.yield,
+                ingredients:  recipeData.ingredients,
+                directions:   recipeData.directions,
+                source:       recipeData.source,
+                recipeSaved
             });
         }
     }
@@ -158,14 +166,14 @@ export default class Recipe extends Component<Props, State> {
         }
 
         //If they are logged in, save the recipe to their account
-        else {
+        /*else {
 
             //Check if it is already saved
 
             //Add it if it's new
             const response = await fetch(`/auth/saveRecipe/${this.state.recipeID}`);
             const userData = await response.json();
-        }
+        }*/
     }
 
     render() {
