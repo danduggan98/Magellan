@@ -141,9 +141,9 @@ function fixAuthorName(name) {
     });
     //Fix suffixes
     let finalName = fixedName
-        .replace('Jr', 'Jr.')
-        .replace('Sr', 'Sr.')
-        .replace('Dr', 'Dr.')
+        .replace(/Jr\s$/g, 'Jr. ')
+        .replace(/Sr\s$/g, 'Sr. ')
+        .replace(/^Dr\s/g, 'Dr. ')
         .trim();
     return finalName;
 }

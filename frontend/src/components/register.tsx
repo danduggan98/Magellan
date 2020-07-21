@@ -1,51 +1,53 @@
 import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
 import { Redirect, Link, RouteComponentProps } from 'react-router-dom';
-import '../styles/login.css';
+import '../styles/register.css';
 
-interface LoginRouterProps {
+interface Props extends RouteComponentProps {
     source: string
-}
-
-interface Props extends RouteComponentProps<LoginRouterProps>{
-    verified: boolean,
-    updateLoginStatus: () => Promise<void>
 }
 
 interface State {
     email: string,
     password: string,
+    confirmPassword: string,
     errors: string[],
     redirectAfterSumbit: boolean
 };
 
-export default class Login extends Component<Props, State> {
+export default class Register extends Component<Props, State> {
     constructor(props: Props) {
         super(props);
-        this.updateLoginStatus = props.updateLoginStatus;
         this.state = {
             email: '',
             password: '',
+            confirmPassword: '',
             errors: [],
             redirectAfterSumbit: false
         };
     }
 
-    updateLoginStatus() {}
-
     //Store the most recent inputs in state
     updateInput = (event: React.ChangeEvent<HTMLInputElement>): void => {
         let { id, value } = event.currentTarget;
 
-        id === 'email'
-          ? this.setState({
-                email: value
-            })
-
-          : this.setState({
-                password: value
-            })
-        ;
+        switch(id) {
+            case 'email':
+                this.setState({
+                    email: value
+                });
+                break;
+            case 'password':
+                this.setState({
+                    password: value
+                });
+                break;
+            case 'confirmPassword':
+                this.setState({
+                    confirmPassword: value
+                });
+                break;
+        }
     }
 
     //Submit the form and save any errors that might have returned
@@ -53,8 +55,9 @@ export default class Login extends Component<Props, State> {
         event.preventDefault();
 
         const inputs = JSON.stringify({
-            email:    this.state.email,
-            password: this.state.password
+            email:           this.state.email,
+            password:        this.state.password,
+            confirmPassword: this.state.confirmPassword
         });
 
         const options = {
@@ -68,11 +71,10 @@ export default class Login extends Component<Props, State> {
 
         try {
             (async() => {
-                const response = await fetch('/auth/login', options);
+                const response = await fetch('/auth/register', options);
                 const errors: string[] = await response.json();
                 
                 if (!errors.length) {
-                    this.updateLoginStatus();
                     this.setState({
                         redirectAfterSumbit: true
                     });
@@ -85,51 +87,37 @@ export default class Login extends Component<Props, State> {
             })();
         }
         catch (err) {
-            console.log('Error submitting login form:', err);
+            console.log('Error submitting registration form:', err);
         }
     }
 
     render() {
-        //Already logged in
-        if (this.props.verified) {
-            return (
-                <div>
-                    <Helmet>
-                        <title>{'Magellan - Login'}</title>
-                    </Helmet>
-
-                    <h3>You are already logged in</h3>
-                    <h4>Click
-                        <span>
-                            <Link to='/home'>
-                                here
-                            </Link>
-                        </span>
-                        to return to the home page
-                    </h4>
-                </div>
-            )
-        }
-
-        //Determine where to redirect after submission
+        ////Determine where to redirect after submission
         const location = this.props.location.state as any;
         const destination = location ? location.source : '/home';
-        
+
         //Successful submission - move on
         if (this.state.redirectAfterSumbit) {
-            return (<Redirect to={destination} />);
+            return (
+                <Redirect
+                    to={{
+                        pathname: '/login',
+                        state: { source: destination }
+                    }}>
+                </Redirect>
+            );
         }
 
         return (
-            <div id='loginWrapper'>
+            <div id='registerWrapper'>
                 <Helmet>
-                    <title>{'Magellan - Login'}</title>
+                    <title>{'Magellan - Register'}</title>
                 </Helmet>
                 
-                <div id='loginHeader'>Log In</div>
+                <div id='registerHeader'>Create an account</div>
 
                 <form
-                    name='loginForm'
+                    name='registerForm'
                     onSubmit={this.submitPage}>
 
                     <div>ERRORS:
@@ -173,16 +161,33 @@ export default class Login extends Component<Props, State> {
                             value={this.state.password}
                             onChange={this.updateInput}>
                         </input>
+
+                        <label
+                            id='confirmPasswordLabel'
+                            className='label'
+                            htmlFor='confirmPassword'>
+                                Confirm Password:
+                        </label>
+                        <input
+                            className='input'
+                            id='confirmPassword'
+                            name='confirmPassword'
+                            type='password'
+                            autoComplete='off'
+                            placeholder='Confirm Password'
+                            value={this.state.confirmPassword}
+                            onChange={this.updateInput}>
+                        </input>
                     </div>
 
                     <div id='registerLink'>
-                        Don't have an account yet?
+                        Already have an account?
                         <Link
                             to={{
-                                pathname: '/register',
+                                pathname: '/login',
                                 state: { source: destination }
                             }}>
-                                Register here
+                                Log in here
                         </Link>
                     </div>
 

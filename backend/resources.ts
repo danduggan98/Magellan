@@ -42,6 +42,9 @@ const NAME_PREFIXES = [`d'`, 'mc', 'mac', `o'`];
 //Used to find any HTML which might appear in a string
 const HTML_TAG_REGEX = /<div.*?>|<\/div>|<a.*?>|<\/a>|<img.*?>|<\/img>|<b.*?>|<\/b>|<p.*?>|<\/p>|<i.*?>|<\/i>|<span.*?>|<\/span>/g;
 
+//Finds valid emails
+const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
 //Method to remove HTML content and whitespace from a string
 const RemoveHtmlTags = (str: string): string => {
     return str.replace(HTML_TAG_REGEX, '').trim();
@@ -81,7 +84,7 @@ const ParseTerms = (source: string, callback: (word: string, idx: number) => voi
 }
 
 //Convert character encodings to their actual character equivalents
-function FixCharacterEncodings(data: string): string {
+const FixCharacterEncodings = (data: string): string => {
     let text = data
         .replace(/&amp;/g,  '&')
         .replace(/&lt;/g,   '<')
@@ -92,6 +95,15 @@ function FixCharacterEncodings(data: string): string {
     return text;
 }
 
+const RandomString = (size: number): string => {
+    let chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    let str = '';
+    for (let i = 0; i < size; i++) {
+        str += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return str;
+}
+
 //\d+\/?\d*
 
 export {
@@ -100,8 +112,10 @@ export {
     IGNORED_WORDS,
     DATA_FILES,
     NAME_PREFIXES,
+    EMAIL_REGEX,
     RemoveHtmlTags,
     ParseTerms,
     SortByProperties,
-    FixCharacterEncodings
+    FixCharacterEncodings,
+    RandomString
 };

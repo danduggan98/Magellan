@@ -1,7 +1,7 @@
 import React, { Component, FunctionComponent } from 'react';
 import { Helmet } from 'react-helmet';
 import '../styles/recipe.css';
-import { RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, Redirect } from 'react-router-dom';
 import { RecipeData } from '../../../magellan';
 
 //Define local types
@@ -11,14 +11,18 @@ interface ArrayToListProps {
     ordered: boolean
 }
 
-interface RecipeParams {
+interface RecipeRouterProps {
     recipeid: string
 }
 
-interface Props extends RouteComponentProps<RecipeParams> {}
+interface Props extends RouteComponentProps<RecipeRouterProps> {
+    verified: boolean
+}
 
 interface State {
     recipeFound:  boolean,
+    recipeSaved:  boolean,
+    redirect:     boolean,
     recipeID:     string,
     URL:          string,
     imageURL:     string,
@@ -93,6 +97,8 @@ export default class Recipe extends Component<Props, State> {
         super(props);
         this.state = {
             recipeFound:  true,
+            recipeSaved:  false,
+            redirect:     false,
             recipeID:     this.props.match.params.recipeid, //URL parameter
             URL:          '',
             imageURL:     '',
@@ -113,35 +119,106 @@ export default class Recipe extends Component<Props, State> {
 
     //Gather data from server JSON response
     async componentDidMount() {
-        const res = await fetch(`/api/recipe/${this.state.recipeID}`);
-        const data: RecipeData = await res.json();
+        const recipeDataResponse = await fetch(`/api/recipe/${this.state.recipeID}`);
+        const recipeData: RecipeData = await recipeDataResponse.json();
+
+        const recipeSavedResponse = await fetch(`/user/recipeSaved/${this.state.recipeID}`);
+        const recipeSavedData = await recipeSavedResponse.json();
+        const recipeSaved: boolean = recipeSavedData.recipeSaved || false;
 
         //Recipe not found
-        if (data.error) {
-            this.setState({ recipeFound: false });
+        if (recipeData.error) {
+            this.setState({
+                recipeFound: false,
+                recipeSaved
+            });
         }
         //Recipe found
         else {
             this.setState({
-                URL:          data.URL,
-                imageURL:     data.imageURL,
-                author:       data.author,
-                recipeName:   data.recipeName,
-                difficulty:   data.difficulty,
-                totalTime:    data.totalTime,
-                prepTime:     data.prepTime,
-                inactiveTime: data.inactiveTime,
-                activeTime:   data.activeTime,
-                cookTime:     data.cookTime,
-                yield:        data.yield,
-                ingredients:  data.ingredients,
-                directions:   data.directions,
-                source:       data.source
+                URL:          recipeData.URL,
+                imageURL:     recipeData.imageURL,
+                author:       recipeData.author,
+                recipeName:   recipeData.recipeName,
+                difficulty:   recipeData.difficulty,
+                totalTime:    recipeData.totalTime,
+                prepTime:     recipeData.prepTime,
+                inactiveTime: recipeData.inactiveTime,
+                activeTime:   recipeData.activeTime,
+                cookTime:     recipeData.cookTime,
+                yield:        recipeData.yield,
+                ingredients:  recipeData.ingredients,
+                directions:   recipeData.directions,
+                source:       recipeData.source,
+                recipeSaved
             });
         }
     }
 
+    //Add this recipe to the user's account
+    saveRecipe = async () => {
+
+        //If they are not logged in, redirect to the login page and then bring them back
+        if (!this.props.verified) {
+            this.setState({
+                redirect: true
+            })
+        }
+
+        //If they are logged in, save the recipe to their account
+        else {
+            const response = await fetch(`/user/saveRecipe/${this.state.recipeID}`);
+            const userData = await response.json();
+
+            if (userData.errors.length) {
+                console.log(userData.errors[0]);
+            }
+            else {
+                this.setState({
+                    recipeSaved: true
+                })
+            }
+        }
+    }
+
+    removeRecipe = async () => {
+
+        //If they are not logged in, redirect to the login page and then bring them back
+        if (!this.props.verified) {
+            this.setState({
+                redirect: true
+            })
+        }
+
+        //If they are logged in, remove the recipe from their account
+        else {
+            const response = await fetch(`/user/removeRecipe/${this.state.recipeID}`);
+            const userData = await response.json();
+
+            if (userData.errors.length) {
+                console.log(userData.errors[0]);
+            }
+            else {
+                this.setState({
+                    recipeSaved: false
+                })
+            }
+        }
+    }
+
     render() {
+        //If the login redirect came from a recipe page, return to that page
+        if (this.state.redirect) {
+            return (
+                <Redirect
+                    to={{
+                        pathname: '/login',
+                        state: { source: `/recipe/${this.state.recipeID}` }
+                    }}>
+                </Redirect>
+            );
+        }
+
         //Recipe not found
         if (!this.state.recipeFound) {
             return (
@@ -151,6 +228,7 @@ export default class Recipe extends Component<Props, State> {
                 </div>
             );
         }
+
         //Recipe found
         else {
             return (
@@ -169,9 +247,12 @@ export default class Recipe extends Component<Props, State> {
                             {this.state.recipeName}
                         </div>
 
-                        <div id='author'>
-                            by {this.state.author}
-                        </div>
+                        { this.state.author
+                          ? <div id='author'>
+                                by {this.state.author}
+                            </div>
+                          : <p className='invisibleElement'></p>
+                        }
 
                         <div id='source'>
                             Courtesy of
@@ -190,6 +271,22 @@ export default class Recipe extends Component<Props, State> {
                         <div id='sourceLink'>
                             <a target='_blank' rel='noopener noreferrer' href={this.state.URL}>Original Recipe</a>
                         </div>
+                    </div>
+
+                    <div id='saveRecipeButton'>
+                        <button
+                            onClick={
+                                this.state.recipeSaved
+                                ? this.removeRecipe
+                                : this.saveRecipe
+                            }>
+                            { this.props.verified
+                              ? this.state.recipeSaved
+                                ? 'Remove Recipe'
+                                : 'Save Recipe'
+                              : 'Log in to save this recipe'
+                            }
+                        </button>
                     </div>
                     
                     <div id='details'>

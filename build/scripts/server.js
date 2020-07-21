@@ -18,7 +18,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 ////////// SETUP \\\\\\\\\\
 const express_1 = __importDefault(require("express"));
 const mongodb_1 = require("mongodb");
+const mongo_sanitize_1 = __importDefault(require("mongo-sanitize"));
 const path_1 = __importDefault(require("path"));
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
+const validateToken_1 = __importDefault(require("./middleware/validateToken"));
 const connectDB_1 = __importDefault(require("./database/connectDB"));
 const resources_1 = require("./resources");
 //Constants
@@ -28,6 +33,7 @@ const REACT_BUNDLE_PATH = path_1.default.resolve('./') + '/build/frontend';
 //Store persistent connections to our database collections
 let recipeCollection;
 let indexCollection;
+let usersCollection;
 //Automatically connect to database
 (function connectToMongo() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -37,15 +43,18 @@ let indexCollection;
             //Save connections to the collections we will use later
             recipeCollection = database.db('recipeData').collection('recipes');
             indexCollection = database.db('recipeData').collection('index');
+            usersCollection = database.db('userData').collection('users');
         }
         catch (err) {
             console.log('Error in connectToMongo:', err);
         }
     });
 })();
-//Set up Express app to serve static React pages
+//Set up Express app
 const app = express_1.default();
-app.use(express_1.default.static(REACT_BUNDLE_PATH));
+app.use(express_1.default.static(REACT_BUNDLE_PATH)); //Serve static React pages
+app.use(express_1.default.json()); //Body parser
+app.use(cookie_parser_1.default());
 ////////// PAGES \\\\\\\\\\
 //Load a recipe
 app.get('/api/recipe/:recipeid', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -109,8 +118,8 @@ app.get('/api/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0,
         console.log(`- Executing search with type '${type}' and terms '${parsedTerms}'`);
         const numTerms = parsedTerms.length;
         if (!numTerms) {
-            res.json({ error: 'No search results' });
             console.timeEnd('  > Search execution time');
+            res.json({ error: 'No search results' });
         }
         else {
             //Place each term in a mongo expression
@@ -124,8 +133,8 @@ app.get('/api/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0,
             let initialResults = []; //Will hold our initial sorted results
             //No results
             if (!results.length) {
-                res.json({ error: 'No search results' });
                 console.timeEnd('  > Search execution time');
+                res.json({ error: 'No search results' });
             }
             //Matches found
             else {
@@ -231,8 +240,8 @@ app.get('/api/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0,
                     console.log('Accuracy:', element.accuracy, ', Brevity:', element.brevity || 'N/A', ', Adjacency:', element.adjacency || 'N/A', ', Rand:', element.rand, '\n');
                 });
                 //Send back the top results as JSON
-                res.json({ searchResults: finalResults });
                 console.timeEnd('  > Search execution time');
+                res.json({ searchResults: finalResults });
             }
         }
     }
@@ -240,28 +249,269 @@ app.get('/api/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0,
         console.log('Error in search route:', err);
     }
 }));
+////////// FORM HANDLERS \\\\\\\\\\
+//Registration
+app.post('/auth/register', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        //Retrieve and sanitize the form inputs
+        const email = mongo_sanitize_1.default(req.body.email);
+        const password = mongo_sanitize_1.default(req.body.password);
+        const confirmPassword = mongo_sanitize_1.default(req.body.confirmPassword);
+        //Check for errors and store any found
+        let errors = [];
+        if (email) {
+            if (!resources_1.EMAIL_REGEX.test(email)) {
+                errors.push('Invalid email. Make sure it is spelled correctly or try another one');
+            }
+            else {
+                const user = yield usersCollection.findOne({ email: email });
+                if (user) {
+                    errors.push('Email already in use. Please try a different one');
+                }
+            }
+        }
+        else {
+            errors.push('Please enter your email');
+        }
+        if (password) {
+            if (password.length < 8) {
+                errors.push('Your password must contain at least 8 characters');
+            }
+            else {
+                if (!confirmPassword) {
+                    errors.push('Please confirm your password');
+                }
+                else if (password !== confirmPassword) {
+                    errors.push('Both passwords must match');
+                }
+            }
+        }
+        else {
+            errors.push('Please enter a new password');
+        }
+        //If there were errors, send them to the page. Otherwise, register the user
+        if (errors.length) {
+            res.json(errors);
+        }
+        else {
+            //Salt + hash the password
+            const salt = yield bcryptjs_1.default.genSalt();
+            const pwHash = yield bcryptjs_1.default.hash(password, salt);
+            const newUser = {
+                email,
+                password: pwHash,
+                savedRecipes: []
+            };
+            //Add the user and redirect to home page
+            yield usersCollection.insertOne(newUser);
+            res.json(errors);
+        }
+    }
+    catch (err) {
+        console.log('Error in registration:', err);
+    }
+}));
+//Login requests
+app.post('/auth/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        //Reject the request if they are already logged in
+        if (req.cookies['auth-token']) {
+            res.status(401).json({
+                errors: ['User already logged in']
+            });
+        }
+        //Retrieve and sanitize the form inputs
+        const email = mongo_sanitize_1.default(req.body.email);
+        const password = mongo_sanitize_1.default(req.body.password);
+        //Check for errors and store any found
+        let errors = [];
+        let userSalt = '';
+        if (email) {
+            const user = yield usersCollection.findOne({ email: email });
+            if (user) {
+                userSalt = bcryptjs_1.default.getSalt(user.password);
+            }
+            else {
+                errors.push('Email not found. Make sure it is spelled correctly or try another one');
+            }
+        }
+        else {
+            errors.push('Please enter your email');
+        }
+        if (!password) {
+            errors.push('Please enter your password');
+        }
+        if (errors.length) {
+            res.status(401).json(errors);
+        }
+        else {
+            //Hash the given password and search for the user
+            const pwHash = yield bcryptjs_1.default.hash(password, userSalt);
+            const user = yield usersCollection.findOne({
+                email: email,
+                password: pwHash
+            });
+            //Valid submission - store a cookie with an authentication token
+            if (user) {
+                const jwt_token = jsonwebtoken_1.default.sign({ email: email }, process.env.JWT_SECRET);
+                //Include the token in our json response
+                res.cookie('auth-token', jwt_token, {
+                    maxAge: 14400000,
+                    httpOnly: true,
+                    secure: true,
+                    sameSite: 'strict'
+                });
+                res.status(200).json(errors);
+            }
+            else {
+                errors.push('Incorrect password. Please try again');
+                res.status(401).json(errors);
+            }
+        }
+    }
+    catch (err) {
+        console.log('Error in login:', err);
+    }
+}));
+//Login requests
+app.get('/auth/logout', (req, res) => {
+    let err_msg = '';
+    let err_code = 400;
+    if (req.cookies['auth-token']) {
+        res.clearCookie('auth-token');
+        err_code = 200;
+    }
+    else {
+        err_msg = 'Logout failed - user not yet logged in';
+    }
+    res.status(err_code).json({
+        verified: false,
+        auth_error: err_msg
+    });
+});
+//Retrieve the email and saved recipes for the current user
+app.get('/user/userData', validateToken_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    //Look up user in the database
+    const errors = [];
+    const email = res.locals.user;
+    const user = yield usersCollection.findOne({ email });
+    if (user) {
+        const recipeList = user.savedRecipes;
+        //Retrieve each saved recipe
+        const recipeIDs = recipeList.map(recipe => new mongodb_1.ObjectID(recipe));
+        const recipeQuery = { _id: { $in: recipeIDs } };
+        const dbResults = yield recipeCollection.find(recipeQuery).toArray();
+        //Get basic data about each recipe
+        const savedRecipes = dbResults.map(recipe => {
+            const nextRecipe = {
+                _id: recipe._id,
+                recipeName: recipe.recipeName,
+                author: recipe.author
+            };
+            return nextRecipe;
+        });
+        res.status(200).json({
+            email,
+            savedRecipes,
+            errors
+        });
+    }
+    else {
+        errors.push('Can not retrieve recipes - user not registered');
+        res.status(401).json(errors);
+    }
+}));
+//Check whether the user is logged in yet
+// If verification fails, the middleware sends them a 'false' flag and an error message
+// The rest of the function is only reached after successful verification, so it just handles valid logins
+app.get('/auth/verified', validateToken_1.default, (req, res) => {
+    res.status(200).json({
+        verified: true,
+        auth_error: ''
+    });
+});
+//Add a recipe to a user's account
+app.get('/user/saveRecipe/:recipeID', validateToken_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const errors = [];
+    const email = res.locals.user;
+    //Look them up in the database
+    const user = yield usersCollection.findOne({ email });
+    //Add the recipe if they were found
+    if (user) {
+        try {
+            yield usersCollection.updateOne({ email }, { $push: { savedRecipes: req.params.recipeID } });
+        }
+        catch (err) {
+            errors.push('Unable to save recipe - database error');
+        }
+    }
+    else {
+        errors.push('Unable to save recipe - could not find user');
+    }
+    let err_code = errors.length ? 500 : 200;
+    res.status(err_code).json({
+        verified: true,
+        auth_error: '',
+        errors
+    });
+}));
+//Remove a recipe from a user's account
+app.get('/user/removeRecipe/:recipeID', validateToken_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const errors = [];
+    const email = res.locals.user;
+    //Look them up in the database
+    const user = yield usersCollection.findOne({ email });
+    //Remove the recipe if they were found
+    if (user) {
+        try {
+            yield usersCollection.updateOne({ email }, { $pull: { savedRecipes: req.params.recipeID } });
+        }
+        catch (err) {
+            errors.push('Unable to remove recipe - database error');
+        }
+    }
+    else {
+        errors.push('Unable to remove recipe - could not find user');
+    }
+    let err_code = errors.length ? 500 : 200;
+    res.status(err_code).json({
+        verified: true,
+        auth_error: '',
+        errors
+    });
+}));
+//Check whether the user has a given recipe saved
+app.get('/user/recipeSaved/:recipeID', validateToken_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const errors = [];
+    const email = res.locals.user;
+    let recipeSaved = false;
+    //Look them up in the database, then check if the recipeID is stored
+    const user = yield usersCollection.findOne({ email });
+    if (user) {
+        recipeSaved = user.savedRecipes.includes(req.params.recipeID);
+    }
+    else {
+        errors.push('Unable to remove recipe - could not find user');
+    }
+    let err_code = errors.length ? 500 : 200;
+    res.status(err_code).json({
+        verified: true,
+        auth_error: '',
+        errors,
+        recipeSaved
+    });
+}));
+////////// ERROR PAGES \\\\\\\\\\
 //Default/home page
 app.get('*', (req, res) => {
     res.sendFile(REACT_BUNDLE_PATH + '/index.html');
 });
-////////// FORM HANDLERS \\\\\\\\\\
-//Login requests
-app.post('/login', (req) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const username = req.body.username;
-        const password = req.body.password;
-    }
-    catch (err) {
-        console.log('Error in login route:', err);
-    }
-}));
-////////// ERROR PAGES \\\\\\\\\\
 //Handle 404 errors
-app.use((req, res) => {
+app.use((err, req, res, next) => {
     res.status(404).send('Error 404 - Page Not Found');
 });
 //Handle 500 errors
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
     console.error(err.stack); //Log error details
     res.status(500).send('Error 500 - Internal Server Error');
 });
