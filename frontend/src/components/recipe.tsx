@@ -122,7 +122,7 @@ export default class Recipe extends Component<Props, State> {
         const recipeDataResponse = await fetch(`/api/recipe/${this.state.recipeID}`);
         const recipeData: RecipeData = await recipeDataResponse.json();
 
-        const recipeSavedResponse = await fetch(`/auth/recipeSaved/${this.state.recipeID}`);
+        const recipeSavedResponse = await fetch(`/user/recipeSaved/${this.state.recipeID}`);
         const recipeSavedData = await recipeSavedResponse.json();
         const recipeSaved: boolean = recipeSavedData.recipeSaved || false;
 
@@ -167,7 +167,7 @@ export default class Recipe extends Component<Props, State> {
 
         //If they are logged in, save the recipe to their account
         else {
-            const response = await fetch(`/auth/saveRecipe/${this.state.recipeID}`);
+            const response = await fetch(`/user/saveRecipe/${this.state.recipeID}`);
             const userData = await response.json();
 
             if (userData.errors.length) {
@@ -192,7 +192,7 @@ export default class Recipe extends Component<Props, State> {
 
         //If they are logged in, remove the recipe from their account
         else {
-            const response = await fetch(`/auth/removeRecipe/${this.state.recipeID}`);
+            const response = await fetch(`/user/removeRecipe/${this.state.recipeID}`);
             const userData = await response.json();
 
             if (userData.errors.length) {

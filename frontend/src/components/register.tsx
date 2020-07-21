@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Helmet } from 'react-helmet';
 import { Redirect, Link, RouteComponentProps } from 'react-router-dom';
 import '../styles/register.css';
 
@@ -109,6 +110,10 @@ export default class Register extends Component<Props, State> {
 
         return (
             <div id='registerWrapper'>
+                <Helmet>
+                    <title>{'Magellan - Register'}</title>
+                </Helmet>
+                
                 <div id='registerHeader'>Create an account</div>
 
                 <form

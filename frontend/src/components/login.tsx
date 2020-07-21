@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Helmet } from 'react-helmet';
 import { Redirect, Link, RouteComponentProps } from 'react-router-dom';
 import '../styles/login.css';
 
@@ -93,6 +94,10 @@ export default class Login extends Component<Props, State> {
         if (this.props.verified) {
             return (
                 <div>
+                    <Helmet>
+                        <title>{'Magellan - Login'}</title>
+                    </Helmet>
+
                     <h3>You are already logged in</h3>
                     <h4>Click
                         <span>
@@ -117,6 +122,10 @@ export default class Login extends Component<Props, State> {
 
         return (
             <div id='loginWrapper'>
+                <Helmet>
+                    <title>{'Magellan - Login'}</title>
+                </Helmet>
+                
                 <div id='loginHeader'>Log In</div>
 
                 <form
