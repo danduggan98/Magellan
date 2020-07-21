@@ -1,8 +1,8 @@
 import React, { FunctionComponent } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
 import '../styles/banner.css'
 
-interface Props {
+interface Props extends RouteComponentProps {
     verified: boolean,
     auth_error: string,
     logout: () => Promise<void>
@@ -22,10 +22,17 @@ const Banner: FunctionComponent<Props> = (props) => {
 
             { props.verified
               ? <button className='logoutButton' onClick={props.logout}>Log Out</button>
-              : <Link to='/login' className='loginButton'>Log In</Link>
+              : <Link
+                    to={{
+                        pathname: '/login',
+                        state: { source: props.location.pathname }
+                    }}
+                    className='loginButton'>
+                        Log In
+                </Link>
             }
         </div>
     );
 }
 
-export default Banner;
+export default withRouter(Banner);
