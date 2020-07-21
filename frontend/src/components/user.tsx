@@ -23,18 +23,18 @@ export default class User extends Component<Props, State> {
     }
 
     async componentDidMount() {
-        await this.getUserData()
+        await this.getUserData();
     }
 
     //Get the email and saved recipes for the current user
-    getUserData = async() => {
+    getUserData = async () => {
         try {
             const response = await fetch('/auth/userData');
             const userData = await response.json();
     
             this.setState({
-                email: userData.email,
-                savedRecipes: userData.savedRecipes
+                email: userData.email || '',
+                savedRecipes: userData.savedRecipes || []
             })
         }
         catch (err) {
@@ -55,8 +55,12 @@ export default class User extends Component<Props, State> {
                     <h3>You are not yet logged in</h3>
                     <h4>Click 
                         <span>
-                            <Link to='/login'>
-                                here
+                            <Link
+                                to={{
+                                    pathname: '/login',
+                                    state: { source: '/user' }
+                                }}>
+                                    here
                             </Link>
                         </span>
                         to log in
