@@ -176,6 +176,16 @@ export default class Recipe extends Component<Props, State> {
         }*/
     }
 
+    removeRecipe = async () => {
+        
+        //If they are not logged in, redirect to the login page and then bring them back
+        if (!this.props.verified) {
+            this.setState({
+                redirect: true
+            })
+        }
+    }
+
     render() {
         //If the login redirect came from a recipe page, return to that page
         if (this.state.redirect) {
@@ -188,6 +198,7 @@ export default class Recipe extends Component<Props, State> {
                 </Redirect>
             );
         }
+
         //Recipe not found
         if (!this.state.recipeFound) {
             return (
@@ -197,6 +208,7 @@ export default class Recipe extends Component<Props, State> {
                 </div>
             );
         }
+
         //Recipe found
         else {
             return (
@@ -242,9 +254,16 @@ export default class Recipe extends Component<Props, State> {
                     </div>
 
                     <div id='saveRecipeButton'>
-                        <button onClick={this.saveRecipe}>
+                        <button
+                            onClick={
+                                this.state.recipeSaved
+                                ? this.removeRecipe
+                                : this.saveRecipe
+                            }>
                             { this.props.verified
-                              ? 'Save Recipe'
+                              ? this.state.recipeSaved
+                                ? 'Remove Recipe'
+                                : 'Save Recipe'
                               : 'Log in to save this recipe'
                             }
                         </button>
