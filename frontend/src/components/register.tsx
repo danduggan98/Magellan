@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
+import BeatLoader from 'react-spinners/BeatLoader';
 import { Redirect, Link, RouteComponentProps } from 'react-router-dom';
 import '../styles/register.css';
 
@@ -8,22 +9,24 @@ interface Props extends RouteComponentProps {
 }
 
 interface State {
-    email: string,
-    password: string,
-    confirmPassword: string,
-    errors: string[],
-    redirectAfterSumbit: boolean
+    email:                string,
+    password:             string,
+    confirmPassword:      string,
+    errors:               string[],
+    redirectAfterSumbit:  boolean,
+    submissionInProgress: boolean
 };
 
 export default class Register extends Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
-            email: '',
-            password: '',
-            confirmPassword: '',
-            errors: [],
-            redirectAfterSumbit: false
+            email:                '',
+            password:             '',
+            confirmPassword:      '',
+            errors:               [],
+            redirectAfterSumbit:  false,
+            submissionInProgress: false
         };
     }
 
@@ -46,13 +49,18 @@ export default class Register extends Component<Props, State> {
                 this.setState({
                     confirmPassword: value
                 });
-                break;
+                break
+            ;
         }
     }
 
     //Submit the form and save any errors that might have returned
     submitPage = (event: React.FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
+
+        this.setState({
+            submissionInProgress: true
+        })
 
         const inputs = JSON.stringify({
             email:           this.state.email,
@@ -76,12 +84,14 @@ export default class Register extends Component<Props, State> {
                 
                 if (!errors.length) {
                     this.setState({
-                        redirectAfterSumbit: true
+                        redirectAfterSumbit:  true,
+                        submissionInProgress: false
                     });
                 }
                 else {
                     this.setState({
-                        errors
+                        errors,
+                        submissionInProgress: false
                     });
                 }
             })();
@@ -200,6 +210,13 @@ export default class Register extends Component<Props, State> {
                     </div>
                 </form>
 
+                { this.state.submissionInProgress
+                  ? <div id='registeringNotice'>
+                        Registering
+                        <BeatLoader size={20} margin={5}/>
+                    </div>
+                  : <div></div>
+                }
             </div>
         );
     }
