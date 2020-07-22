@@ -1,5 +1,7 @@
 import React, { Component, FunctionComponent } from 'react';
 import { Helmet } from 'react-helmet';
+import { css } from '@emotion/core';
+import PulseLoader from 'react-spinners/PulseLoader';
 import { RouteComponentProps, Redirect } from 'react-router-dom';
 import { RecipeData } from '../../../magellan';
 import '../styles/recipe.css';
@@ -22,6 +24,7 @@ interface Props extends RouteComponentProps<RecipeRouterProps> {
 interface State {
     recipeFound:  boolean,
     recipeSaved:  boolean,
+    loaded:       boolean,
     redirect:     boolean,
     recipeID:     string,
     URL:          string,
@@ -95,6 +98,7 @@ export default class Recipe extends Component<Props, State> {
         this.state = {
             recipeFound:  true,
             recipeSaved:  false,
+            loaded:       false,
             redirect:     false,
             recipeID:     this.props.match.params.recipeid, //URL parameter
             URL:          '',
@@ -127,7 +131,8 @@ export default class Recipe extends Component<Props, State> {
         if (recipeData.error) {
             this.setState({
                 recipeFound: false,
-                recipeSaved
+                recipeSaved,
+                loaded: true
             });
         }
         //Recipe found
@@ -147,7 +152,8 @@ export default class Recipe extends Component<Props, State> {
                 ingredients:  recipeData.ingredients,
                 directions:   recipeData.directions,
                 source:       recipeData.source,
-                recipeSaved
+                recipeSaved,
+                loaded: true
             });
         }
     }
@@ -204,6 +210,15 @@ export default class Recipe extends Component<Props, State> {
     }
 
     render() {
+        //CSS for loading bar
+        const override = css`
+            width: 300px;
+            margin-top: 10px;
+            margin-left: auto;
+            margin-right: auto;
+            background-color: white;
+        `;
+
         //If the login redirect came from a recipe page, return to that page
         if (this.state.redirect) {
             return (
@@ -216,8 +231,18 @@ export default class Recipe extends Component<Props, State> {
             );
         }
 
+        //Recipe lookup not yet finished
+        if (!this.state.loaded) {
+            return (
+                <div id='loadingNotice'>
+                    Loading
+                    <PulseLoader css={override}/>
+                </div>
+            );
+        }
+
         //Recipe not found
-        if (!this.state.recipeFound) {
+        else if (!this.state.recipeFound) {
             return (
                 <div id='notFoundNotice'>
                     Recipe not found!
