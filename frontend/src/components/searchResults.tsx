@@ -40,8 +40,11 @@ export default class SearchResults extends Component<Props, State> {
         //Turn them into search cards
         const visibleResults = this.props.data
             .slice(firstIdx, secondIdx)
-            .map(recipe => (
-                <SearchCard info={recipe} />
+            .map((recipe, i) => (
+                <SearchCard
+                    key={i}
+                    info={recipe}>
+                </SearchCard>
             )
         );
 

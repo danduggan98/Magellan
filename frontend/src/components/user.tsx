@@ -45,8 +45,11 @@ export default class User extends Component<Props, State> {
 
     render() {
         const formattedRecipes = this.state.savedRecipes
-            .map(recipe => (
-                <SavedRecipeCard info={recipe} />
+            .map((recipe, i) => (
+                <SavedRecipeCard
+                    key={i}
+                    info={recipe}>
+                </SavedRecipeCard>
             )
         );
         

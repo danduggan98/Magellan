@@ -1,8 +1,8 @@
 import React, { Component, FunctionComponent } from 'react';
 import { Helmet } from 'react-helmet';
-import '../styles/recipe.css';
 import { RouteComponentProps, Redirect } from 'react-router-dom';
 import { RecipeData } from '../../../magellan';
+import '../styles/recipe.css';
 
 //Define local types
 
@@ -53,7 +53,7 @@ const ArrayToList: FunctionComponent<ArrayToListProps> = (props) => {
         for (let j = 1; j < itemList.length; j++) { //Start at j = 1 to skip the header
             let next = itemList[j];
             section.push (
-                <li key={next}>
+                <li key={j}>
                     {next}
                 </li>
             );
@@ -65,7 +65,7 @@ const ArrayToList: FunctionComponent<ArrayToListProps> = (props) => {
         if (header !== 'main') {
             items.push (
                 <div className='sectionHeader'
-                    key={header}>
+                    key={i + 'h'}>
                     {header}
                 </div>
             );
@@ -73,14 +73,11 @@ const ArrayToList: FunctionComponent<ArrayToListProps> = (props) => {
 
         //Print the list of items
         items.push (
-            <div className='sectionData'>
+            <div className='sectionData'
+                key={i}>
                 { props.ordered
-                  ? <ol key={section.toString()}>
-                        {section}
-                    </ol>
-                  : <ul key={section.toString()}>
-                        {section}
-                    </ul>
+                  ? <ol>{section}</ol>
+                  : <ul>{section}</ul>
                 }
             </div>
         );
