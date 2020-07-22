@@ -37,3 +37,9 @@
 #submitButton:hover {
     background-color: lightgrey;
 }
+
+#loggingInNotice {
+    font-size: 25px;
+    text-align: center;
+    margin-top: 20px;
+}
