@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
+import BeatLoader from 'react-spinners/BeatLoader';
 import { Redirect, Link, RouteComponentProps } from 'react-router-dom';
 import '../styles/login.css';
 
@@ -13,10 +14,11 @@ interface Props extends RouteComponentProps<LoginRouterProps>{
 }
 
 interface State {
-    email: string,
-    password: string,
-    errors: string[],
-    redirectAfterSumbit: boolean
+    email:                string,
+    password:             string,
+    errors:               string[],
+    redirectAfterSumbit:  boolean,
+    submissionInProgress: boolean,
 };
 
 export default class Login extends Component<Props, State> {
@@ -24,10 +26,11 @@ export default class Login extends Component<Props, State> {
         super(props);
         this.updateLoginStatus = props.updateLoginStatus;
         this.state = {
-            email: '',
-            password: '',
-            errors: [],
-            redirectAfterSumbit: false
+            email:                '',
+            password:             '',
+            errors:               [],
+            redirectAfterSumbit:  false,
+            submissionInProgress: false
         };
     }
 
@@ -52,6 +55,10 @@ export default class Login extends Component<Props, State> {
     submitPage = (event: React.FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
 
+        this.setState({
+            submissionInProgress: true
+        })
+
         const inputs = JSON.stringify({
             email:    this.state.email,
             password: this.state.password
@@ -74,12 +81,14 @@ export default class Login extends Component<Props, State> {
                 if (!errors.length) {
                     this.updateLoginStatus();
                     this.setState({
-                        redirectAfterSumbit: true
+                        redirectAfterSumbit:  true,
+                        submissionInProgress: false
                     });
                 }
                 else {
                     this.setState({
-                        errors
+                        errors,
+                        submissionInProgress: false
                     });
                 }
             })();
@@ -195,6 +204,13 @@ export default class Login extends Component<Props, State> {
                     </div>
                 </form>
 
+                { this.state.submissionInProgress
+                  ? <div id='loggingInNotice'>
+                        Logging In
+                        <BeatLoader size={20} margin={5}/>
+                    </div>
+                  : <div></div>
+                }
             </div>
         );
     }
