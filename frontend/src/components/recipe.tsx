@@ -225,7 +225,7 @@ export default class Recipe extends Component<Props, State> {
         //Recipe lookup not yet finished
         if (!this.state.loaded) {
             return (
-                <div id='loadingNotice'>
+                <div id='recipeLoadingNotice'>
                     Loading
                     <PulseLoader size={20} margin={5} />
                 </div>
