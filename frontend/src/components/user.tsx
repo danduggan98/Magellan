@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
+import PulseLoader from 'react-spinners/PulseLoader';
 import SavedRecipeCard from './savedRecipeCard';
 import { SavedRecipe } from '../../../magellan';
 import '../styles/user.css';
@@ -11,7 +12,8 @@ interface Props {
 
 interface State {
     email: string,
-    savedRecipes: SavedRecipe[]
+    savedRecipes: SavedRecipe[],
+    loaded: boolean,
 };
 
 export default class User extends Component<Props, State> {
@@ -19,7 +21,8 @@ export default class User extends Component<Props, State> {
         super(props);
         this.state = {
             email: '',
-            savedRecipes: []
+            savedRecipes: [],
+            loaded: false,
         };
     }
 
@@ -35,7 +38,8 @@ export default class User extends Component<Props, State> {
     
             this.setState({
                 email: userData.email || '',
-                savedRecipes: userData.savedRecipes || []
+                savedRecipes: userData.savedRecipes || [],
+                loaded: true
             })
         }
         catch (err) {
@@ -75,6 +79,16 @@ export default class User extends Component<Props, State> {
                     </h4>
                 </div>
             )
+        }
+
+        //Saved recipe lookup not yet finished
+        if (!this.state.loaded) {
+            return (
+                <div id='userLoadingNotice'>
+                    Loading
+                    <PulseLoader size={20} margin={5} />
+                </div>
+            );
         }
     
         return (
