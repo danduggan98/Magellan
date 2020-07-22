@@ -1,6 +1,5 @@
 import React, { Component, FunctionComponent } from 'react';
 import { Helmet } from 'react-helmet';
-import { css } from '@emotion/core';
 import PulseLoader from 'react-spinners/PulseLoader';
 import { RouteComponentProps, Redirect } from 'react-router-dom';
 import { RecipeData } from '../../../magellan';
@@ -210,14 +209,6 @@ export default class Recipe extends Component<Props, State> {
     }
 
     render() {
-        //CSS for loading bar
-        const override = css`
-            width: 300px;
-            margin-top: 10px;
-            margin-left: auto;
-            margin-right: auto;
-            background-color: white;
-        `;
 
         //If the login redirect came from a recipe page, return to that page
         if (this.state.redirect) {
@@ -236,7 +227,7 @@ export default class Recipe extends Component<Props, State> {
             return (
                 <div id='loadingNotice'>
                     Loading
-                    <PulseLoader css={override}/>
+                    <PulseLoader size={20} margin={5} />
                 </div>
             );
         }
