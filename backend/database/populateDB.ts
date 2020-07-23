@@ -53,19 +53,18 @@ import { RecipeData } from 'magellan';
             });
 
             //Insert any recipes that don't already exist
-            let count = 0;
             await Promise.all(
-                cleanedRecipes.map(async nextRecipe => {
+                cleanedRecipes.map(async (nextRecipe, i) => {
                     try {
                         await recipesColl.updateOne(
                             { $and: [
                                 { recipeName: nextRecipe.recipeName },
                                 { author: nextRecipe.author }
                             ]},
-                            { $setOnInsert: { ...nextRecipe } },
+                            { $set: { ...nextRecipe } },
                             { upsert: true }
                         );
-                        if ((++count) % Math.ceil((recipes.length / 7)) === 0) process.stdout.write('.'); //Track progress
+                        if (i % Math.ceil(recipes.length / 7) === 0) process.stdout.write('.'); //Track progress
                     }
                     catch (err) {
                         console.log('Error adding item to database:', err);

@@ -181,16 +181,15 @@ import { RecipeDataResult, RecipeDataCondensed, Index, IndexReference } from 'ma
         process.stdout.write('    * Adding indexes to database ...');
 
         //Insert any recipes that don't already exist
-        let count = 0;
         await Promise.all(
-            indexes.map(async idx => {
+            indexes.map(async (idx, i) => {
                 try {
                     await indexColl.updateOne(
                         { key: idx.key },
-                        { $setOnInsert: { ...idx } },
+                        { $set: { ...idx } },
                         { upsert: true }
                     );
-                    if ((++count) % Math.ceil((indexes.length / 7)) === 0) process.stdout.write('.'); //Track progress
+                    if (i % Math.ceil(indexes.length / 7) === 0) process.stdout.write('.'); //Track progress
                 }
                 catch (err) {
                     console.log('Error adding item to database:', err);
