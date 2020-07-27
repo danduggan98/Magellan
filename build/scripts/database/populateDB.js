@@ -56,14 +56,13 @@ const resources_1 = require("../resources");
                     return nextRecipe;
                 });
                 //Insert any recipes that don't already exist
-                let count = 0;
-                yield Promise.all(cleanedRecipes.map((nextRecipe) => __awaiter(this, void 0, void 0, function* () {
+                yield Promise.all(cleanedRecipes.map((nextRecipe, i) => __awaiter(this, void 0, void 0, function* () {
                     try {
                         yield recipesColl.updateOne({ $and: [
                                 { recipeName: nextRecipe.recipeName },
                                 { author: nextRecipe.author }
-                            ] }, { $setOnInsert: Object.assign({}, nextRecipe) }, { upsert: true });
-                        if ((++count) % Math.ceil((recipes.length / 7)) === 0)
+                            ] }, { $set: Object.assign({}, nextRecipe) }, { upsert: true });
+                        if (i % Math.ceil(recipes.length / 7) === 0)
                             process.stdout.write('.'); //Track progress
                     }
                     catch (err) {

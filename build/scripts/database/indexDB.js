@@ -161,11 +161,10 @@ const resources_1 = require("../resources");
             const indexColl = recipeDB.collection(COLL_NAME);
             process.stdout.write('    * Adding indexes to database ...');
             //Insert any recipes that don't already exist
-            let count = 0;
-            yield Promise.all(indexes.map((idx) => __awaiter(this, void 0, void 0, function* () {
+            yield Promise.all(indexes.map((idx, i) => __awaiter(this, void 0, void 0, function* () {
                 try {
-                    yield indexColl.updateOne({ key: idx.key }, { $setOnInsert: Object.assign({}, idx) }, { upsert: true });
-                    if ((++count) % Math.ceil((indexes.length / 7)) === 0)
+                    yield indexColl.updateOne({ key: idx.key }, { $set: Object.assign({}, idx) }, { upsert: true });
+                    if (i % Math.ceil(indexes.length / 7) === 0)
                         process.stdout.write('.'); //Track progress
                 }
                 catch (err) {
