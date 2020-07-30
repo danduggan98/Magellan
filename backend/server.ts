@@ -259,11 +259,11 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
                 ;
 
                 //PRINT RESULTS FOR TESTING
-                console.log('\nRESULTS:');
+                /*console.log('\nRESULTS:');
                 finalResults.map(element => {
                     console.log(element._id, ':', element.recipeName);
                     console.log('Accuracy:', element.accuracy, ', Brevity:', element.brevity || 'N/A', ', Adjacency:', element.adjacency || 'N/A', ', Rand:', element.rand, '\n');
-                });
+                });*/
 
                 //Send back the top results as JSON
                 console.timeEnd('  > Search execution time');
