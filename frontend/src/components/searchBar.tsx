@@ -97,8 +97,8 @@ export default class SearchBar extends Component {
 
         return (
             <div id='searchContainer'>
-                <div id='notice'>
-                    Find your next meal!
+                <div id='title'>
+                    Find your next meal
                 </div>
 
                 <form
@@ -112,7 +112,7 @@ export default class SearchBar extends Component {
                             id='searchInput'
                             type='text'
                             autoComplete='off'
-                            placeholder='Search for recipes'
+                            placeholder='Search for recipes here'
                             onChange={this.updateInput}>
                         </input>
 
