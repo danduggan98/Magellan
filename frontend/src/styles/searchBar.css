@@ -1,6 +1,6 @@
 #searchContainer {
     margin: auto;
-    min-width: 400px;
+    min-width: 350px;
     max-width: 50%;
 }
 
@@ -35,6 +35,7 @@
 #searchButton {
     position: absolute;
     right: 10px;
+    z-index: 1;
     width: 80px;
     height: 65px;
     text-align: center;
