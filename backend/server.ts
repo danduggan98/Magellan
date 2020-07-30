@@ -403,8 +403,9 @@ app.post('/auth/login', async (req: Request, res: Response) => {
                 );
 
                 //Include the token in our json response
+                const hour = 3600000;
                 res.cookie('auth-token', jwt_token, {
-                    maxAge: 14400000, //Expires in 4 hours
+                    maxAge: 48 * hour,
                     httpOnly: true,
                     secure: true,
                     sameSite: 'strict'
