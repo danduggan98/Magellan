@@ -1,13 +1,17 @@
-body {
-  margin: 10px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* Import Montserrat font */
+@font-face {
+    font-family: 'Montserrat';
+    src: local('Montserrat-regular.tff'), url('./../fonts/Montserrat-Regular.ttf') format('truetype');
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+/* Import Open Sans font */
+@font-face {
+    font-family: 'OpenSans';
+    src: local('OpenSans-regular.tff'), url('./../fonts/OpenSans-Regular.ttf') format('truetype');
 }
+
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
