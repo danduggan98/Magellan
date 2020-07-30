@@ -355,8 +355,9 @@ app.post('/auth/login', (req, res) => __awaiter(void 0, void 0, void 0, function
             if (user) {
                 const jwt_token = jsonwebtoken_1.default.sign({ email: email }, process.env.JWT_SECRET);
                 //Include the token in our json response
+                const hour = 3600000;
                 res.cookie('auth-token', jwt_token, {
-                    maxAge: 14400000,
+                    maxAge: 48 * hour,
                     httpOnly: true,
                     secure: true,
                     sameSite: 'strict'
