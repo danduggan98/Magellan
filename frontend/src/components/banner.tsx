@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
-import '../styles/banner.css'
+import '../styles/banner.css';
 
 interface Props extends RouteComponentProps {
     verified: boolean,
@@ -10,27 +10,28 @@ interface Props extends RouteComponentProps {
 
 const Banner: FunctionComponent<Props> = (props) => {
     return (
-        <div id='logoBanner'>
+        <div id='banner'>
             <Link to='/home' className='logo'>
-                MAGELLAN
+                Magellan
             </Link>
 
             { props.verified
               ? props.location.pathname === '/user'
-                ? <Link to='/home' className='loginButton'>Back to the home page</Link>
-                : <Link to='/user' className='loginButton'>View Your Saved Recipes</Link>
+                ? <Link to='/home' id='homeLink'>Back to the home page</Link>
+                : <Link to='/user' id='userLink'>View Your Saved Recipes</Link>
               : <div></div>
             }
 
             { props.verified
-              ? <button className='logoutButton' onClick={props.logout}>Log Out</button>
+              ? <button id='logoutButton' onClick={props.logout}>Log Out</button>
               : <Link
                     to={{
                         pathname: '/login',
                         state: { source: props.location.pathname }
-                    }}
-                    className='loginButton'>
-                        Log In
+                    }}>
+                    <button className='loginButton'>
+                        <span id='loginButtonText'>Sign In</span>
+                    </button>
                 </Link>
             }
         </div>
