@@ -234,11 +234,11 @@ app.get('/api/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0,
                     ? resources_1.SortByProperties(finalResults, ['accuracy', 'adjacency', 'brevity', 'rand'])
                     : resources_1.SortByProperties(finalResults, ['accuracy', 'rand']);
                 //PRINT RESULTS FOR TESTING
-                console.log('\nRESULTS:');
+                /*console.log('\nRESULTS:');
                 finalResults.map(element => {
                     console.log(element._id, ':', element.recipeName);
                     console.log('Accuracy:', element.accuracy, ', Brevity:', element.brevity || 'N/A', ', Adjacency:', element.adjacency || 'N/A', ', Rand:', element.rand, '\n');
-                });
+                });*/
                 //Send back the top results as JSON
                 console.timeEnd('  > Search execution time');
                 res.json({ searchResults: finalResults });
