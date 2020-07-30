@@ -20,7 +20,7 @@
 }
 
 .linkButton {
-    margin: 10px 10px 10px 20px;
+    margin: 10px 20px 10px 10px;
     cursor: pointer;
     background: transparent;
     border: none !important;
@@ -37,4 +37,3 @@
     padding: 10px 20px 10px 20px;
     border-radius: 50px;
 }
-
