@@ -95,7 +95,7 @@ export default class SearchResults extends Component<Props, State> {
 
     render() {
         return (
-            <div id='wrapper'>
+            <div id='searchResultsWrapper'>
                 <div id='topResultsLabel'>
                     Top Results:
                 </div>
