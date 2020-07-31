@@ -133,6 +133,7 @@ app.get('/api/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0,
             let initialResults = []; //Will hold our initial sorted results
             //No results
             if (!results.length) {
+                console.log('  > No results found');
                 console.timeEnd('  > Search execution time');
                 res.json({ error: 'No search results' });
             }
@@ -155,6 +156,7 @@ app.get('/api/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0,
                         }
                     }
                 }
+                console.log(`  > ${initialResults.length} results found`);
                 //Sort by whatever the user is looking for, then grab only the most relevant results
                 type === 'name'
                     ? resources_1.SortByProperties(initialResults, ['inName', 'inIngs'])

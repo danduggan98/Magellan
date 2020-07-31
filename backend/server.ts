@@ -137,6 +137,7 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
 
             //No results
             if (!results.length) {
+                console.log('  > No results found');
                 console.timeEnd('  > Search execution time');
                 res.json({ error: 'No search results' });
             }
@@ -162,6 +163,7 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
                         }
                     }
                 }
+                console.log(`  > ${initialResults.length} results found`);
 
                 //Sort by whatever the user is looking for, then grab only the most relevant results
                 type === 'name'
