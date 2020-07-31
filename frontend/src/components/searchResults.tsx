@@ -21,7 +21,7 @@ export default class SearchResults extends Component<Props, State> {
         this.state = {
             currentResults: [],
             numResults: 0,
-            numResultsPerPage: 5, //Arbitrary
+            numResultsPerPage: 6, //Arbitrary
             lastPage: 0,
             currentPage: 1
         };
