@@ -75,22 +75,7 @@
     white-space: pre;
 }
 
-#inputReminder {
-    max-height: 12px;
-    text-align: center;
-    font-size: 30px;
-    font-weight: bold;
-    font-family: OpenSans;
-}
-
-#loadingBar {
-    text-align: center;
-    font-size: 30px;
-    font-weight: bold;
-    font-family: OpenSans;
-}
-
-#failNotice {
+.searchNotice {
     text-align: center;
     font-size: 30px;
     font-weight: bold;
