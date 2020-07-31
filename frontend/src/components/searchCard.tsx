@@ -18,18 +18,18 @@ const SearchCard: FunctionComponent<Props> = (props) => {
                 href={link}>
 
                 <div id='cardContents'>
+                    <div id='cardInfo'>
+                        <div id='cardRecipeName'>{data.recipeName}</div>
+                        { data.totalTime
+                          ? <div id='cardTotalTime'>{data.totalTime}</div>
+                          : <p className='invisibleElement'></p>
+                        }
+                    </div>
+
                     <div id='cardPhoto'>
                         { data.imageURL
                           ? <img src={data.imageURL} alt=''></img>
                           : <p className='invisibleElement'></p>
-                        }
-                    </div>
-                    
-                    <div id='cardInfo'>
-                        <div id='cardRecipeName'>{data.recipeName}</div>
-                        { data.totalTime
-                            ? <div id='cardTotalTime'>{data.totalTime}</div>
-                            : <p className='invisibleElement'></p>
                         }
                     </div>
                 </div>
