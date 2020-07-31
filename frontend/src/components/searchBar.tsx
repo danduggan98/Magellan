@@ -27,7 +27,7 @@ export default class SearchBar extends Component {
         resultsFound: true,
         loading:      false,
         results:      [],
-        maxResults:   120 //Arbitrary
+        maxResults:   60 //Arbitrary
     };
 
     //Launch a search in the server and store the results
