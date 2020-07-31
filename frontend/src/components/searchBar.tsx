@@ -173,17 +173,17 @@ export default class SearchBar extends Component {
                     </form>
                 
                     {/* Form redirects to this invisible iframe, keeping it on the same page */}
-                    <iframe name='hiddenFrame' id='iframe' title='hidden'></iframe>
+                    <iframe name='hiddenFrame' className='invisibleElement' title='hidden'></iframe>
                 </div>
 
                 <div id='results'>
                     { !this.state.resultsFound
                       ? <div id='failNotice'>No results found. Please try again</div>
-                      : <p></p>
+                      : <p className='invisibleElement'></p>
                     }
                     { this.state.results.length
                       ? <SearchResults data={this.state.results}/>
-                      : <p></p>
+                      : <p className='invisibleElement'></p>
                     }
                 </div>
             </div>
