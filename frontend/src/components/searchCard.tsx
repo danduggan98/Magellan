@@ -21,14 +21,14 @@ const SearchCard: FunctionComponent<Props> = (props) => {
                     <div id='cardInfo'>
                         <div id='cardRecipeName'>{data.recipeName}</div>
                         { data.totalTime
-                          ? <div id='cardTotalTime'>{data.totalTime}</div>
+                          ? <div id='cardTotalTime'>Total Time: {data.totalTime}</div>
                           : <p className='invisibleElement'></p>
                         }
                     </div>
 
-                    <div id='cardPhoto'>
+                    <div id='cardPhotoContainer'>
                         { data.imageURL
-                          ? <img src={data.imageURL} alt=''></img>
+                          ? <img id='cardPhoto' src={data.imageURL} alt=''></img>
                           : <p className='invisibleElement'></p>
                         }
                     </div>
