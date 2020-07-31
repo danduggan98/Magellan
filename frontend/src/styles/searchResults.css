@@ -4,22 +4,16 @@
     justify-content: space-evenly;
     align-items: center;
     margin: auto;
-    max-width: 100%;
-    margin-top: 10px;
+    max-width: 85%;
+    min-width: 50%;
 }
 
 #topResultsLabel {
-    font-size: 26px;
-    font-weight: bolder;
+    font-size: 30px;
+    font-weight: bold;
+    font-family: OpenSans;
     margin-bottom: 15px;
     text-align: center;
-}
-
-#scrollLeftButton {
-    text-align: center;
-    font-size: 45px;
-    margin-right: 40px;
-    transition: .1s;
 }
 
 #scrollLeftButton:active {
@@ -29,13 +23,7 @@
 #resultsList {
     display: flex;
     flex-direction: column;
-}
-
-#scrollRightButton {
-    text-align: center;
-    font-size: 45px;
-    margin-left: 40px;
-    transition: .1s;
+    margin: 0px 60px 0px 60px;
 }
 
 #scrollRightButton:active {
@@ -48,9 +36,10 @@
     background: transparent;
     border: none !important;
     text-align: center;
-    font-size: 40px;
-    transition: 0.2s;
+    font-size: 60px;
+    transition: 0.1s;
     opacity: 0.8;
+    color: #509EE5;
     position: relative;
 }
 
