@@ -96,81 +96,86 @@ export default class SearchBar extends Component {
         `;
 
         return (
-            <div id='searchContainer'>
-                <div id='title'>
-                    Find your next meal
+            <div id='searchBarWrapper'>
+                <div id='searchContainer'>
+                    <div id='title'>
+                        Find your next meal
+                    </div>
+
+                    <form
+                        name='searchBar'
+                        target='hiddenFrame'
+                        onSubmit={this.getResults}>
+
+                        <div id='searchBarWrapper'>
+                            <input
+                                name='search'
+                                id='searchInput'
+                                type='text'
+                                autoComplete='off'
+                                placeholder='Search for recipes here'
+                                onChange={this.updateInput}>
+                            </input>
+
+                            <button
+                                type='submit'
+                                id='searchButton'
+                                className='fa fa-search'>
+                            </button>
+                        </div>
+                    
+                        <div id='searchType'>
+                            Search by:
+
+                            <div id='searchTypeNameWrapper'>
+                                <input
+                                    type='radio'
+                                    id='searchTypeNameButton'
+                                    name='searchType'
+                                    value='name'
+                                    onChange={this.updateSearchType}
+                                    checked={this.state.searchType === 'name'}>
+                                </input>
+
+                                <label htmlFor='searchTypeNameButton'>Recipe Name</label>
+                            </div>
+
+                            <div id='searchTypeIngWrapper'>
+                                <input
+                                    type='radio'
+                                    id='searchTypeIngButton'
+                                    name='searchType'
+                                    value='ing'
+                                    onChange={this.updateSearchType}
+                                    checked={this.state.searchType === 'ing'}>
+                                </input>
+                            
+                                <label htmlFor='searchTypeIngButton'>Ingredients</label>
+                            </div>
+                        </div>
+
+                        <div id='inputReminder'>
+                            { this.state.emptyInput
+                            ? <h4>Please enter something to search</h4>
+                            : <p></p>
+                            }
+                        </div>
+
+                        <div id='loadingBar'>
+                            { this.state.loading
+                            ? <div>
+                                    Searching...
+                                    <BarLoader height={9} css={override}/>
+                                </div>
+                            : <p></p>
+                            }
+                        </div>
+                    </form>
+                
+                    {/* Form redirects to this invisible iframe, keeping it on the same page */}
+                    <iframe name='hiddenFrame' id='iframe' title='hidden'></iframe>
                 </div>
 
-                <form
-                    name='searchBar'
-                    target='hiddenFrame'
-                    onSubmit={this.getResults}>
-
-                    <div id='searchBarWrapper'>
-                        <input
-                            name='search'
-                            id='searchInput'
-                            type='text'
-                            autoComplete='off'
-                            placeholder='Search for recipes here'
-                            onChange={this.updateInput}>
-                        </input>
-
-                        <button
-                            type='submit'
-                            id='searchButton'
-                            className='fa fa-search'>
-                        </button>
-                    </div>
-                    
-                    <div id='searchType'>
-                        Search by:
-
-                        <div id='searchTypeNameWrapper'>
-                            <input
-                                type='radio'
-                                id='searchTypeNameButton'
-                                name='searchType'
-                                value='name'
-                                onChange={this.updateSearchType}
-                                checked={this.state.searchType === 'name'}>
-                            </input>
-
-                            <label htmlFor='searchTypeNameButton'>Recipe Name</label>
-                        </div>
-
-                        <div id='searchTypeIngWrapper'>
-                            <input
-                                type='radio'
-                                id='searchTypeIngButton'
-                                name='searchType'
-                                value='ing'
-                                onChange={this.updateSearchType}
-                                checked={this.state.searchType === 'ing'}>
-                            </input>
-                            
-                            <label htmlFor='searchTypeIngButton'>Ingredients</label>
-                        </div>
-                    </div>
-
-                    <div id='inputReminder'>
-                        { this.state.emptyInput
-                          ? <h4>Please enter something to search</h4>
-                          : <p></p>
-                        }
-                    </div>
-
-                    <div id='loadingBar'>
-                        { this.state.loading
-                          ? <div>
-                                Searching...
-                                <BarLoader height={9} css={override}/>
-                            </div>
-                          : <p></p>
-                        }
-                    </div>
-                </form>
-                
                 <div id='results'>
                     { !this.state.resultsFound
                       ? <div id='failNotice'>No results found. Please try again</div>
@@ -181,9 +186,6 @@ export default class SearchBar extends Component {
                       : <p></p>
                     }
                 </div>
-
-                {/* Form redirects to this invisible iframe, keeping it on the same page */}
-                <iframe name='hiddenFrame' id='iframe' title='hidden'></iframe>
             </div>
         );
     }
