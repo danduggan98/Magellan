@@ -157,10 +157,3 @@
     font-family: Arial, Helvetica, sans-serif;
     font-size: 18px;
 }
-
-.invisibleElement {
-    display: none;
-    height: 0;
-    width: 0;
-    border: 0;
-}

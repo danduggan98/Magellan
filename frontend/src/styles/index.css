@@ -16,3 +16,10 @@ body {
     background: rgba(243, 249, 255, 0.75);
 }
 
+.invisibleElement {
+    display: none;
+    height: 0;
+    width: 0;
+    border: 0;
+}
+
