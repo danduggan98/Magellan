@@ -1,23 +1,11 @@
 #card {
-    border: 2px solid grey;
-    border-radius: 15px;
-    width: auto;
-    height: auto;
-    min-width: 600px;
-    max-width: 800px;
-    min-height: 85px;
-    max-height: 90px;
-    overflow: hidden;
-    margin-bottom: 1rem;
-}
-
-#card:hover {
-    box-shadow: 3px 3px 8px grey;
-    max-height: 150px;
-}
-
-#card:hover div {
-    white-space: normal;
+    width: 350px;
+    height: 250px;
+    overflow: hidden; /*CHANGE TO SCROLL WHEN SIZING IS FIXED*/
+    margin: 8px;
+    border: none !important;
+    background-color: white;
+    box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.25);
 }
 
 #cardContents {
@@ -25,14 +13,6 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-}
-
-.expandableCard {
-    transition: all .1s ease-in-out;
-}
-
-.expandableCard:hover { 
-    transform: scale(1.1);
 }
 
 #cardInfo {
@@ -68,14 +48,6 @@
     max-width: 43%;
 }
 
-.FNsource {
-    color: darkgreen;
-}
-
-.TOHsource {
-    color: darkorchid;
-}
-
 #cardTotalTime {
     color: purple;
     text-decoration: underline;
@@ -91,8 +63,7 @@
 
 #cardPhoto {
     width: 17%;
-    height: 100%;
-    border-left: 2px solid grey;
+    height: 70%;
 }
 
 .cardRecipeLink {
