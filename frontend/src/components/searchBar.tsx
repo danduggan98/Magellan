@@ -27,7 +27,7 @@ export default class SearchBar extends Component {
         resultsFound: true,
         loading:      false,
         results:      [],
-        maxResults:   35 //Arbitrary
+        maxResults:   120 //Arbitrary
     };
 
     //Launch a search in the server and store the results
@@ -88,11 +88,11 @@ export default class SearchBar extends Component {
     render() {
         //CSS for loading bar
         const override = css`
-            width: 285px;
-            margin-top: 10px;
-            margin-left: auto;
-            margin-right: auto;
+            width: 300px;
+            margin: 10px auto 0px auto;
             background-color: lightgrey;
+            border: none;
+            border-radius: 10px;
         `;
 
         return (
@@ -149,7 +149,7 @@ export default class SearchBar extends Component {
                                 checked={this.state.searchType === 'ing'}>
                             </input>
                             
-                            <label htmlFor='searchTypeIngButton'>Ingredient</label>
+                            <label htmlFor='searchTypeIngButton'>Ingredients</label>
                         </div>
                     </div>
 
@@ -164,7 +164,7 @@ export default class SearchBar extends Component {
                         { this.state.loading
                           ? <div>
                                 Searching...
-                                <BarLoader height={6} css={override}/>
+                                <BarLoader height={9} css={override}/>
                             </div>
                           : <p></p>
                         }
@@ -173,7 +173,7 @@ export default class SearchBar extends Component {
                 
                 <div id='results'>
                     { !this.state.resultsFound
-                      ? <div id='failNotice'>No results found. Try again</div>
+                      ? <div id='failNotice'>No results found. Please try again</div>
                       : <p></p>
                     }
                     { this.state.results.length
