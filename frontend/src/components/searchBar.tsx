@@ -154,20 +154,20 @@ export default class SearchBar extends Component {
                             </div>
                         </div>
 
-                        <div id='inputReminder'>
+                        <div id='inputReminder' className='searchNotice'>
                             { this.state.emptyInput
                             ? <h4>Please enter something to search</h4>
-                            : <p></p>
+                            : <p className='invisibleElement'></p>
                             }
                         </div>
 
-                        <div id='loadingBar'>
+                        <div id='loadingBar' className='searchNotice'>
                             { this.state.loading
                             ? <div>
                                     Searching...
                                     <BarLoader height={9} css={override}/>
                                 </div>
-                            : <p></p>
+                            : <p className='invisibleElement'></p>
                             }
                         </div>
                     </form>
@@ -178,7 +178,7 @@ export default class SearchBar extends Component {
 
                 <div id='results'>
                     { !this.state.resultsFound
-                      ? <div id='failNotice'>No results found. Please try again</div>
+                      ? <div id='failNotice' className='searchNotice'>No results found. Please try again</div>
                       : <p className='invisibleElement'></p>
                     }
                     { this.state.results.length
