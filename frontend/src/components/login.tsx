@@ -99,23 +99,27 @@ export default class Login extends Component<Props, State> {
     }
 
     render() {
-        //Already logged in
+        //Already signed in
         if (this.props.verified) {
             return (
                 <div>
                     <Helmet>
-                        <title>{'Magellan - Login'}</title>
+                        <title>{'Magellan - Sign In'}</title>
                     </Helmet>
 
-                    <h3>You are already logged in</h3>
-                    <h4>Click
-                        <span>
-                            <Link to='/home'>
-                                here
-                            </Link>
-                        </span>
-                        to return to the home page
-                    </h4>
+                    <div id='alreadyLoggedInNotice'>
+                        You are already signed in
+
+                        <div>
+                            Click&nbsp;
+                            <span>
+                                <Link to='/home'>
+                                    here
+                                </Link>
+                            </span>
+                            &nbsp;to return to the home page
+                        </div>
+                    </div>
                 </div>
             )
         }
@@ -132,10 +136,10 @@ export default class Login extends Component<Props, State> {
         return (
             <div id='loginWrapper'>
                 <Helmet>
-                    <title>{'Magellan - Login'}</title>
+                    <title>{'Magellan - Sign In'}</title>
                 </Helmet>
                 
-                <div id='loginHeader'>Log In</div>
+                <div id='loginHeader'>Sign In</div>
 
                 <form
                     name='loginForm'
@@ -209,7 +213,7 @@ export default class Login extends Component<Props, State> {
                         Logging In
                         <BeatLoader size={20} margin={5}/>
                     </div>
-                  : <div></div>
+                  : <div className='invisibleElement'></div>
                 }
             </div>
         );
