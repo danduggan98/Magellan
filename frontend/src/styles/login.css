@@ -1,3 +1,15 @@
+#loginWrapper {
+    width: 100%;
+    position: relative;
+}
+
+#alreadyLoggedInNotice {
+    text-align: center;
+    font-size: 28px;
+    font-weight: 500;
+    font-family: OpenSans;
+}
+
 #loginHeader {
     text-align: center;
     font-size: xx-large;
