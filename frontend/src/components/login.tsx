@@ -183,8 +183,9 @@ export default class Login extends Component<Props, State> {
                     <div id='submitButtonWrapper'>
                         <button
                             type='submit'
-                            id='submitButton'>
-                                Submit
+                            id='submitButton'
+                            className='linkButton'>
+                                <span className='linkButtonText'>Submit</span>
                         </button>
                     </div>
                 </form>
@@ -192,7 +193,7 @@ export default class Login extends Component<Props, State> {
                 { this.state.submissionInProgress
                   ? <div id='loggingInNotice'>
                         Logging In
-                        <BeatLoader size={20} margin={5}/>
+                        <BeatLoader size={16} margin={6}/>
                     </div>
                   : <p className='invisibleElement'></p>
                 }
