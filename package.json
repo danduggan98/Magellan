@@ -19,6 +19,7 @@
     "dependencies": {
         "app-root-path": "^3.0.0",
         "bcryptjs": "^2.4.3",
+        "bootstrap": "^4.5.0",
         "concurrently": "^5.1.0",
         "cookie-parser": "^1.4.5",
         "dotenv": "^8.2.0",
