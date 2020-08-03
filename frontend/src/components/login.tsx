@@ -1,7 +1,7 @@
 import React, { Component, FunctionComponent } from 'react';
 import { Helmet } from 'react-helmet';
 import BeatLoader from 'react-spinners/BeatLoader';
-import Alert from 'react-bootstrap/Alert';
+//import Alert from 'react-bootstrap/Alert';
 import { Redirect, Link, RouteComponentProps } from 'react-router-dom';
 import '../styles/login.css';
 
