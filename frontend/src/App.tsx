@@ -12,8 +12,6 @@ import {
     Redirect
 } from 'react-router-dom';
 
-import './styles/App.css';
-
 interface State {
     verified: boolean,
     auth_error: string
