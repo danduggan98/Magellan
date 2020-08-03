@@ -7,6 +7,10 @@
     box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.25); /*May need to mess with this to fix contrast with background*/
 }
 
+#card:hover {
+    color: #1E76C8;
+}
+
 #cardContents {
     display: flex;
     flex-direction: column;
