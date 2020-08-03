@@ -19,16 +19,16 @@
 
 #inputWrapper {
     max-width: 40%;
-    margin: 15px auto 25px auto;
+    margin: 15px auto 6px auto;
 }
 
 .input {
     width: 90%;
-    height: 65px;
+    height: 60px;
     font-size: 22px;
     font-family: OpenSans;
     padding: 0px 35px 0px 35px;
-    margin-bottom: 25px;
+    margin-bottom: 24px;
     box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.25);
     border: 2px solid transparent;
     border-radius: 50px;
@@ -48,15 +48,9 @@
 }
 
 #submitButtonWrapper {
-    width: 100px;
-    height: 30px;
-    text-align: center;
     margin: auto;
+    text-align: center;
     margin-top: 20px;
-}
-
-#submitButton:hover {
-    background-color: lightgrey;
 }
 
 #loggingInNotice {
