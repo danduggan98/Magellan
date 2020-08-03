@@ -21,9 +21,10 @@ const SavedRecipeCard: FunctionComponent<Props> = (props) => {
                     <div id='savedRecipeCardName'>
                         {data.recipeName}
                     </div>
+                    
                     { data.author
                       ? <div id='savedRecipeCardAuthor'>by {data.author}</div>
-                      : <p></p>
+                      : <p className='invisibleElement'></p>
                     }
                 </div>
             </a>

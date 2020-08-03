@@ -1,17 +1,24 @@
 #savedRecipeCard {
-    border: 2px solid grey;
-    border-radius: 5px;
+    border: 1px solid black;
+    background-color: white;
+    box-sizing: border-box;
+    box-shadow: 1px 1px 1px grey;
+    color: black;
     margin-bottom: 10px;
-    max-width: 650px;
-    max-height: 80px;
+    min-width: 350px;
+    max-width: 35%;
+    min-height: 60px;
+    max-height: 200px;
 }
 
 #savedRecipeCard:hover {
-    box-shadow: 1px 1px 2px grey;
-    max-height: 150px;
+    color: #1E76C8;
 }
 
 .savedRecipeCardLink {
+    display: inline-block;
+    width: 100%;
+    height: 100%;
     color: inherit;
     text-decoration: none;
 }
@@ -21,14 +28,18 @@
 }
 
 #savedRecipeCardContents {
-    margin: 5px;
+    margin: 4px 5px 5px 8px;
 }
 
 #savedRecipeCardName {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 500;
+    font-family: OpenSans;
+    text-overflow: ellipsis;
 }
 
 #savedRecipeCardAuthor {
-    font-size: 17px;
+    font-size: 16px;
+    font-weight: 100;
+    font-family: OpenSans;
 }
