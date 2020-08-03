@@ -1,6 +1,6 @@
 import React, { Component, FunctionComponent } from 'react';
 import { Helmet } from 'react-helmet';
-import PulseLoader from 'react-spinners/PulseLoader';
+import BeatLoader from 'react-spinners/BeatLoader';
 import { RouteComponentProps, Redirect } from 'react-router-dom';
 import { RecipeData } from '../../../magellan';
 import '../styles/recipe.css';
@@ -227,7 +227,7 @@ export default class Recipe extends Component<Props, State> {
             return (
                 <div id='recipeLoadingNotice'>
                     Loading
-                    <PulseLoader size={20} margin={5} />
+                    <BeatLoader size={20} margin={5} />
                 </div>
             );
         }
