@@ -1,11 +1,16 @@
-import React, { Component } from 'react';
+import React, { Component, FunctionComponent } from 'react';
 import { Helmet } from 'react-helmet';
 import BeatLoader from 'react-spinners/BeatLoader';
+import Alert from 'react-bootstrap/Alert';
 import { Redirect, Link, RouteComponentProps } from 'react-router-dom';
 import '../styles/login.css';
 
 interface LoginRouterProps {
     source: string
+}
+
+interface ErrorListProps {
+    errorList: string[]
 }
 
 interface Props extends RouteComponentProps<LoginRouterProps>{
@@ -20,6 +25,21 @@ interface State {
     redirectAfterSumbit:  boolean,
     submissionInProgress: boolean,
 };
+
+const ErrorList: FunctionComponent<ErrorListProps> = (props) => {
+    return (
+        <div>
+            { props.errorList.length
+              ? props.errorList.map(err =>
+                    //<Alert key={err} variant={'warning'} dismissible>
+                        <div>{err}</div>
+                    //</Alert>
+                )
+              : <p className='invisibleElement'></p>
+            }
+        </div>
+    );
+}
 
 export default class Login extends Component<Props, State> {
     constructor(props: Props) {
@@ -199,12 +219,7 @@ export default class Login extends Component<Props, State> {
                 }
 
                 <div id='errorList'>
-                    { this.state.errors.length
-                      ? this.state.errors.map(err => 
-                            <div /*className='alert alert-warning alert-dismissible fade show' role='alert'*/>{err}</div>
-                        )
-                      : <p className='invisibleElement'></p>
-                    }
+                    <ErrorList errorList={this.state.errors}/>
                 </div>
             </div>
         );
