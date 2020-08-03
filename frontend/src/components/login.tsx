@@ -145,13 +145,6 @@ export default class Login extends Component<Props, State> {
                     name='loginForm'
                     onSubmit={this.submitPage}>
 
-                    <div>ERRORS:
-                        { this.state.errors.length
-                          ? this.state.errors
-                          : ''
-                        }
-                    </div>
-
                     <div id='inputWrapper'>
                         <label
                             id='emailLabel'
@@ -213,7 +206,16 @@ export default class Login extends Component<Props, State> {
                         Logging In
                         <BeatLoader size={20} margin={5}/>
                     </div>
-                  : <div className='invisibleElement'></div>
+                  : <p className='invisibleElement'></p>
+                }
+
+                { this.state.errors.length
+                  ? <div id='errorList'>ERRORS: {
+                        this.state.errors.map(err => 
+                            <div /*className='alert alert-warning alert-dismissible fade show' role='alert'*/>{err}</div>
+                        )
+                    }</div>
+                  : <p className='invisibleElement'></p>
                 }
             </div>
         );
