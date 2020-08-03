@@ -15,17 +15,17 @@ const Banner: FunctionComponent<Props> = (props) => {
                 Magellan
             </Link>
 
-            { props.verified
-              ? props.location.pathname === '/user'
-                ? <Link to='/home'
-                        className='linkButton'>
-                            <span className='linkButtonText'>Back to the home page</span>
+            { props.location.pathname === '/home'
+              ? props.verified
+                ? <Link to='/user'
+                    className='linkButton'>
+                        <span className='linkButtonText'>View Your Saved Recipes</span>
                   </Link>
-                : <Link to='/user'
-                        className='linkButton'>
-                            <span className='linkButtonText'>View Your Saved Recipes</span>
-                  </Link>
-              : <div></div>
+                : <p className='invisibleElement'></p>
+              : <Link to='/home'
+                    className='linkButton'>
+                        <span className='linkButtonText'>Back to the home page</span>
+                </Link>
             }
 
             { props.verified
