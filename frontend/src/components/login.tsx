@@ -146,12 +146,6 @@ export default class Login extends Component<Props, State> {
                     onSubmit={this.submitPage}>
 
                     <div id='inputWrapper'>
-                        <label
-                            id='emailLabel'
-                            className='label'
-                            htmlFor='email'>
-                                Email Address:
-                        </label>
                         <input
                             className='input'
                             id='email'
@@ -163,12 +157,6 @@ export default class Login extends Component<Props, State> {
                             onChange={this.updateInput}>
                         </input>
 
-                        <label
-                            id='passwordLabel'
-                            className='label'
-                            htmlFor='password'>
-                                Password:
-                        </label>
                         <input
                             className='input'
                             id='password'
@@ -182,7 +170,7 @@ export default class Login extends Component<Props, State> {
                     </div>
 
                     <div id='registerLink'>
-                        Don't have an account yet?
+                        Don't have an account yet?&nbsp;
                         <Link
                             to={{
                                 pathname: '/register',
@@ -209,14 +197,14 @@ export default class Login extends Component<Props, State> {
                   : <p className='invisibleElement'></p>
                 }
 
-                { this.state.errors.length
-                  ? <div id='errorList'>ERRORS: {
-                        this.state.errors.map(err => 
+                <div id='errorList'>
+                    { this.state.errors.length
+                      ? this.state.errors.map(err => 
                             <div /*className='alert alert-warning alert-dismissible fade show' role='alert'*/>{err}</div>
                         )
-                    }</div>
-                  : <p className='invisibleElement'></p>
-                }
+                      : <p className='invisibleElement'></p>
+                    }
+                </div>
             </div>
         );
     }
