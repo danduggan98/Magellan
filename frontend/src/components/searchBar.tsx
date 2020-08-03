@@ -156,18 +156,18 @@ export default class SearchBar extends Component {
 
                         <div id='inputReminder' className='searchNotice'>
                             { this.state.emptyInput
-                            ? <h4>Please enter something to search</h4>
-                            : <p className='invisibleElement'></p>
+                              ? <div>Please enter something to search</div>
+                              : <p className='invisibleElement'></p>
                             }
                         </div>
 
                         <div id='loadingBar' className='searchNotice'>
                             { this.state.loading
-                            ? <div>
+                              ? <div>
                                     Searching...
                                     <BarLoader height={9} css={override}/>
                                 </div>
-                            : <p className='invisibleElement'></p>
+                              : <p className='invisibleElement'></p>
                             }
                         </div>
                     </form>
