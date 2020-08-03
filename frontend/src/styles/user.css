@@ -1,15 +1,41 @@
+#notYetLoggedInNotice {
+    font-size: 28px;
+    font-weight: 500;
+    font-family: OpenSans;
+    text-align: center;
+}
+
 #userDetails {
     margin-left: 5px;
 }
 
+#welcomeNotice {
+    font-size: 42px;
+    font-weight: 500;
+    font-family: OpenSans;
+    text-align: center;
+}
+
 #emailNotice {
-    font-size: 22px;
-    margin-bottom: 10px;
+    font-size: 28px;
+    font-family: OpenSans;
+    margin: 10px auto 25px auto;
+    text-align: center;
+}
+
+#emailValue {
+    text-decoration: underline;
+}
+
+#savedRecipes {
+    margin-left: 20px;
 }
 
 #recipeNotice {
-    font-size: 18px;
-    margin-bottom: 25px;
+    font-size: 24px;
+    font-weight: 500;
+    font-family: OpenSans;
+    margin-bottom: 12px;
 }
 
 #userLoadingNotice {
