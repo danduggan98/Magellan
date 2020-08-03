@@ -138,12 +138,6 @@ export default class Register extends Component<Props, State> {
                     </div>
 
                     <div id='inputWrapper'>
-                        <label
-                            id='emailLabel'
-                            className='label'
-                            htmlFor='email'>
-                                Email Address:
-                        </label>
                         <input
                             className='input'
                             id='email'
@@ -155,12 +149,6 @@ export default class Register extends Component<Props, State> {
                             onChange={this.updateInput}>
                         </input>
 
-                        <label
-                            id='passwordLabel'
-                            className='label'
-                            htmlFor='password'>
-                                Password:
-                        </label>
                         <input
                             className='input'
                             id='password'
@@ -172,12 +160,6 @@ export default class Register extends Component<Props, State> {
                             onChange={this.updateInput}>
                         </input>
 
-                        <label
-                            id='confirmPasswordLabel'
-                            className='label'
-                            htmlFor='confirmPassword'>
-                                Confirm Password:
-                        </label>
                         <input
                             className='input'
                             id='confirmPassword'
@@ -191,7 +173,7 @@ export default class Register extends Component<Props, State> {
                     </div>
 
                     <div id='registerLink'>
-                        Already have an account?
+                        Already have an account?&nbsp;
                         <Link
                             to={{
                                 pathname: '/login',
