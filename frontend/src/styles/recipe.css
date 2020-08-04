@@ -40,20 +40,29 @@
 }
 
 #source {
-    margin-top: 10px;
-    font-size: 16px;
+    margin: 10px 0px 25px 0px;
+    font-size: 22px;
+}
+
+#sourceText {
+    font-style: italic;
 }
 
 #saveRecipeButton {
     height: 35px;
     border: none;
     border-radius: 50px;
-    background-color: red;
     padding: 5px 15px 5px 15px;
+    color: white;
+    background-color: #509EE5;
+    font-size: 18px;
+    font-weight: 600;
+    font-family: Montserrat;
 }
 
 #saveRecipeButton:hover {
-    color: #1E76C8;
+    background-color: #1E76C8;
+    cursor: pointer;
 }
 
 #sourceText {
@@ -89,13 +98,15 @@
     justify-content: center;
     text-align: center;
     width: 90%;
-    margin: auto;
-    border: 1px solid black;
+    margin: 25px auto 10px auto;
+    background-color: white;
+    filter: drop-shadow(0px 0px 40px rgba(0, 0, 0, 0.2));
 }
 
 #detailsLeft {
     align-self: center;
-    margin-right: 65px;
+    width: 45%;
+    border-right: 1px solid rgba(0, 0, 0, 0.4);
 }
 
 #difficulty {
@@ -110,7 +121,6 @@
 
 #yield {
     font-size: larger;
-    margin-bottom: 5px;
 }
 
 #yieldText {
@@ -133,6 +143,7 @@
 
 #times {
     text-align: center;
+    width: 45%;
 }
 
 #timesList {
