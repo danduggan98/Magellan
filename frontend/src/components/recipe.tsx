@@ -384,10 +384,10 @@ export default class Recipe extends Component<Props, State> {
                             }
                         </div>
 
-                        <div id='image'>
+                        <div id='imageContainer'>
                             { this.state.imageURL
                               ? <div>
-                                    <img src={this.state.imageURL} alt=''></img>
+                                    <img id='recipePhoto' src={this.state.imageURL} alt=''></img>
                                     <div id='sourceLink'>
                                         <a target='_blank' rel='noopener noreferrer' href={this.state.URL}>Original Recipe</a>
                                     </div>
