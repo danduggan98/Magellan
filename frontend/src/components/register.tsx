@@ -4,8 +4,12 @@ import BeatLoader from 'react-spinners/BeatLoader';
 import { Redirect, Link, RouteComponentProps } from 'react-router-dom';
 import '../styles/register.css';
 
-interface Props extends RouteComponentProps {
+interface RegisterRouterProps {
     source: string
+}
+
+interface Props extends RouteComponentProps<RegisterRouterProps>{
+    verified: boolean
 }
 
 interface State {
@@ -102,7 +106,32 @@ export default class Register extends Component<Props, State> {
     }
 
     render() {
-        ////Determine where to redirect after submission
+        //Already signed in
+        if (this.props.verified) {
+            return (
+                <div>
+                    <Helmet>
+                        <title>{'Magellan - Register'}</title>
+                    </Helmet>
+
+                    <div id='alreadyLoggedInNotice'>
+                        You already have an account!
+
+                        <div>
+                            Click&nbsp;
+                            <span>
+                                <Link to='/home'>
+                                    here
+                                </Link>
+                            </span>
+                            &nbsp;to return to the home page
+                        </div>
+                    </div>
+                </div>
+            )
+        }
+
+        //Determine where to redirect after submission
         const location = this.props.location.state as any;
         const destination = location ? location.source : '/home';
 
@@ -133,7 +162,7 @@ export default class Register extends Component<Props, State> {
                     <div>ERRORS:
                         { this.state.errors.length
                           ? this.state.errors
-                          : ''
+                          : <p className='invisibleElement'></p>
                         }
                     </div>
 
