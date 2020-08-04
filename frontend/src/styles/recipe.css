@@ -96,106 +96,44 @@
 #details {
     display: flex;
     justify-content: center;
-    text-align: center;
+    align-items: center;
     width: 90%;
     margin: 25px auto 10px auto;
     background-color: white;
-    filter: drop-shadow(0px 0px 40px rgba(0, 0, 0, 0.2));
+    filter: drop-shadow(0px 0px 20px rgba(0, 0, 0, 0.2));
+    font-size: 22px;
 }
 
 #detailsLeft {
-    align-self: center;
     width: 45%;
     border-right: 1px solid rgba(0, 0, 0, 0.4);
 }
 
-#difficulty {
-    font-size: larger;
-    margin-bottom: 10px;
+.detailHighlight {
+    font-weight: 800;
+    color: #1E76C8;
 }
 
-#difficultyText {
-    font-weight: bold;
-    margin-left: 5px;
-}
-
-#yield {
-    font-size: larger;
-}
-
-#yieldText {
-    font-weight: bold;
-    margin-left: 5px;
+#times {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 45%;
 }
 
 #totalTime {
     font-size: 22px;
     margin-bottom: 5px;
-    margin-top: 25px;
-    margin-left: 15px;
 }
 
 #totalTimeText {
-    font-weight: bold;
-    margin-left: 5px;
-    border-bottom: 2px solid black;
-}
-
-#times {
-    text-align: center;
-    width: 45%;
-}
-
-#timesList {
-    display: inline-block;
-    text-align: left;
-}
-
-#prepTime {
-    font-size: larger;
-    margin-bottom: 10px;
-}
-
-#prepTimeText {
-    font-weight: bold;
-    margin-right: 5px;
-}
-
-#cookTime {
-    font-size: larger;
-    margin-bottom: 10px;
-}
-
-#cookTimeText {
-    font-weight: bold;
-    margin-right: 5px;
-}
-
-#activeTime {
-    font-size: larger;
-    margin-bottom: 10px;
-}
-
-#activeTimeText {
-    font-weight: bold;
-    margin-right: 5px;
-}
-
-#inactiveTime {
-    font-size: larger;
-    margin-bottom: 10px;
-}
-
-#inactiveTimeText {
-    font-weight: bold;
-    margin-right: 5px;
+    text-decoration: underline;
 }
 
 #procedure {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    text-align: left;
 }
 
 .listHeader {
@@ -206,8 +144,7 @@
 
 .sectionHeader {
     font-size: 22px;
-    margin-left: 16px;
-    text-decoration: underline;
+    margin: 20px 0px 20px 20px;
 }
 
 .sectionData {

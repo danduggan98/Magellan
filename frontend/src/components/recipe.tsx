@@ -293,8 +293,8 @@ export default class Recipe extends Component<Props, State> {
                                 <div id='detailsLeft'>
                                     { this.state.difficulty
                                       ? <div id='difficulty'>
-                                            Difficulty:
-                                            <span id='difficultyText'>
+                                            Difficulty:&nbsp;
+                                            <span id='difficultyText' className='detailHighlight'>
                                                 {this.state.difficulty}
                                             </span>
                                         </div>
@@ -303,8 +303,8 @@ export default class Recipe extends Component<Props, State> {
                                     
                                     { this.state.yield
                                       ? <div id='yield'>
-                                            Yield:
-                                            <span id='yieldText'>
+                                            Yield:&nbsp;
+                                            <span id='yieldText' className='detailHighlight'>
                                                 {this.state.yield}
                                             </span>
                                         </div>
@@ -315,8 +315,8 @@ export default class Recipe extends Component<Props, State> {
                                 <div id='times'>
                                     { this.state.totalTime
                                       ? <div id='totalTime'>
-                                            Total Time:
-                                            <span id='totalTimeText'>
+                                            Total Time:&nbsp;
+                                            <span id='totalTimeText' className='detailHighlight'>
                                                 {this.state.totalTime}
                                             </span>
                                         </div>
@@ -329,7 +329,7 @@ export default class Recipe extends Component<Props, State> {
                                                 { this.state.prepTime
                                                   ? <li>
                                                         Prep:&nbsp;
-                                                        <span id='prepTimeText'>
+                                                        <span id='prepTimeText' className='detailHighlight'>
                                                             {this.state.prepTime}
                                                         </span>
                                                     </li>
@@ -341,7 +341,7 @@ export default class Recipe extends Component<Props, State> {
                                                 { this.state.cookTime
                                                   ? <li>
                                                         Cook:&nbsp;
-                                                        <span id='cookTimeText'>
+                                                        <span id='cookTimeText' className='detailHighlight'>
                                                             {this.state.cookTime}
                                                         </span>
                                                     </li>
@@ -353,7 +353,7 @@ export default class Recipe extends Component<Props, State> {
                                                 { this.state.activeTime
                                                   ? <li>
                                                         Active:&nbsp;
-                                                        <span id='activeTimeText'>
+                                                        <span id='activeTimeText' className='detailHighlight'>
                                                             {this.state.activeTime}
                                                         </span>
                                                     </li>
@@ -365,7 +365,7 @@ export default class Recipe extends Component<Props, State> {
                                                 { this.state.inactiveTime
                                                   ? <li>
                                                         Inactive:&nbsp;
-                                                        <span id='inactiveTimeText'>
+                                                        <span id='inactiveTimeText' className='detailHighlight'>
                                                             {this.state.inactiveTime}
                                                         </span>
                                                     </li>
