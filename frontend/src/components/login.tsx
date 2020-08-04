@@ -1,7 +1,6 @@
 import React, { Component, FunctionComponent } from 'react';
 import { Helmet } from 'react-helmet';
 import BeatLoader from 'react-spinners/BeatLoader';
-//import Alert from 'react-bootstrap/Alert';
 import { Redirect, Link, RouteComponentProps } from 'react-router-dom';
 import '../styles/login.css';
 
@@ -9,11 +8,7 @@ interface LoginRouterProps {
     source: string
 }
 
-interface ErrorListProps {
-    errorList: string[]
-}
-
-interface Props extends RouteComponentProps<LoginRouterProps>{
+interface Props extends RouteComponentProps<LoginRouterProps> {
     verified: boolean,
     updateLoginStatus: () => Promise<void>
 }
@@ -23,17 +18,21 @@ interface State {
     password:             string,
     errors:               string[],
     redirectAfterSumbit:  boolean,
-    submissionInProgress: boolean,
+    submissionInProgress: boolean
 };
+
+interface ErrorListProps {
+    errorList: string[]
+}
 
 const ErrorList: FunctionComponent<ErrorListProps> = (props) => {
     return (
         <div>
             { props.errorList.length
               ? props.errorList.map(err =>
-                    //<Alert key={err} variant={'warning'} dismissible>
-                        <div>{err}</div>
-                    //</Alert>
+                    <div className='loginError' key={err}>
+                        {err}
+                    </div>
                 )
               : <p className='invisibleElement'></p>
             }
@@ -215,12 +214,10 @@ export default class Login extends Component<Props, State> {
                         Logging In
                         <BeatLoader size={16} margin={6}/>
                     </div>
-                  : <p className='invisibleElement'></p>
+                  : <div id='errorList'>
+                        <ErrorList errorList={this.state.errors}/>
+                    </div>
                 }
-
-                <div id='errorList'>
-                    <ErrorList errorList={this.state.errors}/>
-                </div>
             </div>
         );
     }
