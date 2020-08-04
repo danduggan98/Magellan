@@ -291,38 +291,47 @@ export default class Recipe extends Component<Props, State> {
 
                             <div id='details'>
                                 <div id='detailsLeft'>
-                                    <div id='difficulty'>
-                                        Difficulty:
-                                        <span id='difficultyText'>
-                                            {this.state.difficulty}
-                                        </span>
-                                    </div>
+                                    { this.state.difficulty
+                                      ? <div id='difficulty'>
+                                            Difficulty:
+                                            <span id='difficultyText'>
+                                                {this.state.difficulty}
+                                            </span>
+                                        </div>
+                                      : <p className='invisibleElement'></p>
+                                    }
                                     
-                                    <div id='yield'>
-                                        Yield:
-                                        <span id='yieldText'>
-                                            {this.state.yield}
-                                        </span>
-                                    </div>
+                                    { this.state.yield
+                                      ? <div id='yield'>
+                                            Yield:
+                                            <span id='yieldText'>
+                                                {this.state.yield}
+                                            </span>
+                                        </div>
+                                      : <p className='invisibleElement'></p>
+                                    }
                                 </div>
 
                                 <div id='times'>
-                                    <div id='totalTime'>
-                                        Total Time:
-                                        <span id='totalTimeText'>
-                                            {this.state.totalTime}
-                                        </span>
-                                    </div>
-
+                                    { this.state.totalTime
+                                      ? <div id='totalTime'>
+                                            Total Time:
+                                            <span id='totalTimeText'>
+                                                {this.state.totalTime}
+                                            </span>
+                                        </div>
+                                      : <p className='invisibleElement'></p>
+                                    }
+                                    
                                     <div id='timesList'>
                                         <ul>
                                             <div id='prepTime'>
                                                 { this.state.prepTime
                                                   ? <li>
+                                                        Prep:&nbsp;
                                                         <span id='prepTimeText'>
                                                             {this.state.prepTime}
                                                         </span>
-                                                        prep time
                                                     </li>
                                                   : <p className='invisibleElement'></p>
                                                 }
@@ -331,10 +340,10 @@ export default class Recipe extends Component<Props, State> {
                                             <div id='cookTime'>
                                                 { this.state.cookTime
                                                   ? <li>
+                                                        Cook:&nbsp;
                                                         <span id='cookTimeText'>
                                                             {this.state.cookTime}
                                                         </span>
-                                                        cook time
                                                     </li>
                                                   : <p className='invisibleElement'></p>
                                                 }
@@ -343,10 +352,10 @@ export default class Recipe extends Component<Props, State> {
                                             <div id='activeTime'>
                                                 { this.state.activeTime
                                                   ? <li>
+                                                        Active:&nbsp;
                                                         <span id='activeTimeText'>
                                                             {this.state.activeTime}
                                                         </span>
-                                                        active time
                                                     </li>
                                                   : <p className='invisibleElement'></p>
                                                 }
@@ -355,10 +364,10 @@ export default class Recipe extends Component<Props, State> {
                                             <div id='inactiveTime'>
                                                 { this.state.inactiveTime
                                                   ? <li>
+                                                        Inactive:&nbsp;
                                                         <span id='inactiveTimeText'>
                                                             {this.state.inactiveTime}
                                                         </span>
-                                                        inactive time
                                                     </li>
                                                   : <p className='invisibleElement'></p>
                                                 }
