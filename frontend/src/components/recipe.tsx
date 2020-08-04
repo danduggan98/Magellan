@@ -376,17 +376,24 @@ export default class Recipe extends Component<Props, State> {
                                     </div>
                                 </div>
                             </div>
+                            { !this.state.imageURL
+                              ? <div id='sourceLink'>
+                                    <a target='_blank' rel='noopener noreferrer' href={this.state.URL}>Original Recipe</a>
+                                </div>
+                              : <p className='invisibleElement'></p>
+                            }
                         </div>
 
                         <div id='image'>
                             { this.state.imageURL
-                              ? <img src={this.state.imageURL} alt='' width='600'></img>
+                              ? <div>
+                                    <img src={this.state.imageURL} alt=''></img>
+                                    <div id='sourceLink'>
+                                        <a target='_blank' rel='noopener noreferrer' href={this.state.URL}>Original Recipe</a>
+                                    </div>
+                                </div>
                               : <p className='invisibleElement'></p>
                             }
-
-                            <div id='sourceLink'>
-                                <a target='_blank' rel='noopener noreferrer' href={this.state.URL}>Original Recipe</a>
-                            </div>
                         </div>
                     </div>
 
