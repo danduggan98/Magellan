@@ -20,7 +20,7 @@
 #inputWrapper {
     min-width: 350px;
     max-width: 40%;
-    margin: 0px auto 0px auto;
+    margin: 0px auto;
 }
 
 .input {
@@ -28,7 +28,7 @@
     height: 60px;
     font-size: 22px;
     font-family: OpenSans;
-    padding: 0px 25px 0px 25px;
+    padding: 0px 25px;
     margin-bottom: 25px;
     box-sizing: border-box;
     box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.25);
@@ -63,7 +63,7 @@
 }
 
 #errorList {
-    margin: 25px auto 25px auto;
+    margin: 25px auto;
     text-align: left;
 }
 
@@ -80,7 +80,7 @@
     margin-bottom: 16px;
     box-sizing: border-box;
     transition: opacity .15s linear;
-    margin: 20px auto 20px auto;
+    margin: 20px auto;
     border-radius: 4px;
     line-height: 1.5;
 }
