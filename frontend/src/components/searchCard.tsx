@@ -1,5 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { RecipeDataResult } from '../../../magellan';
+import placeholderImg from './../images/food-placeholder.png';
 import '../styles/searchCard.css';
 
 interface Props {
@@ -27,10 +28,10 @@ const SearchCard: FunctionComponent<Props> = (props) => {
                     </div>
 
                     <div id='cardPhotoContainer'>
-                        { data.imageURL
-                          ? <img id='cardPhoto' src={data.imageURL} alt=''></img>
-                          : <p className='invisibleElement'></p>
-                        }
+                        <img id='cardPhoto'
+                            src={data.imageURL || placeholderImg}
+                            alt=''>
+                        </img>
                     </div>
                 </div>
             </a>
