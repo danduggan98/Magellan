@@ -65,14 +65,21 @@
 }
 
 #searchTypeNameWrapper {
-    padding-top: 5px;
     display: block;
     white-space: pre;
+}
+
+#searchTypeNameButton {
+    margin-right: 10px;
 }
 
 #searchTypeIngWrapper {
     display: block;
     white-space: pre;
+}
+
+#searchTypeIngButton {
+    margin-right: 10px;
 }
 
 .searchNotice {
