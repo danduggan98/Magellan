@@ -38,11 +38,18 @@
     margin-left: 20px;
 }
 
-#recipeNotice {
+#savedRecipesNotice {
     font-size: 24px;
     font-weight: 500;
     font-family: OpenSans;
     margin-bottom: 12px;
+}
+
+#noSavedRecipesNotice {
+    font-size: 24px;
+    font-weight: 500;
+    font-family: OpenSans;
+    margin-left: 20px;
 }
 
 #userLoadingNotice {
