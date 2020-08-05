@@ -44,10 +44,6 @@
     font-size: 20px;
 }
 
-#sourceText {
-    font-style: italic;
-}
-
 #saveRecipeButton {
     height: 35px;
     border: none;
@@ -108,6 +104,7 @@
 
 #detailsLeft {
     width: 50%;
+    padding: 10px;
 }
 
 .detailHighlight {
@@ -123,6 +120,7 @@
     width: 50%;
     border-left: 1px solid rgba(0, 0, 0, 0.4);
     list-style-position: inside;
+    padding: 10px;
 }
 
 #timesList ul {
