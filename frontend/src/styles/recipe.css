@@ -24,7 +24,7 @@
 }
 
 #header {
-    width: 40%;
+    width: 45%;
 }
 
 #recipeName {
@@ -67,7 +67,9 @@
 
 #imageContainer {
     min-width: 100px;
-    max-width: 30%;
+    max-width: 25%;
+    min-height: 100px;
+    max-height: 25%;
     object-fit: contain;
 }
 
@@ -95,7 +97,7 @@
     min-width: 75%;
     max-width: 90%;
     margin: 25px auto 10px auto;
-    padding: 10px 0px;
+    padding: 16px 0px;
     background-color: white;
     filter: drop-shadow(0px 0px 20px rgba(0, 0, 0, 0.2));
     font-size: 22px;
@@ -129,7 +131,7 @@
 }
 
 #totalTime {
-    font-size: 22px;
+    font-size: 25px;
     margin-bottom: 5px;
 }
 
