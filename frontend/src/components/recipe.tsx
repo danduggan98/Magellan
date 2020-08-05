@@ -124,7 +124,7 @@ export default class Recipe extends Component<Props, State> {
 
         const recipeSavedResponse = await fetch(`/user/recipeSaved/${this.state.recipeID}`);
         const recipeSavedData = await recipeSavedResponse.json();
-        const recipeSaved: boolean = recipeSavedData.recipeSaved ?? false;
+        const recipeSaved: boolean = recipeSavedData.recipeSaved || false;
 
         //Recipe not found
         if (recipeData.error) {

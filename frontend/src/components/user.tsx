@@ -37,8 +37,8 @@ export default class User extends Component<Props, State> {
             const userData = await response.json();
     
             this.setState({
-                email: userData.email ?? '',
-                savedRecipes: userData.savedRecipes ?? [],
+                email: userData.email || '',
+                savedRecipes: userData.savedRecipes || [],
                 loaded: true
             })
         }
