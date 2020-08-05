@@ -2,7 +2,7 @@ import React, { Component, FunctionComponent } from 'react';
 import { Helmet } from 'react-helmet';
 import BeatLoader from 'react-spinners/BeatLoader';
 import { Redirect, Link, RouteComponentProps } from 'react-router-dom';
-import '../styles/login.css';
+import '../styles/authPage.css';
 
 interface LoginRouterProps {
     source: string
@@ -30,7 +30,7 @@ const ErrorList: FunctionComponent<ErrorListProps> = (props) => {
         <div>
             { props.errorList.length
               ? props.errorList.map(err =>
-                    <div className='loginError' key={err}>
+                    <div className='authError' key={err}>
                         {err}
                     </div>
                 )
@@ -126,7 +126,7 @@ export default class Login extends Component<Props, State> {
                         <title>{'Magellan - Sign In'}</title>
                     </Helmet>
 
-                    <div id='alreadyLoggedInNotice'>
+                    <div className='alreadyAuthorizedNotice'>
                         You are already signed in
 
                         <div>
@@ -153,20 +153,20 @@ export default class Login extends Component<Props, State> {
         }
 
         return (
-            <div id='loginWrapper'>
+            <div className='authWrapper'>
                 <Helmet>
                     <title>{'Magellan - Sign In'}</title>
                 </Helmet>
                 
-                <div id='loginHeader'>Sign In</div>
+                <div className='authHeader'>Sign In</div>
 
                 <form
                     name='loginForm'
                     onSubmit={this.submitPage}>
 
-                    <div id='inputWrapper'>
+                    <div className='authInputWrapper'>
                         <input
-                            className='input'
+                            className='authInput'
                             id='email'
                             name='email'
                             type='text'
@@ -177,7 +177,7 @@ export default class Login extends Component<Props, State> {
                         </input>
 
                         <input
-                            className='input'
+                            className='authInput'
                             id='password'
                             name='password'
                             type='password'
@@ -188,7 +188,7 @@ export default class Login extends Component<Props, State> {
                         </input>
                     </div>
 
-                    <div id='registerLink'>
+                    <div className='authLink'>
                         Don't have an account yet?&nbsp;
                         <Link
                             to={{
@@ -199,10 +199,9 @@ export default class Login extends Component<Props, State> {
                         </Link>
                     </div>
 
-                    <div id='submitButtonWrapper'>
+                    <div className='authSubmitButtonWrapper'>
                         <button
                             type='submit'
-                            id='submitButton'
                             className='linkButton'>
                                 <span className='linkButtonText'>Submit</span>
                         </button>
@@ -210,11 +209,11 @@ export default class Login extends Component<Props, State> {
                 </form>
 
                 { this.state.submissionInProgress
-                  ? <div id='loggingInNotice'>
+                  ? <div className='authorizingNotice'>
                         Logging In
                         <BeatLoader size={16} margin={6}/>
                     </div>
-                  : <div id='errorList'>
+                  : <div className='authErrorList'>
                         <ErrorList errorList={this.state.errors}/>
                     </div>
                 }

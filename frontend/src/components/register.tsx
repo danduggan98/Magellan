@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import React, { Component, FunctionComponent } from 'react';
 import { Helmet } from 'react-helmet';
 import BeatLoader from 'react-spinners/BeatLoader';
 import { Redirect, Link, RouteComponentProps } from 'react-router-dom';
-import '../styles/register.css';
+import '../styles/authPage.css';
 
 interface RegisterRouterProps {
     source: string
@@ -20,6 +20,25 @@ interface State {
     redirectAfterSumbit:  boolean,
     submissionInProgress: boolean
 };
+
+interface ErrorListProps {
+    errorList: string[]
+}
+
+const ErrorList: FunctionComponent<ErrorListProps> = (props) => {
+    return (
+        <div>
+            { props.errorList.length
+              ? props.errorList.map(err =>
+                    <div className='authError' key={err}>
+                        {err}
+                    </div>
+                )
+              : <p className='invisibleElement'></p>
+            }
+        </div>
+    );
+}
 
 export default class Register extends Component<Props, State> {
     constructor(props: Props) {
@@ -114,7 +133,7 @@ export default class Register extends Component<Props, State> {
                         <title>{'Magellan - Register'}</title>
                     </Helmet>
 
-                    <div id='alreadyLoggedInNotice'>
+                    <div className='alreadyAuthorizedNotice'>
                         You already have an account!
 
                         <div>
@@ -148,27 +167,20 @@ export default class Register extends Component<Props, State> {
         }
 
         return (
-            <div id='registerWrapper'>
+            <div className='authWrapper'>
                 <Helmet>
                     <title>{'Magellan - Register'}</title>
                 </Helmet>
                 
-                <div id='registerHeader'>Create an account</div>
+                <div className='authHeader'>Create an account</div>
 
                 <form
                     name='registerForm'
                     onSubmit={this.submitPage}>
 
-                    <div>ERRORS:
-                        { this.state.errors.length
-                          ? this.state.errors
-                          : <p className='invisibleElement'></p>
-                        }
-                    </div>
-
-                    <div id='inputWrapper'>
+                    <div className='authInputWrapper'>
                         <input
-                            className='input'
+                            className='authInput'
                             id='email'
                             name='email'
                             type='text'
@@ -179,7 +191,7 @@ export default class Register extends Component<Props, State> {
                         </input>
 
                         <input
-                            className='input'
+                            className='authInput'
                             id='password'
                             name='password'
                             type='password'
@@ -190,7 +202,7 @@ export default class Register extends Component<Props, State> {
                         </input>
 
                         <input
-                            className='input'
+                            className='authInput'
                             id='confirmPassword'
                             name='confirmPassword'
                             type='password'
@@ -201,7 +213,7 @@ export default class Register extends Component<Props, State> {
                         </input>
                     </div>
 
-                    <div id='registerLink'>
+                    <div className='authLink'>
                         Already have an account?&nbsp;
                         <Link
                             to={{
@@ -212,21 +224,23 @@ export default class Register extends Component<Props, State> {
                         </Link>
                     </div>
 
-                    <div id='submitButtonWrapper'>
+                    <div className='authSubmitButtonWrapper'>
                         <button
                             type='submit'
-                            id='submitButton'>
-                                Submit
+                            className='linkButton'>
+                                <span className='linkButtonText'>Submit</span>
                         </button>
                     </div>
                 </form>
 
                 { this.state.submissionInProgress
-                  ? <div id='registeringNotice'>
+                  ? <div className='authorizingNotice'>
                         Registering
-                        <BeatLoader size={20} margin={5}/>
+                        <BeatLoader size={16} margin={6}/>
                     </div>
-                  : <div></div>
+                  : <div className='authErrorList'>
+                        <ErrorList errorList={this.state.errors}/>
+                    </div>
                 }
             </div>
         );
