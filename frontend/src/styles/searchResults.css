@@ -37,7 +37,7 @@
     border: none !important;
     text-align: center;
     font-size: 65px;
-    transition: 0.1s;
+    transition: 0.2s;
     opacity: 0.8;
     color: #509EE5;
     position: relative;
@@ -54,7 +54,7 @@
 }
 
 .scrollButton:hover {
-    opacity: 1
+    color: #1E76C8;
 }
 
 .scrollButton:focus {
