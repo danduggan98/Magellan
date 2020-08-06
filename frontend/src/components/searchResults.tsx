@@ -107,6 +107,9 @@ export default class SearchResults extends Component<Props, State> {
                                 className='scrollButton'
                                 onClick={this.goToPreviousPage}>
                                     ◀
+                                    <div className='scrollLabel'>
+                                        Previous<br/>Page
+                                    </div>
                             </button>
                           : <div className='scrollPlaceholder'> </div>
                         }
@@ -122,6 +125,9 @@ export default class SearchResults extends Component<Props, State> {
                                 className='scrollButton'
                                 onClick={this.goToNextPage}>
                                     ▶
+                                    <div className='scrollLabel'>
+                                        Next<br/>Page
+                                    </div>
                             </button>
                           : <div className='scrollPlaceholder'> </div>
                         }
