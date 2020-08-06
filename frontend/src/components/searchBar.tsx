@@ -96,7 +96,7 @@ export default class SearchBar extends Component {
         `;
 
         return (
-            <div id='searchBarWrapper'>
+            <div>
                 <div id='searchContainer'>
                     <div id='title'>
                         Find your next meal
@@ -113,7 +113,7 @@ export default class SearchBar extends Component {
                                 id='searchInput'
                                 type='text'
                                 autoComplete='off'
-                                placeholder='Search for recipes here'
+                                placeholder='Search for recipes'
                                 onChange={this.updateInput}>
                             </input>
 

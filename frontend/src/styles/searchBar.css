@@ -1,12 +1,15 @@
-#searchBarWrapper {
-    width: 100%;
-    position: relative;
-}
-
 #searchContainer {
     margin: auto;
     min-width: 350px;
     max-width: 50%;
+}
+
+#searchBarWrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    position: relative;
 }
 
 #title {
@@ -19,6 +22,7 @@
 #searchInput {
     width: 90%;
     height: 65px;
+    flex-grow: 2;
     font-size: 22px;
     font-family: OpenSans;
     padding: 0px 35px;
@@ -34,7 +38,7 @@
 
 #searchButton {
     position: absolute;
-    right: 10px;
+    right: 0px;
     z-index: 1;
     width: 80px;
     height: 65px;
@@ -68,7 +72,7 @@
 https://www.w3schools.com/howto/howto_css_custom_checkbox.asp */
 
 #searchType {
-    padding: 25px 0px 10px 25px;
+    padding: 25px;
     text-align: left;
     font-size: 24px;
     font-family: OpenSans;
