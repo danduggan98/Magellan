@@ -57,6 +57,10 @@
     opacity: 1
 }
 
+.scrollButton:focus {
+    outline: none;
+}
+
 .scrollLabel {
     font-size: 20px;
     font-family: OpenSans;
