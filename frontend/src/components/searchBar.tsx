@@ -127,31 +127,29 @@ export default class SearchBar extends Component {
                         <div id='searchType'>
                             Search by:
 
-                            <div id='searchTypeNameWrapper'>
+                            <label className='searchTypeContainer'>
+                                Recipe Name
                                 <input
                                     type='radio'
-                                    id='searchTypeNameButton'
                                     name='searchType'
                                     value='name'
                                     onChange={this.updateSearchType}
                                     checked={this.state.searchType === 'name'}>
                                 </input>
+                                <span className='searchTypeButton'></span>
+                            </label>
 
-                                <label htmlFor='searchTypeNameButton'>Recipe Name</label>
-                            </div>
-
-                            <div id='searchTypeIngWrapper'>
+                            <label className='searchTypeContainer'>
+                                Ingredients
                                 <input
                                     type='radio'
-                                    id='searchTypeIngButton'
                                     name='searchType'
                                     value='ing'
                                     onChange={this.updateSearchType}
                                     checked={this.state.searchType === 'ing'}>
                                 </input>
-                            
-                                <label htmlFor='searchTypeIngButton'>Ingredients</label>
-                            </div>
+                                <span className='searchTypeButton'></span>
+                            </label>
                         </div>
 
                         <div id='inputReminder' className='searchNotice'>
