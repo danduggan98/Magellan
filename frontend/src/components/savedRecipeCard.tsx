@@ -1,5 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { SavedRecipe } from '../../../magellan';
+import placeholderImg from './../images/food-placeholder.png';
 import '../styles/savedRecipeCard.css';
 
 interface Props {
@@ -18,14 +19,21 @@ const SavedRecipeCard: FunctionComponent<Props> = (props) => {
                 href={link}>
 
                 <div id='savedRecipeCardContents'>
-                    <div id='savedRecipeCardName'>
-                        {data.recipeName}
+                    <div id='savedRecipeCardLeft'>
+                        <div id='savedRecipeCardName'>
+                            {data.recipeName}
+                        </div>
+                        
+                        { data.author
+                          ? <div id='savedRecipeCardAuthor'>by {data.author}</div>
+                          : <p className='invisibleElement'></p>
+                        }
                     </div>
-                    
-                    { data.author
-                      ? <div id='savedRecipeCardAuthor'>by {data.author}</div>
-                      : <p className='invisibleElement'></p>
-                    }
+
+                    <img id='savedRecipePhoto'
+                        src={data.imageURL || placeholderImg}
+                        alt=''>
+                    </img>
                 </div>
             </a>
         </div>

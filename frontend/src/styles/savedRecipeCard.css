@@ -7,8 +7,8 @@
     margin-bottom: 10px;
     min-width: 350px;
     max-width: 35%;
-    min-height: 60px;
-    max-height: 200px;
+    min-height: 50px;
+    max-height: 75px;
 }
 
 #savedRecipeCard:hover {
@@ -28,7 +28,15 @@
 }
 
 #savedRecipeCardContents {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
     margin: 4px 5px 5px 8px;
+}
+
+#savedRecipeCardLeft {
+    display: flex;
+    flex-direction: column;
 }
 
 #savedRecipeCardName {
@@ -42,4 +50,9 @@
     font-size: 16px;
     font-weight: 100;
     font-family: OpenSans;
+}
+
+#savedRecipePhoto {
+    height: 50px;
+    object-fit: contain;
 }

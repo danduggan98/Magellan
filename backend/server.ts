@@ -470,7 +470,8 @@ app.get('/user/userData', verify, async (req: Request, res: Response) => {
                 const nextRecipe: SavedRecipe = {
                     _id: recipe._id,
                     recipeName: recipe.recipeName,
-                    author: recipe.author
+                    author: recipe.author,
+                    imageURL: recipe.imageURL
                 }
                 return nextRecipe;
             })
