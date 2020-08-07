@@ -24,6 +24,13 @@
     flex-direction: column;
     justify-content: space-between;
     padding: 2% 3% 2% 3%;
+    max-height: 70px;
+    max-width: 100%;
+    overflow-x: scroll;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    scrollbar-color: #509EE5 white;
+    scrollbar-width: thin;
 }
 
 #cardRecipeName {
