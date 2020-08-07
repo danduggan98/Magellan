@@ -27,7 +27,6 @@
     max-height: 70px;
     max-width: 100%;
     overflow-x: scroll;
-    text-overflow: ellipsis;
     white-space: nowrap;
     scrollbar-color: #509EE5 white;
     scrollbar-width: thin;
@@ -37,7 +36,6 @@
     font-size: 20px;
     font-family: OpenSans;
     font-weight: 500;
-    text-overflow: ellipsis;
 }
 
 #cardTotalTime {

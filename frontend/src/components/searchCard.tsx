@@ -13,19 +13,27 @@ const SearchCard: FunctionComponent<Props> = (props) => {
 
     return (
         <div id='card'>
-            <a className='cardRecipeLink'
-                target='_blank'
-                rel='noopener noreferrer'
-                href={link}>
-
-                <div id='cardContents'>
-                    <div id='cardInfo'>
-                        <div id='cardRecipeName'>{data.recipeName}</div>
-                        { data.totalTime
-                          ? <div id='cardTotalTime'>Total Time: {data.totalTime}</div>
-                          : <p className='invisibleElement'></p>
-                        }
+            <div id='cardContents'>
+                <div id='cardInfo'>
+                    <div id='cardRecipeName'>
+                        {data.recipeName}
+                        &nbsp;&nbsp;
                     </div>
+
+                    { data.totalTime
+                      ? <div id='cardTotalTime'>
+                            Total Time:&nbsp;
+                            {data.totalTime}
+                            &nbsp;&nbsp;
+                        </div>
+                      : <p className='invisibleElement'></p>
+                    }
+                </div>
+
+                <a className='cardRecipeLink'
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    href={link}>
 
                     <div id='cardPhotoContainer'>
                         <img id='cardPhoto'
@@ -33,8 +41,8 @@ const SearchCard: FunctionComponent<Props> = (props) => {
                             alt=''>
                         </img>
                     </div>
-                </div>
-            </a>
+                </a>
+            </div>
         </div>
     );
 }
