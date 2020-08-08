@@ -409,7 +409,8 @@ app.get('/user/userData', validateToken_1.default, (req, res) => __awaiter(void 
             const nextRecipe = {
                 _id: recipe._id,
                 recipeName: recipe.recipeName,
-                author: recipe.author
+                author: recipe.author,
+                imageURL: recipe.imageURL
             };
             return nextRecipe;
         });
