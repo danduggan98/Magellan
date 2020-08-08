@@ -1,6 +1,6 @@
 #card {
     width: 350px;
-    height: 250px;
+    height: 275px;
     overflow: hidden;
     margin: 8px;
     background-color: white;
@@ -49,7 +49,10 @@
 
 #cardPhoto {
     width: 100%;
-    object-fit: contain;
+    height: 300px;
+    background-size: cover;
+    background-position: center -35px;
+    background-repeat: no-repeat;
 }
 
 .cardRecipeLink {

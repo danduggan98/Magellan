@@ -47,11 +47,12 @@ const SearchCard: FunctionComponent<Props> = (props) => {
                     rel='noopener noreferrer'
                     href={link}>
 
-                    <div id='cardPhotoContainer'>
-                        <img id='cardPhoto'
-                            src={data.imageURL || placeholderImg}
-                            alt=''>
-                        </img>
+                    <div id='cardPhoto'
+                        style={{
+                            backgroundImage: `url(${
+                                data.imageURL || placeholderImg
+                            })`
+                        }}>
                     </div>
                 </a>
             </div>
