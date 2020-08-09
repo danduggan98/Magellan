@@ -21,7 +21,7 @@ export default class SearchResults extends Component<Props, State> {
         this.state = {
             currentResults: [],
             numResults: 0,
-            numResultsPerPage: 5, //Arbitrary
+            numResultsPerPage: 6, //Arbitrary
             lastPage: 0,
             currentPage: 1
         };
@@ -95,7 +95,7 @@ export default class SearchResults extends Component<Props, State> {
 
     render() {
         return (
-            <div id='wrapper'>
+            <div id='searchResultsWrapper'>
                 <div id='topResultsLabel'>
                     Top Results:
                 </div>
@@ -107,6 +107,9 @@ export default class SearchResults extends Component<Props, State> {
                                 className='scrollButton'
                                 onClick={this.goToPreviousPage}>
                                     ◀
+                                    <div className='scrollLabel'>
+                                        Previous<br/>Page
+                                    </div>
                             </button>
                           : <div className='scrollPlaceholder'> </div>
                         }
@@ -122,6 +125,9 @@ export default class SearchResults extends Component<Props, State> {
                                 className='scrollButton'
                                 onClick={this.goToNextPage}>
                                     ▶
+                                    <div className='scrollLabel'>
+                                        Next<br/>Page
+                                    </div>
                             </button>
                           : <div className='scrollPlaceholder'> </div>
                         }

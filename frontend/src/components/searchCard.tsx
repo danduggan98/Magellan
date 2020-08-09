@@ -1,5 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { RecipeDataResult } from '../../../magellan';
+import placeholderImg from './../images/food-placeholder.png';
 import '../styles/searchCard.css';
 
 interface Props {
@@ -10,56 +11,51 @@ const SearchCard: FunctionComponent<Props> = (props) => {
     const data = props.info;
     const link = `/recipe/${data._id}`;
 
-    //Select the appropriate class so we can give each source a unique color
-    let src = '';
-        
-    switch(data.source) {
-        case ("Food Network"):
-            src = "FNsource";
-            break;
-        case ("Taste of Home"):
-            src = "TOHsource";
-            break;
-    }
-
     return (
-        <div id='card' className='expandableCard'>
-            <a className='cardRecipeLink'
-                target='_blank'
-                rel='noopener noreferrer'
-                href={link}>
+        <div id='card'>
+            <div id='cardContents'>
+                <div id='cardInfo'>
+                    <div id='cardRecipeName'>
+                        <a className='cardRecipeLink'
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            href={link}>
 
-                <div id='cardContents'>
-                    <div id='cardInfo'>
-                        <div id='cardRecipeName'>{data.recipeName}</div>
-                        <div id='secondaryDetails'>
-                            { data.author
-                              ? <div id='cardAuthor'>by {data.author}</div>
-                              : <p></p>
-                            }
-
-                            <div id='tertiaryDetails'>
-                                { data.source
-                                  ? <div id='cardSource' className={src}>
-                                        from {data.source}
-                                    </div>
-                                  : <p></p>
-                                }
-
-                                { data.totalTime
-                                    ? <div id='cardTotalTime'>{data.totalTime}</div>
-                                    : <p></p>
-                                }
-                                
-                            </div>
-                        </div>
+                            {data.recipeName}
+                            &nbsp;&nbsp;
+                        </a>
                     </div>
-                    { data.imageURL
-                      ? <img id='cardPhoto' src={data.imageURL} alt=''></img>
-                      : <p></p>
+
+                    { data.totalTime
+                      ? <a className='cardRecipeLink'
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            href={link}>
+                                
+                            <div id='cardTotalTime'>
+                                Total Time:&nbsp;
+                                {data.totalTime}
+                                &nbsp;&nbsp;
+                            </div>
+                        </a>
+                      : <p className='invisibleElement'></p>
                     }
                 </div>
-            </a>
+
+                <a className='cardRecipeLink'
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    href={link}>
+
+                    <div id='cardPhoto'
+                        style={{
+                            backgroundImage: `url(${
+                                data.imageURL || placeholderImg
+                            })`
+                        }}>
+                    </div>
+                </a>
+            </div>
         </div>
     );
 }

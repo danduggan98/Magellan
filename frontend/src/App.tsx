@@ -12,8 +12,6 @@ import {
     Redirect
 } from 'react-router-dom';
 
-import './styles/App.css';
-
 interface State {
     verified: boolean,
     auth_error: string
@@ -77,7 +75,12 @@ export default class App extends Component {
 
                         <Route
                             path={'/register'}
-                            component={Register}>
+                            render={(props) => (
+                                <Register
+                                    {...props}
+                                    verified={this.state.verified}>
+                                </Register>
+                            )}>
                         </Route>
 
                         <Route

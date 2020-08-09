@@ -1,41 +1,32 @@
 #resultsContainer {
     display: flex;
     flex-direction: row;
-    justify-content: space-evenly;
+    justify-content: center;
     align-items: center;
+    flex-wrap: wrap;
     margin: auto;
-    max-width: 100%;
-    margin-top: 10px;
+    min-width: 50%;
 }
 
 #topResultsLabel {
-    font-size: 26px;
-    font-weight: bolder;
-    margin-bottom: 15px;
+    font-size: 30px;
+    font-weight: bold;
+    font-family: OpenSans;
+    margin-bottom: 30px;
     text-align: center;
-}
-
-#scrollLeftButton {
-    text-align: center;
-    font-size: 45px;
-    margin-right: 40px;
-    transition: .1s;
-}
-
-#scrollLeftButton:active {
-    transform: translateX(-10px);
 }
 
 #resultsList {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    max-width: 1200px;
 }
 
-#scrollRightButton {
-    text-align: center;
-    font-size: 45px;
-    margin-left: 40px;
-    transition: .1s;
+#scrollLeftButton:active {
+    transform: translateX(-10px);
 }
 
 #scrollRightButton:active {
@@ -43,15 +34,17 @@
 }
 
 .scrollButton {
-    width: 50px;
+    width: 120px;
     cursor: pointer;
     background: transparent;
     border: none !important;
     text-align: center;
-    font-size: 40px;
-    transition: 0.2s;
+    font-size: 65px;
+    transition: 0.1s;
     opacity: 0.8;
+    color: #509EE5;
     position: relative;
+    padding: 48px 0 0 0;
 }
 
 .scrollButton:after {
@@ -64,10 +57,31 @@
 }
 
 .scrollButton:hover {
-    opacity: 1
+    color: #1E76C8;
+}
+
+.scrollButton:focus {
+    outline: none;
+}
+
+.scrollLabel {
+    font-size: 20px;
+    font-family: OpenSans;
+    text-align: center;
+    color: black;
+    padding-top: 5px;
 }
 
 .scrollPlaceholder {
-    width: 50px;
+    width: 120px;
+    height: 0;
     visibility: hidden;
+    border: 0;
+}
+
+#pageDetails {
+    text-align: center;
+    margin: 15px;
+    font-size: 20px;
+    font-family: OpenSans;
 }

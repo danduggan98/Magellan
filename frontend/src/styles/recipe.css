@@ -1,39 +1,88 @@
 #recipeLoadingNotice {
     text-align: center;
     font-size: 50px;
+    font-weight: 600;
+    font-family: Montserrat;
+}
+
+#notFoundNotice {
+    text-align: center;
+    font-size: 30px;
+}
+
+#recipePage {
+    font-family: OpenSans;
+    margin: 25px;
+}
+
+#recipeDetails {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    text-align: center;
+    margin-bottom: 50px;
 }
 
 #header {
-    text-align: center;
-    margin-bottom: 25px;
+    width: 45%;
 }
 
 #recipeName {
     margin: auto;
     font-size: 45px;
-    width: 65%;
+    min-width: 65%;
+    max-width: 90%;
 }
 
 #author {
-    margin-top: 15px;
+    margin-top: 25px;
     font-size: 25px;
 }
 
 #source {
-    margin-top: 10px;
-    font-size: 16px;
+    margin: 10px auto 25px auto;
+    font-size: 20px;
+}
+
+#saveRecipeButton {
+    height: 35px;
+    border: none;
+    border-radius: 50px;
+    padding: 5px 15px;
+    color: white;
+    background-color: #509EE5;
+    font-size: 18px;
+    font-weight: 600;
+    font-family: Montserrat;
+}
+
+#saveRecipeButton:hover {
+    background-color: #1E76C8;
+    cursor: pointer;
 }
 
 #sourceText {
-    color: red;
-    margin-left: 5px;
+    font-weight: 800;
 }
 
-#image {
-    text-align: center;
+#imageContainer {
+    min-width: 100px;
+    max-width: 25%;
+    min-height: 100px;
+    max-height: 25%;
+    object-fit: contain;
+}
+
+#recipePhoto {
+    width: 100%;
+    height: auto;
+    border: none;
+    border-radius: 50px;
 }
 
 #sourceLink {
+    font-size: 20px;
+    font-weight: 400;
     text-align: center;
 }
 
@@ -44,123 +93,71 @@
 #details {
     display: flex;
     justify-content: center;
-    text-align: center;
-    width: 60%;
-    margin: auto;
-    margin-top: 25px;
-    border: 1px solid black;
+    align-items: center;
+    min-width: 75%;
+    max-width: 90%;
+    margin: 25px auto 10px auto;
+    padding: 16px 0px;
+    background-color: white;
+    filter: drop-shadow(0px 0px 20px rgba(0, 0, 0, 0.2));
+    font-size: 22px;
+    line-height: 1.75;
 }
 
 #detailsLeft {
-    align-self: center;
-    margin-right: 65px;
+    width: 50%;
+    padding: 10px;
 }
 
-#difficulty {
-    font-size: larger;
-    margin-bottom: 10px;
-}
-
-#difficultyText {
-    font-weight: bold;
-    margin-left: 5px;
-}
-
-#yield {
-    font-size: larger;
-    margin-bottom: 5px;
-}
-
-#yieldText {
-    font-weight: bold;
-    margin-left: 5px;
-}
-
-#totalTime {
-    font-size: 22px;
-    margin-bottom: 5px;
-    margin-top: 25px;
-    margin-left: 15px;
-}
-
-#totalTimeText {
-    font-weight: bold;
-    margin-left: 5px;
-    border-bottom: 2px solid black;
+.detailHighlight {
+    font-weight: 800;
+    color: #1E76C8;
 }
 
 #times {
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    border-left: 1px solid rgba(0, 0, 0, 0.4);
+    list-style-position: inside;
+    padding: 10px;
 }
 
-#timesList {
-    display: inline-block;
-    text-align: left;
+#timesList ul {
+    margin: 0;
+    padding: 0;
 }
 
-#prepTime {
-    font-size: larger;
-    margin-bottom: 10px;
+#totalTime {
+    font-size: 25px;
+    margin-bottom: 5px;
 }
 
-#prepTimeText {
-    font-weight: bold;
-    margin-right: 5px;
-}
-
-#cookTime {
-    font-size: larger;
-    margin-bottom: 10px;
-}
-
-#cookTimeText {
-    font-weight: bold;
-    margin-right: 5px;
-}
-
-#activeTime {
-    font-size: larger;
-    margin-bottom: 10px;
-}
-
-#activeTimeText {
-    font-weight: bold;
-    margin-right: 5px;
-}
-
-#inactiveTime {
-    font-size: larger;
-    margin-bottom: 10px;
-}
-
-#inactiveTimeText {
-    font-weight: bold;
-    margin-right: 5px;
-}
-
-.listHeader {
-    font-size: x-large;
-    font-weight: bold;
-    margin-top: 25px;
-}
-
-.sectionHeader {
-    margin-top: 20px;
-    font-size: large;
-    margin-left: 15px;
+#totalTimeText {
     text-decoration: underline;
 }
 
-.sectionData {
-    margin-bottom: 6px;
-    line-height: 25px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 18px;
+#procedure {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 0 20%;
 }
 
-.invisibleElement {
-    display: none;
-    height: 0;
-    width: 0;
-    border: 0;
+.listHeader {
+    font-size: 30px;
+    font-weight: 400;
+    text-decoration: underline;
+}
+
+.sectionHeader {
+    font-size: 22px;
+    margin: 20px 0px 20px 20px;
+}
+
+.sectionData {
+    line-height: 30px;
+    font-size: 20px;
 }

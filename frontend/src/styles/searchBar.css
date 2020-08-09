@@ -1,92 +1,140 @@
 #searchContainer {
     margin: auto;
-    max-width: 800px;
-}
-
-#notice {
-    font-size: x-large;
-    font-weight: bolder;
-    padding-bottom: 20px;
-    text-align: left;
-    padding-left: 20px;
+    min-width: 350px;
+    max-width: 50%;
 }
 
 #searchBarWrapper {
-    text-align: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
     position: relative;
 }
 
-#searchInput {
-    margin: auto;
-    text-align: left;
-    height: 45px;
-    border: 1px solid black;
-    border-radius: 20px;
-    font-size: large;
-    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-    padding-left: 15px;
-    width: 750px;
+#title {
+    font-size: 50px;
+    font-family: OpenSans;
+    text-align: center;
+    margin-bottom: 30px;
 }
 
-#iframe {
-    display: none;
-    width: 0;
-    height: 0;
-    border: 0;
+#searchInput {
+    width: 90%;
+    height: 65px;
+    flex-grow: 2;
+    font-size: 22px;
+    font-family: OpenSans;
+    padding: 0px 35px;
+    box-shadow: 0px 0px 40px rgba(0, 0, 0, 0.25);
+    border: none;
+    border-radius: 50px;
+    overflow: scroll;
+}
+
+#searchInput:focus {
+    outline: none;
 }
 
 #searchButton {
-    color: black;
-    height: 49px;
-    width: 60px;
-    cursor: pointer;
-    text-align: center;
     position: absolute;
-    right: 15px;
-    border: 1px solid black;
-    border-top-right-radius: 20px;
-    border-bottom-right-radius: 20px;
-    background-color: lightsteelblue;
-    font-size: x-large;
+    right: 0px;
+    z-index: 1;
+    width: 80px;
+    height: 65px;
+    text-align: center;
+    color: black;
+    cursor: pointer;
+    border: none;
+    border-radius: 0px 50px 50px 0;
+    background-color: #91c1ee;
+    font-size: 30px;
 }
 
 #searchButton:hover {
-    background-color: cornflowerblue;
+    background-color: #64a8e8;
+    box-shadow: 2px 0px 10px rgba(0, 0, 0, 0.25);
 }
+
+#searchButton:focus {
+    outline: none;
+    border: 2px solid rgba(80, 158, 229, 0.5);
+}
+
+.searchNotice {
+    text-align: center;
+    font-size: 30px;
+    font-weight: bold;
+    font-family: OpenSans;
+}
+
+/* The following searchType styling is heavily inspired by this page from W3Schools
+https://www.w3schools.com/howto/howto_css_custom_checkbox.asp */
 
 #searchType {
-    padding-top: 25px;
-    padding-left: 20px;
-    padding-bottom: 10px;
+    padding: 25px;
     text-align: left;
+    font-size: 24px;
+    font-family: OpenSans;
 }
 
-#searchTypeNameWrapper {
-    padding-top: 5px;
+.searchTypeContainer {
     display: block;
-    white-space: pre;
+    position: relative;
+    padding-left: 40px;
+    margin-top: 6px;
+    width: 150px;
+    font-size: 22px;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
-#searchTypeIngWrapper {
+.searchTypeContainer input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.searchTypeButton {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 25px;
+    width: 25px;
+    background-color: white;
+    border: 1px solid #b3b3b3;
+    border-radius: 50%;
+}
+
+.searchTypeContainer:hover input ~ .searchTypeButton {
+    background-color: white;
+}
+  
+.searchTypeContainer input:checked ~ .searchTypeButton {
+    background-color: #1E76C8;
+    border: 1px solid transparent;
+}
+
+.searchTypeButton:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+  
+.searchTypeContainer input:checked ~ .searchTypeButton:after {
     display: block;
-    white-space: pre;
 }
-
-#inputReminder {
-    max-height: 12px;
-    text-align: center;
-    font-size: x-large;
-    font-weight: bold;
-}
-
-#loadingBar {
-    text-align: center;
-    font-size: x-large;
-    font-weight: bold;
-}
-
-#failNotice {
-    text-align: center;
-    font-size: x-large;
-    font-weight: bold;
+  
+.searchTypeContainer .searchTypeButton:after {
+    top: 9px;
+    left: 9px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: white;
 }

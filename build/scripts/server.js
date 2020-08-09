@@ -133,6 +133,7 @@ app.get('/api/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0,
             let initialResults = []; //Will hold our initial sorted results
             //No results
             if (!results.length) {
+                console.log('  > No results found');
                 console.timeEnd('  > Search execution time');
                 res.json({ error: 'No search results' });
             }
@@ -155,6 +156,7 @@ app.get('/api/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0,
                         }
                     }
                 }
+                console.log(`  > ${initialResults.length} results found`);
                 //Sort by whatever the user is looking for, then grab only the most relevant results
                 type === 'name'
                     ? resources_1.SortByProperties(initialResults, ['inName', 'inIngs'])
@@ -234,11 +236,11 @@ app.get('/api/search/:type/:terms/:qty', (req, res) => __awaiter(void 0, void 0,
                     ? resources_1.SortByProperties(finalResults, ['accuracy', 'adjacency', 'brevity', 'rand'])
                     : resources_1.SortByProperties(finalResults, ['accuracy', 'rand']);
                 //PRINT RESULTS FOR TESTING
-                console.log('\nRESULTS:');
+                /*console.log('\nRESULTS:');
                 finalResults.map(element => {
                     console.log(element._id, ':', element.recipeName);
                     console.log('Accuracy:', element.accuracy, ', Brevity:', element.brevity || 'N/A', ', Adjacency:', element.adjacency || 'N/A', ', Rand:', element.rand, '\n');
-                });
+                });*/
                 //Send back the top results as JSON
                 console.timeEnd('  > Search execution time');
                 res.json({ searchResults: finalResults });
@@ -355,8 +357,9 @@ app.post('/auth/login', (req, res) => __awaiter(void 0, void 0, void 0, function
             if (user) {
                 const jwt_token = jsonwebtoken_1.default.sign({ email: email }, process.env.JWT_SECRET);
                 //Include the token in our json response
+                const hour = 3600000;
                 res.cookie('auth-token', jwt_token, {
-                    maxAge: 14400000,
+                    maxAge: 48 * hour,
                     httpOnly: true,
                     secure: true,
                     sameSite: 'strict'
@@ -406,7 +409,8 @@ app.get('/user/userData', validateToken_1.default, (req, res) => __awaiter(void 
             const nextRecipe = {
                 _id: recipe._id,
                 recipeName: recipe.recipeName,
-                author: recipe.author
+                author: recipe.author,
+                imageURL: recipe.imageURL
             };
             return nextRecipe;
         });

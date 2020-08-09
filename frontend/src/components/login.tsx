@@ -1,14 +1,14 @@
-import React, { Component } from 'react';
+import React, { Component, FunctionComponent } from 'react';
 import { Helmet } from 'react-helmet';
 import BeatLoader from 'react-spinners/BeatLoader';
 import { Redirect, Link, RouteComponentProps } from 'react-router-dom';
-import '../styles/login.css';
+import '../styles/authPage.css';
 
 interface LoginRouterProps {
     source: string
 }
 
-interface Props extends RouteComponentProps<LoginRouterProps>{
+interface Props extends RouteComponentProps<LoginRouterProps> {
     verified: boolean,
     updateLoginStatus: () => Promise<void>
 }
@@ -18,8 +18,27 @@ interface State {
     password:             string,
     errors:               string[],
     redirectAfterSumbit:  boolean,
-    submissionInProgress: boolean,
+    submissionInProgress: boolean
 };
+
+interface ErrorListProps {
+    errorList: string[]
+}
+
+const ErrorList: FunctionComponent<ErrorListProps> = (props) => {
+    return (
+        <div>
+            { props.errorList.length
+              ? props.errorList.map(err =>
+                    <div className='authError' key={err}>
+                        {err}
+                    </div>
+                )
+              : <p className='invisibleElement'></p>
+            }
+        </div>
+    );
+}
 
 export default class Login extends Component<Props, State> {
     constructor(props: Props) {
@@ -99,23 +118,27 @@ export default class Login extends Component<Props, State> {
     }
 
     render() {
-        //Already logged in
+        //Already signed in
         if (this.props.verified) {
             return (
                 <div>
                     <Helmet>
-                        <title>{'Magellan - Login'}</title>
+                        <title>{'Magellan - Sign In'}</title>
                     </Helmet>
 
-                    <h3>You are already logged in</h3>
-                    <h4>Click
-                        <span>
-                            <Link to='/home'>
-                                here
-                            </Link>
-                        </span>
-                        to return to the home page
-                    </h4>
+                    <div className='alreadyAuthorizedNotice'>
+                        You are already signed in
+
+                        <div>
+                            Click&nbsp;
+                            <span>
+                                <Link to='/home'>
+                                    here
+                                </Link>
+                            </span>
+                            &nbsp;to return to the home page
+                        </div>
+                    </div>
                 </div>
             )
         }
@@ -130,33 +153,20 @@ export default class Login extends Component<Props, State> {
         }
 
         return (
-            <div id='loginWrapper'>
+            <div className='authWrapper'>
                 <Helmet>
-                    <title>{'Magellan - Login'}</title>
+                    <title>{'Magellan - Sign In'}</title>
                 </Helmet>
                 
-                <div id='loginHeader'>Log In</div>
+                <div className='authHeader'>Sign In</div>
 
                 <form
                     name='loginForm'
                     onSubmit={this.submitPage}>
 
-                    <div>ERRORS:
-                        { this.state.errors.length
-                          ? this.state.errors
-                          : ''
-                        }
-                    </div>
-
-                    <div id='inputWrapper'>
-                        <label
-                            id='emailLabel'
-                            className='label'
-                            htmlFor='email'>
-                                Email Address:
-                        </label>
+                    <div className='authInputWrapper'>
                         <input
-                            className='input'
+                            className='authInput'
                             id='email'
                             name='email'
                             type='text'
@@ -166,14 +176,8 @@ export default class Login extends Component<Props, State> {
                             onChange={this.updateInput}>
                         </input>
 
-                        <label
-                            id='passwordLabel'
-                            className='label'
-                            htmlFor='password'>
-                                Password:
-                        </label>
                         <input
-                            className='input'
+                            className='authInput'
                             id='password'
                             name='password'
                             type='password'
@@ -184,8 +188,8 @@ export default class Login extends Component<Props, State> {
                         </input>
                     </div>
 
-                    <div id='registerLink'>
-                        Don't have an account yet?
+                    <div className='authLink'>
+                        Don't have an account yet?&nbsp;
                         <Link
                             to={{
                                 pathname: '/register',
@@ -195,21 +199,23 @@ export default class Login extends Component<Props, State> {
                         </Link>
                     </div>
 
-                    <div id='submitButtonWrapper'>
+                    <div className='authSubmitButtonWrapper'>
                         <button
                             type='submit'
-                            id='submitButton'>
-                                Submit
+                            className='linkButton'>
+                                <span className='linkButtonText'>Submit</span>
                         </button>
                     </div>
                 </form>
 
                 { this.state.submissionInProgress
-                  ? <div id='loggingInNotice'>
+                  ? <div className='authorizingNotice'>
                         Logging In
-                        <BeatLoader size={20} margin={5}/>
+                        <BeatLoader size={16} margin={6}/>
                     </div>
-                  : <div></div>
+                  : <div className='authErrorList'>
+                        <ErrorList errorList={this.state.errors}/>
+                    </div>
                 }
             </div>
         );

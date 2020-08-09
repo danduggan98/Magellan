@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
-import PulseLoader from 'react-spinners/PulseLoader';
+import BeatLoader from 'react-spinners/BeatLoader';
 import SavedRecipeCard from './savedRecipeCard';
 import { SavedRecipe } from '../../../magellan';
 import '../styles/user.css';
@@ -64,19 +64,23 @@ export default class User extends Component<Props, State> {
                         <title>{'Magellan - Profile'}</title>
                     </Helmet>
 
-                    <h3>You are not yet logged in</h3>
-                    <h4>Click 
-                        <span>
-                            <Link
-                                to={{
-                                    pathname: '/login',
-                                    state: { source: '/user' }
-                                }}>
-                                    here
-                            </Link>
-                        </span>
-                        to log in
-                    </h4>
+                    <div id='notYetLoggedInNotice'>
+                        You must be signed in to view your profile
+
+                        <div>
+                            Click&nbsp;
+                            <span>
+                                <Link
+                                    to={{
+                                        pathname: '/login',
+                                        state: { source: '/user' }
+                                    }}>
+                                        here
+                                </Link>
+                            </span>
+                            &nbsp;to sign in
+                        </div>
+                    </div>
                 </div>
             )
         }
@@ -86,7 +90,7 @@ export default class User extends Component<Props, State> {
             return (
                 <div id='userLoadingNotice'>
                     Loading
-                    <PulseLoader size={20} margin={5} />
+                    <BeatLoader size={20} margin={5} />
                 </div>
             );
         }
@@ -97,14 +101,19 @@ export default class User extends Component<Props, State> {
                     <title>{'Magellan - Profile'}</title>
                 </Helmet>
 
+                <div id='welcomeNotice'>
+                    Welcome!
+                </div>
+
                 <div id='emailNotice'>
-                    You are logged in as {this.state.email}
+                    You are signed in as
+                    <div id='emailValue'>{this.state.email}</div>
                 </div>
 
                 { formattedRecipes.length
                   ? <div id='savedRecipes'>
-                        <div id='recipeNotice'>
-                            Here are your saved recipes:
+                        <div id='savedRecipesNotice'>
+                            Your saved recipes:
                         </div>
 
                         <div id='recipeList'>
@@ -112,7 +121,7 @@ export default class User extends Component<Props, State> {
                         </div>
                     </div>
 
-                  : <div id='recipeNotice'>
+                  : <div id='noSavedRecipesNotice'>
                         You do not have any saved recipes
                     </div>
                 }

@@ -1,0 +1,86 @@
+.authWrapper {
+    width: 100%;
+    position: relative;
+}
+
+.alreadyAuthorizedNotice {
+    font-size: 28px;
+    font-weight: 500;
+    font-family: OpenSans;
+    text-align: center;
+}
+
+.authHeader {
+    font-size: 50px;
+    font-family: OpenSans;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.authInputWrapper {
+    min-width: 350px;
+    max-width: 40%;
+    margin: 0px auto;
+}
+
+.authInput {
+    width: 100%;
+    height: 60px;
+    font-size: 22px;
+    font-family: OpenSans;
+    padding: 0px 25px;
+    margin-bottom: 25px;
+    box-sizing: border-box;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.25);
+    border: 2px solid transparent;
+    border-radius: 50px;
+    overflow: scroll;
+}
+
+.authInput:focus {
+    outline: none;
+    border: 2px solid rgba(80, 158, 229, 0.5);
+}
+
+.authLink {
+    font-size: 20px;
+    font-weight: 400;
+    font-family: OpenSans;
+    text-align: center;
+    margin: 0px auto 25px auto;
+}
+
+.authSubmitButtonWrapper {
+    margin: auto;
+    text-align: center;
+}
+
+.authorizingNotice {
+    font-size: 30px;
+    font-family: Montserrat;
+    margin: 20px auto;
+    text-align: center;
+}
+
+.authErrorList {
+    margin: 25px auto;
+    text-align: left;
+}
+
+/* Copied directly from Bootstrap's alerts */
+.authError {
+    width: 50%;
+    color: #856404;
+    background-color: #fff3cd;
+    border: 1px solid #ffeeba;
+    font-size: 20px;
+    font-weight: 400;
+    font-family: Montserrat;
+    padding: 12px 20px;
+    margin-bottom: 16px;
+    box-sizing: border-box;
+    transition: opacity .15s linear;
+    margin: 20px auto;
+    border-radius: 4px;
+    line-height: 1.5;
+}

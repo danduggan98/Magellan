@@ -137,6 +137,7 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
 
             //No results
             if (!results.length) {
+                console.log('  > No results found');
                 console.timeEnd('  > Search execution time');
                 res.json({ error: 'No search results' });
             }
@@ -162,6 +163,7 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
                         }
                     }
                 }
+                console.log(`  > ${initialResults.length} results found`);
 
                 //Sort by whatever the user is looking for, then grab only the most relevant results
                 type === 'name'
@@ -259,11 +261,11 @@ app.get('/api/search/:type/:terms/:qty', async (req: Request, res: Response) => 
                 ;
 
                 //PRINT RESULTS FOR TESTING
-                console.log('\nRESULTS:');
+                /*console.log('\nRESULTS:');
                 finalResults.map(element => {
                     console.log(element._id, ':', element.recipeName);
                     console.log('Accuracy:', element.accuracy, ', Brevity:', element.brevity || 'N/A', ', Adjacency:', element.adjacency || 'N/A', ', Rand:', element.rand, '\n');
-                });
+                });*/
 
                 //Send back the top results as JSON
                 console.timeEnd('  > Search execution time');
@@ -403,8 +405,9 @@ app.post('/auth/login', async (req: Request, res: Response) => {
                 );
 
                 //Include the token in our json response
+                const hour = 3600000;
                 res.cookie('auth-token', jwt_token, {
-                    maxAge: 14400000, //Expires in 4 hours
+                    maxAge: 48 * hour,
                     httpOnly: true,
                     secure: true,
                     sameSite: 'strict'
@@ -467,7 +470,8 @@ app.get('/user/userData', verify, async (req: Request, res: Response) => {
                 const nextRecipe: SavedRecipe = {
                     _id: recipe._id,
                     recipeName: recipe.recipeName,
-                    author: recipe.author
+                    author: recipe.author,
+                    imageURL: recipe.imageURL
                 }
                 return nextRecipe;
             })

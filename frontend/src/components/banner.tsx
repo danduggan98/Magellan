@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
-import '../styles/banner.css'
+import '../styles/banner.css';
 
 interface Props extends RouteComponentProps {
     verified: boolean,
@@ -10,29 +10,42 @@ interface Props extends RouteComponentProps {
 
 const Banner: FunctionComponent<Props> = (props) => {
     return (
-        <div id='logoBanner'>
-            <Link to='/home' className='logo'>
-                MAGELLAN
-            </Link>
-
-            { props.verified
-              ? props.location.pathname === '/user'
-                ? <Link to='/home' className='loginButton'>Back to the home page</Link>
-                : <Link to='/user' className='loginButton'>View Your Saved Recipes</Link>
-              : <div></div>
-            }
-
-            { props.verified
-              ? <button className='logoutButton' onClick={props.logout}>Log Out</button>
-              : <Link
-                    to={{
-                        pathname: '/login',
-                        state: { source: props.location.pathname }
-                    }}
-                    className='loginButton'>
-                        Log In
+        <div id='banner'>
+            <div id='bannerLeft'>
+                <Link to='/home' className='logo'>
+                    Magellan
                 </Link>
-            }
+
+                { props.location.pathname === '/home'
+                  ? <p className='invisibleElement'></p>
+                  : <Link to='/home'
+                        className='linkButton'>
+                            <span className='linkButtonText'>Back to the home page</span>
+                    </Link>
+                }
+            </div>
+            
+            <div id='bannerRight'>
+                { props.verified
+                  ? <div>
+                        <Link to='/user'
+                            className='linkButton'>
+                                <span id='userLinkButtonText' className='linkButtonText'>View Your Saved Recipes</span>
+                        </Link>
+                        <button className='linkButton' onClick={props.logout}>
+                            <span className='linkButtonText'>Sign Out</span>
+                        </button>
+                    </div>
+                  : <Link
+                        to={{
+                            pathname: '/login',
+                            state: { source: props.location.pathname }
+                        }}
+                        className='linkButton'>
+                            <span className='linkButtonText'>Sign In</span>
+                    </Link>
+                }
+            </div>
         </div>
     );
 }

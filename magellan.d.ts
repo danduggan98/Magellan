@@ -50,7 +50,8 @@ export interface SavedRecipe {
     [key: string]: string
     _id:           string,
     recipeName:    string,
-    author:        string
+    author:        string,
+    imageURL:      string
 }
 
 //Format for indexes held by database
