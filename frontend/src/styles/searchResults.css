@@ -1,10 +1,9 @@
 #resultsContainer {
     display: flex;
     flex-direction: row;
-    justify-content: space-evenly;
+    justify-content: center;
     align-items: center;
     margin: auto;
-    max-width: 80%;
     min-width: 50%;
 }
 
@@ -17,9 +16,12 @@
 }
 
 #resultsList {
-    display: grid;
-    grid-template-columns: auto auto auto;
-    grid-template-rows: auto auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    max-width: 1200px;
 }
 
 #scrollLeftButton:active {
