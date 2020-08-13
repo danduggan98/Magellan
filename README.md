@@ -10,4 +10,4 @@ We cut out all unnecessary content like ads and auto-play videos, delivering you
 
 When you find a recipe you like, you can save it to your account and come back to it whenever and wherever you want.
 
-Visit us today!
+[Visit us today!](https://www.magellanmeals.com)
