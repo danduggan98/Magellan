@@ -210,7 +210,7 @@ export default class Login extends Component<Props, State> {
 
                 { this.state.submissionInProgress
                   ? <div className='authorizingNotice'>
-                        Logging In
+                        Signing In
                         <BeatLoader size={16} margin={6}/>
                     </div>
                   : <div className='authErrorList'>
