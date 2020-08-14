@@ -10,6 +10,12 @@
     src: local('OpenSans-regular.tff'), url('./../fonts/OpenSans-Regular.ttf') format('truetype');
 }
 
+/* Import Noto Serif font */
+@font-face {
+    font-family: 'NotoSerif';
+    src: local('NotoSerif-Regular.ttf'), url('./../fonts/NotoSerif-Regular.ttf') format('truetype');
+}
+
 body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
