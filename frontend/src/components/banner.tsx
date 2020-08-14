@@ -12,9 +12,12 @@ const Banner: FunctionComponent<Props> = (props) => {
     return (
         <div id='banner'>
             <div id='bannerLeft'>
-                <Link to='/home' className='logo'>
-                    Magellan
-                </Link>
+                <div id='titleContainer'>
+                    <Link to='/home' className='logo'>
+                        Magellan
+                    </Link>
+                    <div id='tagline'>Explore the culinary world</div>
+                </div>
 
                 { props.location.pathname === '/home'
                   ? <p className='invisibleElement'></p>
@@ -30,7 +33,7 @@ const Banner: FunctionComponent<Props> = (props) => {
                   ? <div>
                         <Link to='/user'
                             className='linkButton'>
-                                <span id='userLinkButtonText' className='linkButtonText'>View Your Saved Recipes</span>
+                                <span id='userLinkButtonText' className='linkButtonText'>View your saved recipes</span>
                         </Link>
                         <button className='linkButton' onClick={props.logout}>
                             <span className='linkButtonText'>Sign Out</span>
